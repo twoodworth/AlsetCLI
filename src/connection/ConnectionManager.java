@@ -19,6 +19,7 @@ public class ConnectionManager {
             current = DriverManager.getConnection(url, user, pwd);
             return current;
         } catch (SQLException e) {
+            e.printStackTrace();
             current = null;
             return null;
         }

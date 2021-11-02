@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/AlsetCLI_jar</output-path>
     <root id="archive" name="AlsetCLI.jar">
       <element id="module-output" name="AlsetCLI" />
+      <element id="library" level="project" name="ojdbc8" />
     </root>
   </artifact>
 </component>

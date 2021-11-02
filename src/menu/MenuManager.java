@@ -57,20 +57,20 @@ public class MenuManager {
     public boolean createMenu(String id, String title, MenuOption... options) {
         if (menus.containsKey(id)) return false;
         else {
-            var menu = new Menu(title, options);
+            Menu menu = new Menu(title, options);
             menus.put(id, menu);
             return true;
         }
     }
 
     public void showMenu(String id) {
-        var menu = menus.get(id);
+        Menu menu = menus.get(id);
         history.push(current);
         showMenu(menu);
     }
 
     public void showPrevious() {
-        var previous = history.pop();
+        Menu previous = history.pop();
         showMenu(previous);
     }
 
@@ -78,8 +78,8 @@ public class MenuManager {
         current = menu;
         while (current == menu) {
             System.out.println(menu.toString());
-            var l = menu.options.length;
-            var input = InputManager.getIntInput("Select an option:", 0, l - 1);
+            int l = menu.options.length;
+            Integer input = InputManager.getIntInput("Select an option:", 0, l - 1);
             if (input == null) {
                 System.out.println("Input is invalid.");
             } else {

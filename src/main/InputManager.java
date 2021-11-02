@@ -19,9 +19,9 @@ public class InputManager {
 
     public static Integer getIntInput(String message, int min, int max) {
         System.out.println(message);
-        var s = scanner.next();
+        String s = scanner.next();
         try {
-            var i = Integer.parseInt(s);
+            int i = Integer.parseInt(s);
             if (i < min || i > max) return null;
             else return i;
         } catch (NumberFormatException e) {

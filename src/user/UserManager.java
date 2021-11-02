@@ -1,10 +1,10 @@
 package user;
 
 import connection.ConnectionManager;
-import constants.Constants;
 import database.DatabaseManager;
-import menu.MenuManager;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserManager {
@@ -19,14 +19,14 @@ public class UserManager {
         if (DatabaseManager.getInstance().validLoginData(email, password)) {
             try {
                 boolean success;
-                var s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT first, middle, last FROM customer_name WHERE email=?");
+                PreparedStatement s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT first, middle, last FROM customer_name WHERE email=?");
                 s.setString(1, email);
                 s.execute();
-                var rs = s.executeQuery();
+                ResultSet rs = s.executeQuery();
                 if (rs.next()) {
-                    var first = rs.getString("first");
-                    var middle = rs.getString("middle");
-                    var last = rs.getString("last");
+                    String first = rs.getString("first");
+                    String middle = rs.getString("middle");
+                    String last = rs.getString("last");
                     current = new User(first, middle, last, email, password);
                     success = true;
                 } else {

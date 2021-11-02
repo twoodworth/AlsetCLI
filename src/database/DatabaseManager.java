@@ -4,7 +4,10 @@ import connection.ConnectionManager;
 import constants.Constants;
 import menu.MenuManager;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DatabaseManager {
     private static DatabaseManager instance = null;
@@ -19,10 +22,10 @@ public class DatabaseManager {
     public boolean validLoginData(String email, String pwd) {
         try {
             boolean valid;
-            var s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT password FROM customer WHERE email=?");
+            PreparedStatement s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT password FROM customer WHERE email=?");
             s.setString(1, email);
             s.execute();
-            var rs = s.executeQuery();
+            ResultSet rs = s.executeQuery();
             valid = rs.next() && rs.getString("password").equals(pwd);
             rs.close();
             return valid;

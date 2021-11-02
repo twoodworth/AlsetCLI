@@ -36,9 +36,9 @@ class Menu {
      */
     @Override
     public String toString() {
-        var sb = new StringBuilder("\n").append(title);
+        StringBuilder sb = new StringBuilder("\n").append(title);
         int count = 0;
-        for (var option : options) {
+        for (MenuOption option : options) {
             sb.append("\n\t").append("[").append(count++).append("]").append("\t").append(option.getDescription());
         }
         return sb.append("\n").toString();
