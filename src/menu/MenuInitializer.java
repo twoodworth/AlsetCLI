@@ -42,10 +42,14 @@ public class MenuInitializer {
     private static void edgar1LoginSequence() {
         var id = InputManager.getStringInput("Enter your Oracle id for edgar1:");
         var pwd = InputManager.getPasswordInput("Enter your Oracle password for edgar1:");
+        System.out.println("Connecting to database...");
         var conn = ConnectionManager.createEdgar1Connection(id, pwd);
         if (conn == null)
             System.out.println("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
-        else manager.showMenu(Constants.START_MENU_KEY);
+        else {
+            System.out.println("Connected successfully.");
+            manager.showMenu(Constants.START_MENU_KEY);
+        }
     }
 
     private static void initializeEdgar1Menu() {
@@ -53,7 +57,7 @@ public class MenuInitializer {
                 Constants.EDGAR1_MENU_KEY,
                 "Edgar1 Login Menu",
                 new MenuOption("Log Into Edgar1", MenuInitializer::edgar1LoginSequence),
-                new MenuOption("Exit Program", () -> System.exit(0))
+                new MenuOption("Exit Program", () -> InputManager.exitProgram(0))
         );
     }
 }

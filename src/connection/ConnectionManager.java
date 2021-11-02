@@ -16,8 +16,10 @@ public class ConnectionManager {
 
     public static Connection createConnection(String url, String user, String pwd) {
         try {
-            return DriverManager.getConnection(url, user, pwd);
+            current = DriverManager.getConnection(url, user, pwd);
+            return current;
         } catch (SQLException e) {
+            current = null;
             return null;
         }
     }

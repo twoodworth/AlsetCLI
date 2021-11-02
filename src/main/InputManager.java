@@ -19,8 +19,9 @@ public class InputManager {
 
     public static Integer getIntInput(String message, int min, int max) {
         System.out.println(message);
+        var s = scanner.next();
         try {
-            var i = scanner.nextInt();
+            var i = Integer.parseInt(s);
             if (i < min || i > max) return null;
             else return i;
         } catch (NumberFormatException e) {
@@ -29,12 +30,18 @@ public class InputManager {
     }
 
     public static String getPasswordInput(String message) {
-        System.out.println(message);
-        char[] pwd = System.console().readPassword();
-        var sb = new StringBuilder();
-        for (var c : pwd) {
-            sb.append(c);
-        }
-        return sb.toString();
+//        System.out.println(message);
+//        char[] pwd = System.console().readPassword();
+//        var sb = new StringBuilder();
+//        for (var c : pwd) {
+//            sb.append(c);
+//        }
+//        return sb.toString();
+        return getStringInput(message);
+    }
+
+    public static void exitProgram(int status) {
+        System.out.println("Exiting program.");
+        System.exit(status);
     }
 }

@@ -66,14 +66,12 @@ public class MenuManager {
     public void showMenu(String id) {
         var menu = menus.get(id);
         history.push(current);
-        var thread = new Thread(() -> showMenu(menu));
-        thread.start();
+        showMenu(menu);
     }
 
     public void showPrevious() {
         var previous = history.pop();
-        var thread = new Thread(() -> showMenu(previous));
-        thread.start();
+        showMenu(previous);
     }
 
     private void showMenu(Menu menu) {
