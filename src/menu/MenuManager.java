@@ -81,7 +81,7 @@ public class MenuManager {
         while (current == menu) {
             System.out.println(menu.toString());
             var l = menu.options.length;
-            var input = InputManager.getIntInput("Select an option:", 0, l);
+            var input = InputManager.getIntInput("Select an option:", 0, l - 1);
             if (input == null) {
                 System.out.println("Input is invalid.");
             } else {
