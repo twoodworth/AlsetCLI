@@ -1,5 +1,5 @@
 
-Logged Out Main Menu:
+Start Menu:
     [0] Log into Alset // go to Log In Menu
     [1] Forgot password // go to Forgot Password Menu
     [2] Create New Account // Go to Create Account Menu

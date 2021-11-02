@@ -1,8 +1,10 @@
 package menu;
 
+import constants.Constants;
+import main.InputManager;
+
 import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Scanner;
 import java.util.Stack;
 
 /**
@@ -15,11 +17,6 @@ public class MenuManager {
      * Singleton instance of MenuManager
      */
     private static MenuManager instance = null;
-
-    /**
-     * Scanner used for reading the user inputs
-     */
-    private final Scanner scanner = new Scanner(System.in);
 
     /**
      * Maps a set of IDs to corresponding menus.
@@ -55,7 +52,6 @@ public class MenuManager {
      * Constructs the MenuManager class.
      */
     private MenuManager() {
-
     }
 
     public boolean createMenu(String id, String title, MenuOption... options) {
@@ -84,17 +80,12 @@ public class MenuManager {
         current = menu;
         while (current == menu) {
             System.out.println(menu.toString());
-            System.out.println("\nSelect an option:");
-            try {
-                var input = scanner.nextInt();
-                var l = menu.options.length;
-                if (input >= l) {
-                    System.out.println("Input is invalid.");
-                } else {
-                    menu.options[input].runAction();
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Input is invalid.\n");
+            var l = menu.options.length;
+            var input = InputManager.getIntInput("Select an option:", 0, l);
+            if (input == null) {
+                System.out.println("Input is invalid.");
+            } else {
+                menu.options[input].runAction();
             }
         }
     }

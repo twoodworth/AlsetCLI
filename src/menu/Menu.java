@@ -36,11 +36,11 @@ class Menu {
      */
     @Override
     public String toString() {
-        var sb = new StringBuilder(title);
+        var sb = new StringBuilder("\n").append(title);
         int count = 0;
         for (var option : options) {
-            sb.append("\n\t").append(count++).append("\t").append(option.getDescription());
+            sb.append("\n\t").append("[").append(count++).append("]").append("\t").append(option.getDescription());
         }
-        return sb.toString();
+        return sb.append("\n").toString();
     }
 }
