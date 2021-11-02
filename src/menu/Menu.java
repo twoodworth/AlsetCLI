@@ -3,7 +3,7 @@ package menu;
 /**
  * A class which is used for creating command-line interface menus.
  */
-public class Menu {
+class Menu {
     /**
      * The title of the menu. When the menu gets displayed, the title
      * is displayed as the first line in the menu.
@@ -22,7 +22,7 @@ public class Menu {
      * @param title   the menu title
      * @param options an array of all the menu's options
      */
-    public Menu(String title, MenuOption... options) {
+    Menu(String title, MenuOption... options) {
         this.title = title;
         this.options = options;
     }
