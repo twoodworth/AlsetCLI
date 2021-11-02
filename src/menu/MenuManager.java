@@ -35,7 +35,7 @@ public class MenuManager {
     /**
      * The menu currently being displayed to the user.
      */
-    private Menu current = null;
+    private volatile Menu current = null;
 
 
     /**
@@ -70,12 +70,14 @@ public class MenuManager {
     public void showMenu(String id) {
         var menu = menus.get(id);
         history.push(current);
-        showMenu(menu);
+        var thread = new Thread(() -> showMenu(menu));
+        thread.start();
     }
 
     public void showPrevious() {
         var previous = history.pop();
-        showMenu(previous);
+        var thread = new Thread(() -> showMenu(previous));
+        thread.start();
     }
 
     private void showMenu(Menu menu) {
