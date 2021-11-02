@@ -1,0 +1,59 @@
+
+Logged Out Main Menu:
+    [0] Log into Alset // go to Log In Menu
+    [1] Forgot password // go to Forgot Password Menu
+    [2] Create New Account // Go to Create Account Menu
+    [3] Log in as admin // Go to Admin Log in Menu
+    [4] Exit // Exit program
+
+Log In Menu:
+    > Enter email:
+    > Enter password:
+    // if correct: Print "Welcome back, [name]!" and go to Logged In Menu
+    // if incorrect: Print "Email or password was incorrect." and go to Logged Out Main Menu
+
+Forgot Password Menu:
+    > Enter email:
+    // Print: "A new password has been sent to [email] if it has an account."
+    // If correct: Print set new password to a random string, and print out that random string
+    // return to logged out main menu
+
+Create Account Menu:
+    > Enter email:
+    > Enter first name:
+    > Enter middle name:
+    > Enter last name:
+    > Enter password:
+    > Confirm password:
+    // Print: "A validation key has been sent to [email]."
+    > Enter validation key:
+    // If all correct: "Welcome to Alset, [name]!"
+
+Log in as admin menu:
+    > Enter edgar1 username:
+    > Enter edgar1 password:
+
+Logged In Main Menu:
+    [0] Manage my vehicles // Go to vehicles list
+    [1] Purchase new vehicle // List new models
+    [2] Change password // go to password change menu
+    [3] Log out // Go to Logged Out main menu
+    [4] Exit program // system.exit(0);
+
+Logged In Admin menu:
+    [0] TBD
+    [1] TBD
+
+Manage vehicles menu
+    [0] Return to Main Menu
+    [1] Vehicle #1 // go to vehicle #1 menu
+    [2] Vehicle #2 // go to vehicle #2 menu
+    ...
+    [N] Vehicle #N // go to vehicle N menu
+
+Manage Vehicle menu
+    [0] View vehicle information
+    [1]
+
+
+
