@@ -1,8 +1,5 @@
 package main;
 
-import constants.Constants;
-
-import java.io.Console;
 import java.util.Scanner;
 
 public class InputManager {
@@ -12,11 +9,25 @@ public class InputManager {
      */
     private static final Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Fetches a String input from the user
+     *
+     * @param message: The message to be sent to the user
+     * @return the user input
+     */
     public static String getStringInput(String message) {
         System.out.println(message);
         return scanner.next();
     }
 
+    /**
+     * Fetches an Integer input from the user
+     *
+     * @param message: The message to send to the user
+     * @param min:     The minimum value to be accepted
+     * @param max:     The maximum value to be accepted
+     * @return the user input
+     */
     public static Integer getIntInput(String message, int min, int max) {
         System.out.println(message);
         String s = scanner.next();
@@ -29,17 +40,27 @@ public class InputManager {
         }
     }
 
+    /**
+     * Fetches a String input from the user in a password-secure manner
+     *
+     * @param message: The message to send to the user
+     * @return the user input
+     */
     public static String getPasswordInput(String message) {
-//        System.out.println(message);
-//        char[] pwd = System.console().readPassword();
-//        var sb = new StringBuilder();
-//        for (var c : pwd) {
-//            sb.append(c);
-//        }
-//        return sb.toString();
-        return getStringInput(message);
+        System.out.println(message);
+        char[] pwd = System.console().readPassword();
+        StringBuilder sb = new StringBuilder();
+        for (char c : pwd) {
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
+    /**
+     * Exits the program, and prints an exit message.
+     *
+     * @param status: The exit status
+     */
     public static void exitProgram(int status) {
         System.out.println("Exiting program.");
         System.exit(status);

@@ -7,11 +7,23 @@ import menu.MenuManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
+/**
+ * Manages interactions with the Alset database
+ */
 public class DatabaseManager {
+
+    /**
+     * Singleton instance of DatabaseManager
+     */
     private static DatabaseManager instance = null;
 
+    /**
+     * Returns the singleton instance of DatabaseManager,
+     * and constructs it if it does not already exist.
+     *
+     * @return
+     */
     public static DatabaseManager getInstance() {
         if (instance == null) {
             instance = new DatabaseManager();
@@ -19,6 +31,13 @@ public class DatabaseManager {
         return instance;
     }
 
+    /**
+     * Checks if the given email and password are correct and correspond to an Alset account
+     *
+     * @param email: Email to check
+     * @param pwd:   Password to check
+     * @return true if the credentials are valid, otherwise false.
+     */
     public boolean validLoginData(String email, String pwd) {
         try {
             boolean valid;
