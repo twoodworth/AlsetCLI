@@ -37,12 +37,34 @@ public class ConnectionManager {
      */
     public static Connection createConnection(String url, String user, String pwd) {
         try {
-            current = DriverManager.getConnection(url, user, pwd);
+            Connection conn = DriverManager.getConnection(url, user, pwd);
+            if (current != null) {
+                boolean closed = closeConnection();
+                if (!closed) System.out.println("Error while closing previous connection.");
+            }
+            current = conn;
             return current;
         } catch (SQLException e) {
             current = null;
             return null;
         }
+    }
+
+    /**
+     * Returns true if the connection is closed, otherwise false.
+     *
+     * @return true if connection is closed, otherwise false
+     */
+    public static boolean closeConnection() {
+        if (current != null) {
+            try {
+                current.close();
+                return true;
+            } catch (SQLException e) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

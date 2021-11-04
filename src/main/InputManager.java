@@ -55,14 +55,4 @@ public class InputManager {
         }
         return sb.toString();
     }
-
-    /**
-     * Exits the program, and prints an exit message.
-     *
-     * @param status: The exit status
-     */
-    public static void exitProgram(int status) {
-        System.out.println("Exiting program.");
-        System.exit(status);
-    }
 }

@@ -8,7 +8,7 @@ public class Constants {
     /**
      * Key mapping to the start menu
      */
-    public static final String START_MENU_KEY = "a";
+    public static final String ALSET_LOGIN_MENU_KEY = "a";
 
     /**
      * Key mapping to the Edgar1 Login menu

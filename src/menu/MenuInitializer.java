@@ -1,11 +1,6 @@
 package menu;
 
-import connection.ConnectionManager;
 import constants.Constants;
-import main.InputManager;
-import user.UserManager;
-
-import java.sql.Connection;
 
 /**
  * Initializes all of the menus in the program.
@@ -24,7 +19,7 @@ public class MenuInitializer {
     public static void initializeMenus() {
         if (!initialized) {
             initializeEdgar1Menu();
-            initializeStartMenu();
+            initializeAlsetLoginMenu();
             initialized = true;
         }
     }
@@ -32,13 +27,25 @@ public class MenuInitializer {
     /**
      * Initializes the start menu
      */
-    private static void initializeStartMenu() {
+    private static void initializeAlsetLoginMenu() {
         MenuManager.getInstance().createMenu(
-                Constants.START_MENU_KEY,
-                "Start Menu",
-                new MenuOption("Log Into Alset", Sequences::alsetLoginSequence)
+                Constants.ALSET_LOGIN_MENU_KEY,
+                "Alset Login Menu",
+                new MenuOption("Log Into Alset", Sequences::alsetLoginSequence),
+                new MenuOption("Forgot password", Sequences::forgotPwdSequence),
+                new MenuOption("Create New Account", Sequences::createAcctSequence),
+                new MenuOption("Log in as admin", Sequences::adminLoginSequence),
+                new MenuOption("End connection", Sequences::endConnectionSequence),
+                new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }
+
+    //Start Menu:
+    //    [0] Log into Alset // go to Log In Menu
+    //    [1] Forgot password // go to Forgot Password Menu
+    //    [2] Create New Account // Go to Create Account Menu
+    //    [3] Log in as admin // Go to Admin Log in Menu
+    //    [4] Exit // Exit program
 
     /**
      * Initializes the Edgar1 login menu
@@ -48,7 +55,7 @@ public class MenuInitializer {
                 Constants.EDGAR1_MENU_KEY,
                 "Edgar1 Login Menu",
                 new MenuOption("Log Into Edgar1", Sequences::edgar1LoginSequence),
-                new MenuOption("Exit Program", () -> InputManager.exitProgram(0))
+                new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }
 }

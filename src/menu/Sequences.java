@@ -41,7 +41,31 @@ public class Sequences {
             System.out.println("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
             System.out.println("Connected successfully.");
-            MenuManager.getInstance().showMenu(Constants.START_MENU_KEY);
+            MenuManager.getInstance().showMenu(Constants.ALSET_LOGIN_MENU_KEY);
         }
+    }
+
+
+    /**
+     * Exits the program.
+     */
+    public static void exitSequence() {
+        Connection current = ConnectionManager.getCurrentConnection();
+        if (current != null) {
+            System.out.println("Closing connection...");
+            boolean closed = ConnectionManager.closeConnection();
+            if (!closed) System.out.println("Error while closing connection.");
+        }
+        System.out.println("Exiting program.");
+        System.exit(0);
+    }
+
+    public static void createAcctSequence() {//todo add code
+    }
+
+    public static void adminLoginSequence() {//todo add code
+    }
+
+    public static void endConnectionSequence() {//todo add code
     }
 }
