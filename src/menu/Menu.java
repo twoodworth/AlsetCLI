@@ -1,5 +1,8 @@
 package menu;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A class which is used for creating command-line interface menus.
  */
@@ -42,5 +45,32 @@ class Menu {
             sb.append("\n\t").append("[").append(count++).append("]").append("\t").append(option.getDescription());
         }
         return sb.append("\n").toString();
+    }
+
+    /**
+     * Checks for equality between a menu instance and another object.
+     *
+     * @param o: Object to check for equality
+     * @return true if the object is equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Menu menu = (Menu) o;
+        return Objects.equals(title, menu.title) &&
+                Arrays.equals(options, menu.options);
+    }
+
+    /**
+     * Provides a hash code for menus.
+     *
+     * @return hash value
+     */
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(title);
+        result = 31 * result + Arrays.hashCode(options);
+        return result;
     }
 }

@@ -5,6 +5,7 @@ import main.InputManager;
 
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 
 /**
@@ -54,26 +55,50 @@ public class MenuManager {
     private MenuManager() {
     }
 
-    public boolean createMenu(String id, String title, MenuOption... options) {
-        if (menus.containsKey(id)) return false;
-        else {
+    /**
+     * Creates a new menu using the given parameters
+     *
+     * @param id:      ID of menu
+     * @param title:   Title of menu
+     * @param options: Array of menu options
+     * @throws IllegalArgumentException if a menu with the given ID already exists.
+     */
+    public void createMenu(String id, String title, MenuOption... options) throws IllegalArgumentException {
+        if (menus.containsKey(id)) {
+            throw new IllegalArgumentException("A menu with id " + id + "already exists.");
+        } else {
             Menu menu = new Menu(title, options);
             menus.put(id, menu);
-            return true;
         }
     }
 
-    public void showMenu(String id) {
+    /**
+     * Shows the user the menu with the given ID
+     *
+     * @param id ID of menu to show
+     * @throws NoSuchElementException if no menu exists with the given ID
+     */
+    public void showMenu(String id) throws NoSuchElementException {
         Menu menu = menus.get(id);
+        if (menu == null) throw new NoSuchElementException("No menu with ID of " + id + " exists.");
         history.push(current);
         showMenu(menu);
     }
 
+    /**
+     * Pops the top menu in the history stack and
+     * displays it to the user.
+     */
     public void showPrevious() {
         Menu previous = history.pop();
         showMenu(previous);
     }
 
+    /**
+     * Displays the provided menu to the user.
+     *
+     * @param menu: Menu to display to the user
+     */
     private void showMenu(Menu menu) {
         current = menu;
         while (current == menu) {
@@ -86,5 +111,26 @@ public class MenuManager {
                 menu.options[input].runAction();
             }
         }
+    }
+
+    /**
+     * Deletes the menu with the given ID.
+     * <p>
+     * If the menu does not exist, or is currently being
+     * displayed to the user, no menu will be deleted and
+     * this function will return false.
+     * <p>
+     * Otherwise, the function will return true.
+     *
+     * @param id: ID of menu to delete
+     * @return true if the menu was deleted, false if it was not or does not exist.
+     */
+    private boolean deleteMenu(String id) {
+        Menu menu = menus.get(id);
+        if (menu == null) return false;
+        if (current.equals(menu)) return false;
+        menus.remove(id);
+        history.remove(menu);
+        return true;
     }
 }
