@@ -27,6 +27,13 @@ public class UserManager {
     }
 
     /**
+     * Private constructor of UserManager
+     */
+    private UserManager() {
+
+    }
+
+    /**
      * Logs a new user into the program using a given email and password.
      * <p>
      * Returns true if the user is successfully logged in, otherwise returns false.

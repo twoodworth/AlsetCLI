@@ -21,6 +21,12 @@ public class InputManager {
     }
 
     /**
+     * Private constructor of InputManager
+     */
+    private InputManager() {
+    }
+
+    /**
      * Fetches an Integer input from the user
      *
      * @param message: The message to send to the user

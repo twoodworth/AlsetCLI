@@ -17,6 +17,12 @@ public class ConnectionManager {
     private static Connection current = null;
 
     /**
+     * Private constructor of ConnectionManager
+     */
+    private ConnectionManager() {
+    }
+
+    /**
      * Establishes a connection with edgar1.
      *
      * @param user: Username to connect with

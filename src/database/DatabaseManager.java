@@ -22,7 +22,7 @@ public class DatabaseManager {
      * Returns the singleton instance of DatabaseManager,
      * and constructs it if it does not already exist.
      *
-     * @return
+     * @return instance of DatabaseManager
      */
     public static DatabaseManager getInstance() {
         if (instance == null) {
@@ -30,6 +30,13 @@ public class DatabaseManager {
         }
         return instance;
     }
+
+    /**
+     * Private constructor of DatabaseManager
+     */
+    private DatabaseManager() {
+    }
+
 
     /**
      * Checks if the given email and password are correct and correspond to an Alset account

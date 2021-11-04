@@ -28,10 +28,6 @@ public class Sequences {
         else System.out.println("Unable to login. Please try again.");
     }
 
-    static void forgotPwdSequence() {
-
-    }
-
     static void edgar1LoginSequence() {
         String id = InputManager.getStringInput("Enter your Oracle id for edgar1:");
         String pwd = InputManager.getPasswordInput("Enter your Oracle password for edgar1:");
@@ -56,8 +52,12 @@ public class Sequences {
             boolean closed = ConnectionManager.closeConnection();
             if (!closed) System.out.println("Error while closing connection.");
         }
-        System.out.println("Exiting program.");
+        System.out.println("Exiting...");
         System.exit(0);
+    }
+
+    static void forgotPwdSequence() {
+        InputManager.getStringInput("test");
     }
 
     public static void createAcctSequence() {//todo add code

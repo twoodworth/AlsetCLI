@@ -50,7 +50,7 @@ public class MenuManager {
     }
 
     /**
-     * Constructs the MenuManager class.
+     * Private constructor of MenuManager
      */
     private MenuManager() {
     }
