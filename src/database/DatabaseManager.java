@@ -14,24 +14,6 @@ import java.sql.SQLException;
 public class DatabaseManager {
 
     /**
-     * Singleton instance of DatabaseManager
-     */
-    private static DatabaseManager instance = null;
-
-    /**
-     * Returns the singleton instance of DatabaseManager,
-     * and constructs it if it does not already exist.
-     *
-     * @return instance of DatabaseManager
-     */
-    public static DatabaseManager getInstance() {
-        if (instance == null) {
-            instance = new DatabaseManager();
-        }
-        return instance;
-    }
-
-    /**
      * Private constructor of DatabaseManager
      */
     private DatabaseManager() {
@@ -45,7 +27,7 @@ public class DatabaseManager {
      * @param pwd:   Password to check
      * @return true if the credentials are valid, otherwise false.
      */
-    public boolean validLoginData(String email, String pwd) {
+    public static boolean validLoginData(String email, String pwd) {
         try {
             boolean valid;
             PreparedStatement s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT password FROM customer WHERE email=?");
@@ -57,7 +39,7 @@ public class DatabaseManager {
             return valid;
         } catch (SQLException e) {
             System.out.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.getInstance().showMenu(Constants.EDGAR1_MENU_KEY);
+            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
             return false;
         }
     }

@@ -28,7 +28,7 @@ public class MenuInitializer {
      * Initializes the start menu
      */
     private static void initializeAlsetLoginMenu() {
-        MenuManager.getInstance().createMenu(
+        MenuManager.createMenu(
                 Constants.ALSET_LOGIN_MENU_KEY,
                 "Alset Login Menu",
                 new MenuOption("Log Into Alset", Sequences::alsetLoginSequence),
@@ -51,7 +51,7 @@ public class MenuInitializer {
      * Initializes the Edgar1 login menu
      */
     private static void initializeEdgar1Menu() {
-        MenuManager.getInstance().createMenu(
+        MenuManager.createMenu(
                 Constants.EDGAR1_MENU_KEY,
                 "Edgar1 Login Menu",
                 new MenuOption("Log Into Edgar1", Sequences::edgar1LoginSequence),

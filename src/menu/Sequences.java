@@ -37,7 +37,7 @@ public class Sequences {
             System.out.println("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
             System.out.println("Connected successfully.");
-            MenuManager.getInstance().showMenu(Constants.ALSET_LOGIN_MENU_KEY);
+            MenuManager.showMenu(Constants.ALSET_LOGIN_MENU_KEY);
         }
     }
 

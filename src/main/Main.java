@@ -17,11 +17,9 @@ public class Main {
     }
 
     /**
-     * Initializes the menu manager, along with all the menus,
-     * for later use.
+     * Initializes the program
      */
     private static void initialize() {
-        MenuManager.getInstance();
         MenuInitializer.initializeMenus();
     }
 
@@ -32,6 +30,6 @@ public class Main {
     private static void startSequence() {
         System.out.println(Constants.ALSET_LOGO);
         System.out.println("**Remove this** | user=trw324 | pwd=P823539274"); //todo remove
-        MenuManager.getInstance().showMenu(Constants.EDGAR1_MENU_KEY);
+        MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
     }
 }

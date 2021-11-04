@@ -15,39 +15,20 @@ import java.util.Stack;
 public class MenuManager {
 
     /**
-     * Singleton instance of MenuManager
-     */
-    private static MenuManager instance = null;
-
-    /**
      * Maps a set of IDs to corresponding menus.
      */
-    private final HashMap<String, Menu> menus = new HashMap<>();
+    private static final HashMap<String, Menu> menus = new HashMap<>();
 
     /**
      * Contains a history of all the menus the user has viewed. Every time the user
      * views a new menu, the old menu is added to history.
      */
-    private final Stack<Menu> history = new Stack<>();
+    private static final Stack<Menu> history = new Stack<>();
 
     /**
      * The menu currently being displayed to the user.
      */
-    private volatile Menu current = null;
-
-
-    /**
-     * Returns the singleton instance of MenuManager, and constructs
-     * it if it does not already exist.
-     *
-     * @return instance of MenuManager
-     */
-    public static MenuManager getInstance() {
-        if (instance == null) {
-            instance = new MenuManager();
-        }
-        return instance;
-    }
+    private static Menu current = null;
 
     /**
      * Private constructor of MenuManager
@@ -63,7 +44,7 @@ public class MenuManager {
      * @param options: Array of menu options
      * @throws IllegalArgumentException if a menu with the given ID already exists.
      */
-    public void createMenu(String id, String title, MenuOption... options) throws IllegalArgumentException {
+    public static void createMenu(String id, String title, MenuOption... options) throws IllegalArgumentException {
         if (menus.containsKey(id)) {
             throw new IllegalArgumentException("A menu with id " + id + "already exists.");
         } else {
@@ -78,7 +59,7 @@ public class MenuManager {
      * @param id ID of menu to show
      * @throws NoSuchElementException if no menu exists with the given ID
      */
-    public void showMenu(String id) throws NoSuchElementException {
+    public static void showMenu(String id) throws NoSuchElementException {
         Menu menu = menus.get(id);
         if (menu == null) throw new NoSuchElementException("No menu with ID of " + id + " exists.");
         history.push(current);
@@ -89,7 +70,7 @@ public class MenuManager {
      * Pops the top menu in the history stack and
      * displays it to the user.
      */
-    public void showPrevious() {
+    public static void showPrevious() {
         Menu previous = history.pop();
         showMenu(previous);
     }
@@ -99,7 +80,7 @@ public class MenuManager {
      *
      * @param menu: Menu to display to the user
      */
-    private void showMenu(Menu menu) {
+    private static void showMenu(Menu menu) {
         current = menu;
         while (current == menu) {
             System.out.println(menu.toString());
@@ -125,7 +106,7 @@ public class MenuManager {
      * @param id: ID of menu to delete
      * @return true if the menu was deleted, false if it was not or does not exist.
      */
-    private boolean deleteMenu(String id) {
+    private static boolean deleteMenu(String id) {
         Menu menu = menus.get(id);
         if (menu == null) return false;
         if (current.equals(menu)) return false;

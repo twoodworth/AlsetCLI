@@ -46,7 +46,7 @@ public class UserManager {
      * @return true if login successful, false otherwise
      */
     public static boolean login(String email, String password) {
-        if (DatabaseManager.getInstance().validLoginData(email, password)) {
+        if (DatabaseManager.validLoginData(email, password)) {
             try {
                 boolean success;
                 PreparedStatement s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT first, middle, last FROM customer_name WHERE email=?");
