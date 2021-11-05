@@ -1,6 +1,9 @@
 package user;
 
 import constants.Constants;
+import vehicle.Vehicle;
+
+import java.util.HashSet;
 
 /**
  * Represents a user, and stores data related to the user.
@@ -28,20 +31,27 @@ public class User {
     private String password;
 
     /**
-     * Constructs a new user using their first name, middle name, last name, email, and password
+     * Set of vehicles owned by the user
+     */
+    private HashSet<Vehicle> vehicles;
+
+    /**
+     * Constructs a new user using their first name, middle name, last name, email, password, and owned vehicles
      *
      * @param first:    First name of user
      * @param middle:   Middle name of user
      * @param last:     Last name of user
      * @param email:    Email of user
      * @param password: Password of user
+     * @param vehicles: Vehicles owned by user
      */
-    public User(String first, String middle, String last, String email, String password) {
+    public User(String first, String middle, String last, String email, String password, HashSet<Vehicle> vehicles) {
         this.first = first;
         this.middle = middle;
         this.last = last;
         this.email = email;
         this.password = password;
+        this.vehicles = vehicles;
     }
 
     /**
@@ -123,6 +133,23 @@ public class User {
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * Returns the user's owned vehicles
+     *
+     * @return HashSet of vehicles
+     */
+    public HashSet<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public boolean removeVehicle(Vehicle vehicle) {
+       return vehicles.remove(vehicle);
+    }
+
+    public boolean addVehicle(Vehicle vehicle) {
+        return vehicles.add(vehicle);
     }
 
     /**
