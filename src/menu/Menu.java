@@ -30,6 +30,31 @@ class Menu {
         this.options = options;
     }
 
+    void addOption(MenuOption option) {
+        MenuOption[] temp = Arrays.copyOf(options, options.length + 1);
+        temp[options.length] = option;
+        options = temp;
+    }
+
+    void setOption(int index, MenuOption option) {
+        options[index] = option;
+    }
+
+    void removeOption(int index) {
+        MenuOption[] temp = new MenuOption[options.length - 1];
+        int i = 0;
+        for (int j = 0; j < options.length; j++) {
+            if (j == index) continue;
+            temp[i] = options[j];
+            i++;
+        }
+        options = temp;
+    }
+
+    int size() {
+        return options.length;
+    }
+
     /**
      * Returns a formatted string containing the menu title and a list of its options. The formatted
      * string is designed to be printed to the console so that the user can read and select from the
