@@ -21,6 +21,7 @@ public class MenuInitializer {
             initializeEdgar1Menu();
             initializeAlsetLoginMenu();
             initializeMainMenu();
+            initializeMyVehiclesMenu();
             initialized = true;
         }
     }
@@ -36,7 +37,7 @@ public class MenuInitializer {
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
                 new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),
                 new MenuOption("Admin Login //todo add functionality", Sequences::adminLoginSequence),
-                new MenuOption("End connection", Sequences::endConnectionSequence),
+                new MenuOption("End connection //todo add functionality", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }
@@ -57,8 +58,7 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Constants.ALSET_MAIN_MENU_KEY,
                 "Alset Main Menu",
-                new MenuOption("Manage Vehicles //todo add functionality", () -> {
-                }),
+                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Constants.MY_VEHICLES_KEY)),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
                 new MenuOption("Manage Account //todo add functionality", () -> {
@@ -67,6 +67,14 @@ public class MenuInitializer {
                 }),
                 new MenuOption("Log Out", Sequences::alsetLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
+        );
+    }
+
+    private static void initializeMyVehiclesMenu() {
+        MenuManager.createMenu(
+                Constants.MY_VEHICLES_KEY,
+                "My Vehicles",
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Constants.ALSET_MAIN_MENU_KEY))
         );
     }
 }
