@@ -1,6 +1,7 @@
 package connection;
 
 import constants.Constants;
+import main.IOManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,7 +47,7 @@ public class ConnectionManager {
             Connection conn = DriverManager.getConnection(url, user, pwd);
             if (current != null) {
                 boolean closed = closeConnection();
-                if (!closed) System.out.println("Error while closing previous connection.");
+                if (!closed) IOManager.println("Error while closing previous connection.");
             }
             current = conn;
             return current;

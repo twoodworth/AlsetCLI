@@ -1,8 +1,10 @@
 package main;
 
+import constants.Constants;
+
 import java.util.Scanner;
 
-public class InputManager {
+public class IOManager {
 
     /**
      * Scanner used for reading the user inputs
@@ -16,14 +18,32 @@ public class InputManager {
      * @return the user input
      */
     public static String getStringInput(String message) {
-        System.out.println(message);
+        print(message + " ");
         return scanner.next();
     }
 
     /**
      * Private constructor of InputManager
      */
-    private InputManager() {
+    private IOManager() {
+    }
+
+    public static void print(String message) {
+        message = message.replace("\n", "\n[Alset] ");
+        System.out.print(Constants.ALSET_PREFIX + message);
+    }
+
+    public static void print() {
+        print("");
+    }
+
+    public static void println(String message) {
+        message = message.replace("\n", "\n[Alset] ");
+        System.out.println(Constants.ALSET_PREFIX + message);
+    }
+
+    public static void println() {
+        println("");
     }
 
     /**
@@ -35,7 +55,7 @@ public class InputManager {
      * @return the user input
      */
     public static Integer getIntInput(String message, int min, int max) {
-        System.out.println(message);
+        IOManager.print(message + " ");
         String s = scanner.next();
         try {
             int i = Integer.parseInt(s);
@@ -53,7 +73,7 @@ public class InputManager {
      * @return the user input
      */
     public static String getPasswordInput(String message) {
-        System.out.println(message);
+        print(message + " ");
         char[] pwd = System.console().readPassword();
         StringBuilder sb = new StringBuilder();
         for (char c : pwd) {

@@ -31,21 +31,14 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Constants.ALSET_LOGIN_MENU_KEY,
                 "Alset Login Menu",
-                new MenuOption("Log Into Alset", Sequences::alsetLoginSequence),
+                new MenuOption("Log Into Alset \t // Sample: (email=ghost@sbcglobal.net, password=O0y8q6WPXFxo)", Sequences::alsetLoginSequence),
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
-                new MenuOption("Create New Account", Sequences::createAcctSequence),
-                new MenuOption("Log in as admin", Sequences::adminLoginSequence),
+                new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),
+                new MenuOption("Log in as admin //todo add functionality", Sequences::adminLoginSequence),
                 new MenuOption("End connection", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }
-
-    //Start Menu:
-    //    [0] Log into Alset // go to Log In Menu
-    //    [1] Forgot password // go to Forgot Password Menu
-    //    [2] Create New Account // Go to Create Account Menu
-    //    [3] Log in as admin // Go to Admin Log in Menu
-    //    [4] Exit // Exit program
 
     /**
      * Initializes the Edgar1 login menu
@@ -54,7 +47,7 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Constants.EDGAR1_MENU_KEY,
                 "Edgar1 Login Menu",
-                new MenuOption("Log Into Edgar1", Sequences::edgar1LoginSequence),
+                new MenuOption("Log Into Edgar1 \t//todo remove: user=trw324 | pwd=P823539274", Sequences::edgar1LoginSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }

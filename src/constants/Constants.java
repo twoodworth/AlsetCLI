@@ -11,6 +11,11 @@ public class Constants {
     public static final String ALSET_LOGIN_MENU_KEY = "a";
 
     /**
+     * Prefix for all printouts
+     */
+    public static final String ALSET_PREFIX = "[Alset] ";
+
+    /**
      * Key mapping to the Edgar1 Login menu
      */
     public static final String EDGAR1_MENU_KEY = "b";
@@ -19,6 +24,12 @@ public class Constants {
      * URL of edgar1
      */
     public static final String EDGAR1_URL = "jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241";
+
+    /**
+     * String containing all possible characters that
+     * can appear in a random password.
+     */
+    public static final String RANDOM_PASS_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     /**
      * String representation of Alset Logo

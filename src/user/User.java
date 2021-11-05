@@ -1,5 +1,7 @@
 package user;
 
+import constants.Constants;
+
 /**
  * Represents a user, and stores data related to the user.
  */
@@ -121,5 +123,20 @@ public class User {
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * Generates a String of random characters to be used as a password.
+     *
+     * @return randomly generated password
+     */
+    public static String getRandomPassword() {
+        int length = (int) (Math.random() * 20) + 10;
+        StringBuilder sb = new StringBuilder();
+        int charCount = Constants.RANDOM_PASS_CHARS.length();
+        for (int i = 0; i < length; i++) {
+            sb.append(Constants.RANDOM_PASS_CHARS.charAt((int) (Math.random() * charCount)));
+        }
+        return sb.toString();
     }
 }

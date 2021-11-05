@@ -28,8 +28,7 @@ public class Main {
      * displays the Edgar1 login menu.
      */
     private static void startSequence() {
-        System.out.println(Constants.ALSET_LOGO);
-        System.out.println("**Remove this** | user=trw324 | pwd=P823539274"); //todo remove
+        IOManager.println(Constants.ALSET_LOGO);
         MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
     }
 }

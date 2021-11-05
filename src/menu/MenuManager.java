@@ -1,10 +1,8 @@
 package menu;
 
-import constants.Constants;
-import main.InputManager;
+import main.IOManager;
 
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
@@ -83,11 +81,11 @@ public class MenuManager {
     private static void showMenu(Menu menu) {
         current = menu;
         while (current == menu) {
-            System.out.println(menu.toString());
+            IOManager.println(menu.toString());
             int l = menu.options.length;
-            Integer input = InputManager.getIntInput("Select an option:", 0, l - 1);
+            Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
             if (input == null) {
-                System.out.println("Input is invalid.");
+                IOManager.println("Input is invalid.");
             } else {
                 menu.options[input].runAction();
             }

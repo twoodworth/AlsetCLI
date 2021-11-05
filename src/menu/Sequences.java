@@ -2,7 +2,9 @@ package menu;
 
 import connection.ConnectionManager;
 import constants.Constants;
-import main.InputManager;
+import database.DatabaseManager;
+import main.IOManager;
+import user.User;
 import user.UserManager;
 
 import java.sql.Connection;
@@ -20,23 +22,23 @@ public class Sequences {
      * Runs the alset login sequence
      */
     static void alsetLoginSequence() {
-        String email = InputManager.getStringInput("Enter your Alset email:");
-        String password = InputManager.getPasswordInput("Enter your Alset password:");
+        String email = IOManager.getStringInput("Enter your Alset email:");
+        String password = IOManager.getPasswordInput("Enter your Alset password:");
         boolean success = UserManager.login(email, password);
 
-        if (success) System.out.println("Success");
-        else System.out.println("Unable to login. Please try again.");
+        if (success) IOManager.println("Success");
+        else IOManager.println("Unable to login. Please try again.");
     }
 
     static void edgar1LoginSequence() {
-        String id = InputManager.getStringInput("Enter your Oracle id for edgar1:");
-        String pwd = InputManager.getPasswordInput("Enter your Oracle password for edgar1:");
-        System.out.println("Connecting to database...");
+        String id = IOManager.getStringInput("Enter your Oracle id for edgar1:");
+        String pwd = IOManager.getPasswordInput("Enter your Oracle password for edgar1:");
+        IOManager.println("Connecting to database...");
         Connection conn = ConnectionManager.createEdgar1Connection(id, pwd);
         if (conn == null)
-            System.out.println("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
+            IOManager.println("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
-            System.out.println("Connected successfully.");
+            IOManager.println("Connected successfully.");
             MenuManager.showMenu(Constants.ALSET_LOGIN_MENU_KEY);
         }
     }
@@ -48,16 +50,25 @@ public class Sequences {
     public static void exitSequence() {
         Connection current = ConnectionManager.getCurrentConnection();
         if (current != null) {
-            System.out.println("Closing connection...");
+            IOManager.println("Closing connection...");
             boolean closed = ConnectionManager.closeConnection();
-            if (!closed) System.out.println("Error while closing connection.");
+            if (!closed) IOManager.println("Error while closing connection.");
         }
-        System.out.println("Exiting...");
+        IOManager.println("Exiting...");
         System.exit(0);
     }
 
     static void forgotPwdSequence() {
-        InputManager.getStringInput("test");
+        String email = IOManager.getStringInput("Enter your Alset email:");
+        boolean exists = DatabaseManager.emailExists(email);
+        if (exists) {
+            String pass = User.getRandomPassword();
+            DatabaseManager.updatePassword(email, pass);
+            IOManager.println("A new random password has been sent to " + email);
+            IOManager.println("Email from security@alset.com: Your new random password is '" + pass + "'.");
+        } else {
+            IOManager.print("Unrecognised email, please try again.");
+        }
     }
 
     public static void createAcctSequence() {//todo add code
