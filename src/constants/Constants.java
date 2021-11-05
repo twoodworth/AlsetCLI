@@ -16,6 +16,11 @@ public class Constants {
     public static final String ALSET_MAIN_MENU_KEY = "c";
 
     /**
+     * Key mapping to the 'My Vehicles' menu
+     */
+    public static final String MY_VEHICLES_KEY = "d";
+
+    /**
      * Prefix for all printouts
      */
     public static final String ALSET_PREFIX = "[Alset] ";
