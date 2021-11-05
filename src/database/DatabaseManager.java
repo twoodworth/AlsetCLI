@@ -4,10 +4,12 @@ import connection.ConnectionManager;
 import constants.Constants;
 import main.IOManager;
 import menu.MenuManager;
+import vehicle.Vehicle;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 
 /**
  * Manages interactions with the Alset database
@@ -112,6 +114,32 @@ public class DatabaseManager {
             } else {
                 return null;
             }
+        } catch (SQLException e) {
+            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
+            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            return null;
+        }
+    }
+
+    public static HashSet<Vehicle> getVehicles(String email) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement("SELECT serial_num, year, name, is_manufactured FROM owner NATURAL JOIN vehicle_model NATURAL JOIN vehicle WHERE email=?");
+            s.setString(1, email);
+            ResultSet rs = s.executeQuery();
+            HashSet<Vehicle> vehicles = new HashSet<>();
+
+            while (rs.next()) {
+                Vehicle vehicle = new Vehicle(
+                        rs.getString("serial_num"),
+                        rs.getInt("year"),
+                        rs.getString("name"),
+                        Boolean.parseBoolean(rs.getString("is_manufactured"))
+                );
+                vehicles.add(vehicle);
+            }
+            return vehicles;
         } catch (SQLException e) {
             IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
             MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
