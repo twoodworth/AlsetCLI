@@ -1,6 +1,9 @@
 package user;
 
 import database.DatabaseManager;
+import vehicle.Vehicle;
+
+import java.util.HashSet;
 
 /**
  * Manages data related to the program user
@@ -43,10 +46,11 @@ public class UserManager {
     public static boolean login(String email, String password) {
         if (DatabaseManager.validLoginData(email, password)) {
             String[] name = DatabaseManager.getName(email);
-            if (name == null) {
+            HashSet<Vehicle> vehicles = DatabaseManager.getVehicles(email);
+            if (name == null || vehicles == null) {
                 return false;
             } else {
-                current = new User(name[0], name[1], name[2], email, password);
+                current = new User(name[0], name[1], name[2], email, password, vehicles);
                 return true;
             }
         } else {

@@ -6,8 +6,10 @@ import database.DatabaseManager;
 import main.IOManager;
 import user.User;
 import user.UserManager;
+import vehicle.Vehicle;
 
 import java.sql.Connection;
+import java.util.HashSet;
 
 /**
  * Contains all the sequence functions in the program.
@@ -28,13 +30,25 @@ public class Sequences {
 
         if (success) {
             User current = UserManager.getCurrent();
+
+            // welcome the user back
             StringBuilder sb = new StringBuilder("Welcome back, ");
             sb.append(current.getFirst()).append(" ");
             String mid = current.getMiddle();
             if (mid != null && !mid.isEmpty()) sb.append(mid.charAt(0)).append(". ");
             sb.append(current.getLast()).append("!");
-
             IOManager.println(sb.toString());
+
+            // Load in the user's vehicles to the vehicle manager menu.
+            HashSet<Vehicle> vehicles = current.getVehicles();
+            for (Vehicle v : vehicles) {
+                String s = v.getYear() + " Model " + v.getModel() + " (SN: " + v.getSerial_num() + ")";
+                MenuManager.addOption(Constants.MY_VEHICLES_KEY, new MenuOption(s, () -> {
+                        }) //todo add functionality
+                );
+            }
+
+            // display the main menu
             MenuManager.showMenu(Constants.ALSET_MAIN_MENU_KEY);
         } else IOManager.println("Unable to login. Please try again.");
     }
@@ -54,9 +68,14 @@ public class Sequences {
 
     static void alsetLogoutSequence() {
         IOManager.println("Logging out of " + UserManager.getCurrent().getEmail() + "...");
-        if (!UserManager.logout()) {
-            IOManager.println("Error: already logged out.");
-        }
+
+        // Remove user's vehicles from 'My Vehicles' Menu
+        int size = MenuManager.getSize(Constants.MY_VEHICLES_KEY);
+        for (int i = size - 1; i > 0; i--)
+            MenuManager.removeOption(Constants.MY_VEHICLES_KEY, i);
+
+        // Log user out + display login menu
+        UserManager.logout();
         MenuManager.showMenu(Constants.ALSET_LOGIN_MENU_KEY);
     }
 
