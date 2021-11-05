@@ -89,4 +89,35 @@ public class DatabaseManager {
             return false;
         }
     }
+
+    /**
+     * Returns the name of a given customer.
+     *
+     * @param email: Email of customer
+     * @return array of customer's first, middle, and last names
+     */
+    public static String[] getName(String email) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement("SELECT first, middle, last FROM customer_name WHERE email=?");
+            s.setString(1, email);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                String[] name = new String[3];
+                name[0] = rs.getString("first");
+                name[1] = rs.getString("middle");
+                name[2] = rs.getString("last");
+                return name;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
+            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            return null;
+        }
+    }
+
+
 }

@@ -26,8 +26,17 @@ public class Sequences {
         String password = IOManager.getPasswordInput("Enter your Alset password:");
         boolean success = UserManager.login(email, password);
 
-        if (success) IOManager.println("Success");
-        else IOManager.println("Unable to login. Please try again.");
+        if (success) {
+            User current = UserManager.getCurrent();
+            StringBuilder sb = new StringBuilder("Welcome back, ");
+            sb.append(current.getFirst()).append(" ");
+            String mid = current.getMiddle();
+            if (mid != null && !mid.isEmpty()) sb.append(mid.charAt(0)).append(". ");
+            sb.append(current.getLast()).append("!");
+
+            IOManager.println(sb.toString());
+            MenuManager.showMenu(Constants.ALSET_MAIN_MENU_KEY);
+        } else IOManager.println("Unable to login. Please try again.");
     }
 
     static void edgar1LoginSequence() {
@@ -43,11 +52,18 @@ public class Sequences {
         }
     }
 
+    static void alsetLogoutSequence() {
+        IOManager.println("Logging out of " + UserManager.getCurrent().getEmail() + "...");
+        if (!UserManager.logout()) {
+            IOManager.println("Error: already logged out.");
+        }
+        MenuManager.showMenu(Constants.ALSET_LOGIN_MENU_KEY);
+    }
 
     /**
      * Exits the program.
      */
-    public static void exitSequence() {
+    static void exitSequence() {
         Connection current = ConnectionManager.getCurrentConnection();
         if (current != null) {
             IOManager.println("Closing connection...");
@@ -71,12 +87,12 @@ public class Sequences {
         }
     }
 
-    public static void createAcctSequence() {//todo add code
+    static void createAcctSequence() {//todo add code
     }
 
-    public static void adminLoginSequence() {//todo add code
+    static void adminLoginSequence() {//todo add code
     }
 
-    public static void endConnectionSequence() {//todo add code
+    static void endConnectionSequence() {//todo add code
     }
 }

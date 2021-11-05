@@ -20,6 +20,7 @@ public class MenuInitializer {
         if (!initialized) {
             initializeEdgar1Menu();
             initializeAlsetLoginMenu();
+            initializeMainMenu();
             initialized = true;
         }
     }
@@ -34,7 +35,7 @@ public class MenuInitializer {
                 new MenuOption("Log Into Alset \t // Sample: (email=ghost@sbcglobal.net, password=O0y8q6WPXFxo)", Sequences::alsetLoginSequence),
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
                 new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),
-                new MenuOption("Log in as admin //todo add functionality", Sequences::adminLoginSequence),
+                new MenuOption("Admin Login //todo add functionality", Sequences::adminLoginSequence),
                 new MenuOption("End connection", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
@@ -48,6 +49,23 @@ public class MenuInitializer {
                 Constants.EDGAR1_MENU_KEY,
                 "Edgar1 Login Menu",
                 new MenuOption("Log Into Edgar1 \t//todo remove: user=trw324 | pwd=P823539274", Sequences::edgar1LoginSequence),
+                new MenuOption("Exit Program", Sequences::exitSequence)
+        );
+    }
+
+    private static void initializeMainMenu() {
+        MenuManager.createMenu(
+                Constants.ALSET_MAIN_MENU_KEY,
+                "Alset Main Menu",
+                new MenuOption("Manage Vehicles //todo add functionality", () -> {
+                }),
+                new MenuOption("Purchase Vehicles //todo add functionality", () -> {
+                }),
+                new MenuOption("Manage Account //todo add functionality", () -> {
+                }),
+                new MenuOption("View Transactions //todo add functionality", () -> {
+                }),
+                new MenuOption("Log Out", Sequences::alsetLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }

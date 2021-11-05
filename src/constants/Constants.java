@@ -11,6 +11,11 @@ public class Constants {
     public static final String ALSET_LOGIN_MENU_KEY = "a";
 
     /**
+     * Key mapping to the main menu
+     */
+    public static final String ALSET_MAIN_MENU_KEY = "c";
+
+    /**
      * Prefix for all printouts
      */
     public static final String ALSET_PREFIX = "[Alset] ";

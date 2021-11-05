@@ -6,12 +6,6 @@ Start Menu:
     [3] Log in as admin // Go to Admin Log in Menu
     [4] Exit // Exit program
 
-Log In Menu:
-    > Enter email:
-    > Enter password:
-    // if correct: Print "Welcome back, [name]!" and go to Logged In Menu
-    // if incorrect: Print "Email or password was incorrect." and go to Logged Out Main Menu
-
 Forgot Password Menu:
     > Enter email:
     // Print: "A new password has been sent to [email] if it has an account."
@@ -33,12 +27,21 @@ Log in as admin menu:
     > Enter edgar1 username:
     > Enter edgar1 password:
 
-Logged In Main Menu:
+Main Menu:
     [0] Manage my vehicles // Go to vehicles list
     [1] Purchase new vehicle // List new models
-    [2] Change password // go to password change menu
+    [2] Manage Account // go to account menu
+    [3] View Transactions
     [3] Log out // Go to Logged Out main menu
     [4] Exit program // system.exit(0);
+
+Account Menu:
+    [0] View Account Information
+    [1] Update name
+    [2] Update Address Info
+    [3] Update card Info
+    [4] Change password
+    [5] Return to main menu
 
 Logged In Admin menu:
     [0] TBD
