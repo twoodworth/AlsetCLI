@@ -51,6 +51,22 @@ public class MenuManager {
         }
     }
 
+    public static void addOption(String id, MenuOption option) throws NoSuchElementException {
+        Menu menu = menus.get(id);
+        if (menu == null) throw new NoSuchElementException("No menu exists with id " + id);
+        else {
+            menu.addOption(option);
+        }
+    }
+
+    public static void removeOption(String id, int index) throws NoSuchElementException {
+        Menu menu = menus.get(id);
+        if (menu == null) throw new NoSuchElementException("No menu exists with id " + id);
+        else {
+            menu.removeOption(index);
+        }
+    }
+
     /**
      * Shows the user the menu with the given ID
      *
@@ -71,6 +87,12 @@ public class MenuManager {
     public static void showPrevious() {
         Menu previous = history.pop();
         showMenu(previous);
+    }
+
+    public static int getSize(String id) throws NoSuchElementException {
+        Menu menu = menus.get(id);
+        if (menu == null) throw new NoSuchElementException("No menu with ID of " + id + " exists.");
+        return menu.size();
     }
 
     /**
