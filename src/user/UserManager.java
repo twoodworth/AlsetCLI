@@ -1,6 +1,6 @@
 package user;
 
-import database.DatabaseManager;
+import database.DBManager;
 import vehicle.Vehicle;
 
 import java.util.HashSet;
@@ -44,9 +44,9 @@ public class UserManager {
      * @return true if login successful, false otherwise
      */
     public static boolean login(String email, String password) {
-        if (DatabaseManager.validLoginData(email, password)) {
-            String[] name = DatabaseManager.getName(email);
-            HashSet<Vehicle> vehicles = DatabaseManager.getVehicles(email);
+        if (DBManager.validLoginData(email, password)) {
+            String[] name = DBManager.getName(email);
+            HashSet<Vehicle> vehicles = DBManager.getVehicles(email);
             if (name == null || vehicles == null) {
                 return false;
             } else {

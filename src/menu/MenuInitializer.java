@@ -37,7 +37,7 @@ public class MenuInitializer {
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
                 new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),
                 new MenuOption("Admin Login //todo add functionality", Sequences::adminLoginSequence),
-                new MenuOption("End connection //todo add functionality", Sequences::endConnectionSequence),
+                new MenuOption("Close connection", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }

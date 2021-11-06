@@ -14,12 +14,12 @@ import java.util.HashSet;
 /**
  * Manages interactions with the Alset database
  */
-public class DatabaseManager {
+public class DBManager {
 
     /**
      * Private constructor of DatabaseManager
      */
-    private DatabaseManager() {
+    private DBManager() {
     }
 
     /**

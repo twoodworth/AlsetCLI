@@ -2,7 +2,7 @@ package menu;
 
 import connection.ConnectionManager;
 import constants.Constants;
-import database.DatabaseManager;
+import database.DBManager;
 import main.IOManager;
 import user.User;
 import user.UserManager;
@@ -95,10 +95,10 @@ public class Sequences {
 
     static void forgotPwdSequence() {
         String email = IOManager.getStringInput("Enter your Alset email:");
-        boolean exists = DatabaseManager.emailExists(email);
+        boolean exists = DBManager.emailExists(email);
         if (exists) {
             String pass = User.getRandomPassword();
-            DatabaseManager.updatePassword(email, pass);
+            DBManager.updatePassword(email, pass);
             IOManager.println("A new random password has been sent to " + email);
             IOManager.println("Email from security@alset.com: Your new random password is '" + pass + "'.");
         } else {
@@ -112,6 +112,9 @@ public class Sequences {
     static void adminLoginSequence() {//todo add code
     }
 
-    static void endConnectionSequence() {//todo add code
+    static void endConnectionSequence() {
+        IOManager.println("Closing Connection...");
+        ConnectionManager.closeConnection();
+        MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
     }
 }
