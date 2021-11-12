@@ -35,8 +35,8 @@ public class MenuInitializer {
                 "Alset Login Menu",
                 new MenuOption("Log Into Alset \t // Sample: (email=ghost@sbcglobal.net, password=O0y8q6WPXFxo)", Sequences::alsetLoginSequence),
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
-                new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),
-                new MenuOption("Admin Login //todo add functionality", Sequences::adminLoginSequence),
+                new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),//todo add functionality
+                new MenuOption("Admin Login //todo add functionality", Sequences::adminLoginSequence),//todo add functionality
                 new MenuOption("Close connection", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );

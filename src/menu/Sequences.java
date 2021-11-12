@@ -98,9 +98,30 @@ public class Sequences {
         boolean exists = DBManager.emailExists(email);
         if (exists) {
             String pass = User.getRandomPassword();
-            DBManager.updatePassword(email, pass);
-            IOManager.println("A new random password has been sent to " + email);
-            IOManager.println("Email from security@alset.com: Your new random password is '" + pass + "'.");
+            IOManager.println("A verification key has been sent to " + email);
+            IOManager.println("Email from security@alset.com to " + email + ": Your Alset verification key is '" + pass + "'.");
+            String key = IOManager.getStringInput("Enter verification key:");
+            if (key.equals(pass)) {
+                IOManager.println("Verification Successful.");
+                while (true) {
+                    String newPass = IOManager.getPasswordInput("Enter new password:");
+                    String newPass2 = IOManager.getPasswordInput("Confirm new password:");
+
+                    if (newPass.equals(newPass2)) {
+                        boolean success = DBManager.updatePassword(email, newPass);
+                        if (success) {
+                            IOManager.println("Password has been updated successfully.");
+                            break;
+                        } else {
+                            IOManager.println("Error while updating password. Please try again.");
+                        }
+                    } else {
+                        IOManager.println("Password confirmation does not match. Please try again.");
+                    }
+                }
+            } else {
+                IOManager.println("Verification failed.");
+            }
         } else {
             IOManager.print("Unrecognised email, please try again.");
         }
