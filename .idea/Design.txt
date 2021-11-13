@@ -55,8 +55,11 @@ Manage vehicles menu
     [N] Vehicle #N // go to vehicle N menu
 
 Manage Vehicle menu
-    [0] View vehicle information
-    [1]
+    [0] Vehicle Overview
+    [1] Vehicle Condition
+    [2] Schedule a Repair/Inspection
+    [3] Maintenence Status
+    [4] Return to My Vehicles
 
 
 

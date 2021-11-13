@@ -47,8 +47,10 @@ public class Sequences {
 
                 // Create menu for vehicle
                 MenuManager.createMenu(num, s,
-                        new MenuOption("Option", () -> {
-                        }), //todo add options
+                        new MenuOption("Vehicle Overview //todo add", () -> {}), //todo add functionality
+                        new MenuOption("Vehicle Condition //todo add", () -> {}), //todo add functionality
+                        new MenuOption("Schedule a Repair/Inspection //todo add", () -> {}), //todo add functionality
+                        new MenuOption("Maintenance Status //todo add", () -> {}), // todo add functionality
                         new MenuOption("Return to My Vehicles", () -> MenuManager.showMenu(Constants.MY_VEHICLES_KEY))
                 );
 
