@@ -126,7 +126,7 @@ public class MenuManager {
      * @param id: ID of menu to delete
      * @return true if the menu was deleted, false if it was not or does not exist.
      */
-    private static boolean deleteMenu(String id) {
+    static boolean deleteMenu(String id) {
         Menu menu = menus.get(id);
         if (menu == null) return false;
         if (current.equals(menu)) return false;

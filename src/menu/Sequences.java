@@ -42,10 +42,18 @@ public class Sequences {
             // Load in the user's vehicles to the vehicle manager menu.
             HashSet<Vehicle> vehicles = current.getVehicles();
             for (Vehicle v : vehicles) {
-                String s = v.getYear() + " Model " + v.getModel() + " (SN: " + v.getSerial_num() + ")";
-                MenuManager.addOption(Constants.MY_VEHICLES_KEY, new MenuOption(s, () -> {
-                        }) //todo add functionality
+                String num = v.getSerial_num();
+                String s = v.getYear() + " Model " + v.getModel() + " (SN: " + num + ")";
+
+                // Create menu for vehicle
+                MenuManager.createMenu(num, s,
+                        new MenuOption("Option", () -> {
+                        }), //todo add options
+                        new MenuOption("Return to My Vehicles", () -> MenuManager.showMenu(Constants.MY_VEHICLES_KEY))
                 );
+
+                // Add menu option to access the vehicle's menu
+                MenuManager.addOption(Constants.MY_VEHICLES_KEY, new MenuOption(s, () -> MenuManager.showMenu(num))); //todo add functionality
             }
 
             // display the main menu
@@ -73,6 +81,10 @@ public class Sequences {
         int size = MenuManager.getSize(Constants.MY_VEHICLES_KEY);
         for (int i = size - 1; i > 0; i--)
             MenuManager.removeOption(Constants.MY_VEHICLES_KEY, i);
+
+        // Remove vehicle menus
+        for (Vehicle v : UserManager.getCurrent().getVehicles())
+            MenuManager.deleteMenu(v.getSerial_num());
 
         // Log user out + display login menu
         UserManager.logout();

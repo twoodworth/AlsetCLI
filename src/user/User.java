@@ -33,7 +33,7 @@ public class User {
     /**
      * Set of vehicles owned by the user
      */
-    private HashSet<Vehicle> vehicles;
+    private final HashSet<Vehicle> vehicles;
 
     /**
      * Constructs a new user using their first name, middle name, last name, email, password, and owned vehicles
