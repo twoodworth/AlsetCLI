@@ -26,6 +26,11 @@ public class Vehicle {
     private boolean isManufactured;
 
     /**
+     * Contains information on the condition of the vehicle
+     */
+    private Condition condition;
+
+    /**
      * Constructs a new vehicle
      *
      * @param serialNum:      Serial number of vehicle
@@ -33,11 +38,12 @@ public class Vehicle {
      * @param model:          model name of vehicle
      * @param isManufactured: Whether the vehicle is manufactured or not
      */
-    public Vehicle(String serialNum, int year, String model, boolean isManufactured) {
+    public Vehicle(String serialNum, int year, String model, boolean isManufactured, Condition condition) {
         this.serialNum = serialNum;
         this.year = year;
         this.model = model;
         this.isManufactured = isManufactured;
+        this.condition = condition;
     }
 
     /**
@@ -47,6 +53,15 @@ public class Vehicle {
      */
     public String getSerialNum() {
         return serialNum;
+    }
+
+    /**
+     * Returns the vehicle's condition
+     *
+     * @return vehicle condition
+     */
+    public Condition getCondition() {
+        return condition;
     }
 
     /**

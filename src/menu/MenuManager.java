@@ -4,6 +4,7 @@ import main.IOManager;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -154,5 +155,18 @@ public class MenuManager {
         menus.remove(id);
         history.remove(menu);
         return true;
+    }
+
+    static String getCurrentKey() {
+        if (current == null) return null;
+
+        Set<String> keys = menus.keySet();
+        for (String key : keys) {
+            if (menus.get(key).equals(current)) {
+                return key;
+            }
+        }
+
+        return null;
     }
 }

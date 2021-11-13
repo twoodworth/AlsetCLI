@@ -42,6 +42,15 @@ class Menu {
     }
 
     /**
+     * Returns the menu title
+     *
+     * @return menu title
+     */
+    String getTitle() {
+        return title;
+    }
+
+    /**
      * Replaces the option at the given index with a new option
      *
      * @param index:  Inedex to add the new option too

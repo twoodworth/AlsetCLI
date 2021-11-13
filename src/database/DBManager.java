@@ -4,6 +4,7 @@ import connection.ConnectionManager;
 import constants.Constants;
 import main.IOManager;
 import menu.MenuManager;
+import vehicle.Condition;
 import vehicle.Vehicle;
 
 import java.sql.PreparedStatement;
@@ -121,6 +122,28 @@ public class DBManager {
         }
     }
 
+    public static Condition getCondition(String serialNum) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement("SELECT mileage, last_inspection, has_damage FROM vehicle_condition WHERE serial_num=?");
+            s.setString(1, serialNum);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                return new Condition(
+                        rs.getLong("mileage"),
+                        rs.getLong("last_inspection"),
+                        Boolean.parseBoolean(rs.getString("has_damage"))
+                );
+            }
+            return null;
+        } catch (SQLException e) {
+            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
+            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            return null;
+        }
+    }
+
     /**
      * Returns the list of vehicles currently owned by the logged-in user.
      *
@@ -137,15 +160,43 @@ public class DBManager {
             HashSet<Vehicle> vehicles = new HashSet<>();
 
             while (rs.next()) {
+                String sn = rs.getString("serial_num");
                 Vehicle vehicle = new Vehicle(
-                        rs.getString("serial_num"),
+                        sn,
                         rs.getInt("year"),
                         rs.getString("name"),
-                        Boolean.parseBoolean(rs.getString("is_manufactured"))
+                        Boolean.parseBoolean(rs.getString("is_manufactured")),
+                        getCondition(sn)
                 );
                 vehicles.add(vehicle);
             }
             return vehicles;
+        } catch (SQLException e) {
+            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
+            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            return null;
+        }
+    }
+
+    /**
+     * Returns all the additional options of a vehicle
+     *
+     * @param serialNum: Serial number of vehicle
+     * @return set of names of additional options
+     */
+    public static HashSet<String> getOptions(String serialNum) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement("SELECT option_name FROM vehicle_options WHERE serial_num=?");
+            s.setString(1, serialNum);
+            ResultSet rs = s.executeQuery();
+            HashSet<String> options = new HashSet<>();
+
+            while (rs.next()) {
+                options.add(rs.getString("option_name"));
+            }
+            return options;
         } catch (SQLException e) {
             IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
             MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);

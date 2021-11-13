@@ -6,6 +6,7 @@ import database.DBManager;
 import main.IOManager;
 import user.User;
 import user.UserManager;
+import vehicle.Condition;
 import vehicle.Vehicle;
 
 import java.sql.Connection;
@@ -53,10 +54,11 @@ public class Sequences {
 
                 // Create menu for vehicle
                 MenuManager.createMenu(num, s,
-                        new MenuOption("Vehicle Overview //todo add", () -> {}), //todo add functionality
-                        new MenuOption("Vehicle Condition //todo add", () -> {}), //todo add functionality
-                        new MenuOption("Schedule a Repair/Inspection //todo add", () -> {}), //todo add functionality
-                        new MenuOption("Maintenance Status //todo add", () -> {}), // todo add functionality
+                        new MenuOption("Vehicle Overview", Sequences::vehicleOverviewSequence),
+                        new MenuOption("Schedule a Repair/Inspection //todo add", () -> {
+                        }), //todo add functionality
+                        new MenuOption("Maintenance Status //todo add", () -> {
+                        }), // todo add functionality
                         new MenuOption("Return to My Vehicles", () -> MenuManager.showMenu(Constants.MY_VEHICLES_KEY))
                 );
 
@@ -185,5 +187,64 @@ public class Sequences {
         IOManager.println("Closing Connection...");
         ConnectionManager.closeConnection();
         MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+    }
+
+    static void vehicleOverviewSequence() {
+        // get vehicle serial number
+        String serialNum = MenuManager.getCurrentKey();
+        if (serialNum == null) {
+            IOManager.println("Error loading vehicle overview.");
+            return;
+        }
+
+        // get vehicle
+        Vehicle vehicle = null;
+        for (Vehicle v : UserManager.getCurrent().getVehicles()) {
+            if (v.getSerialNum().equals(serialNum)) {
+                vehicle = v;
+                break;
+            }
+        }
+        if (vehicle == null) {
+            IOManager.println("Error loading vehicle overview.");
+            return;
+        }
+
+        // get options
+        HashSet<String> options = DBManager.getOptions(serialNum);
+
+        // get condition
+        Condition condition = vehicle.getCondition();
+        if (condition == null) {
+            IOManager.println("Error loading vehicle overview.");
+            return;
+        }
+
+
+        // print basic info
+        IOManager.println();
+        IOManager.println("Vehicle Overview:");
+        IOManager.println("\tSerial Number: " + serialNum);
+        IOManager.println("\tModel: " + vehicle.getModel());
+        IOManager.println("\tYear: " + vehicle.getYear());
+
+        // print condition
+        IOManager.println("\tMileage: " + condition.getMileage() + " miles");
+        IOManager.println("\tLast Inspection: " + condition.getLastInspectionFormatted());
+        IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
+
+        // print additional options
+        if (options == null || options.isEmpty()) {
+            IOManager.println("\tAdditional Features: None");
+        } else {
+            IOManager.println("\tAdditional Features:");
+            for (String option : options) {
+                IOManager.println("\t\t- " + option);
+            }
+        }
+
+        // pause until user enters value
+        IOManager.println();
+        IOManager.getStringInput("Enter any value to continue:");
     }
 }
