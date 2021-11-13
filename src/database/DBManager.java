@@ -121,6 +121,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Returns the list of vehicles currently owned by the logged-in user.
+     *
+     * @param email: email of user
+     * @return cars owned by the user
+     */
     public static HashSet<Vehicle> getVehicles(String email) {
         try {
             PreparedStatement s = ConnectionManager
@@ -146,6 +152,4 @@ public class DBManager {
             return null;
         }
     }
-
-
 }

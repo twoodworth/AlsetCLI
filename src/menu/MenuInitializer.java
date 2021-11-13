@@ -54,6 +54,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the main menu
+     */
     private static void initializeMainMenu() {
         MenuManager.createMenu(
                 Constants.ALSET_MAIN_MENU_KEY,
@@ -70,6 +73,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the 'My Vehicles' menu
+     */
     private static void initializeMyVehiclesMenu() {
         MenuManager.createMenu(
                 Constants.MY_VEHICLES_KEY,

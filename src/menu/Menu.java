@@ -30,16 +30,32 @@ class Menu {
         this.options = options;
     }
 
+    /**
+     * Adds an option to the menu.
+     *
+     * @param option: New menu option
+     */
     void addOption(MenuOption option) {
         MenuOption[] temp = Arrays.copyOf(options, options.length + 1);
         temp[options.length] = option;
         options = temp;
     }
 
+    /**
+     * Replaces the option at the given index with a new option
+     *
+     * @param index:  Inedex to add the new option too
+     * @param option: New option
+     */
     void setOption(int index, MenuOption option) {
         options[index] = option;
     }
 
+    /**
+     * Removes the option at the given index
+     *
+     * @param index: Index to remove
+     */
     void removeOption(int index) {
         MenuOption[] temp = new MenuOption[options.length - 1];
         int i = 0;
@@ -51,6 +67,11 @@ class Menu {
         options = temp;
     }
 
+    /**
+     * Returns the number of options belonging to the menu.
+     *
+     * @return size of menu
+     */
     int size() {
         return options.length;
     }

@@ -4,6 +4,9 @@ import constants.Constants;
 
 import java.util.Scanner;
 
+/**
+ * Manages the user inputs and outputs
+ */
 public class IOManager {
 
     /**
@@ -28,20 +31,36 @@ public class IOManager {
     private IOManager() {
     }
 
+    /**
+     * Prints a message in console using the Alset format.
+     *
+     * @param message: Message to print
+     */
     public static void print(String message) {
         message = message.replace("\n", "\n[Alset] ");
         System.out.print(Constants.ALSET_PREFIX + message);
     }
 
+    /**
+     * Prints an empty message in console using the Alset format.
+     */
     public static void print() {
         print("");
     }
 
+    /**
+     * Prints a message in console using the Alset format, and creates a new line.
+     *
+     * @param message: Message to print out
+     */
     public static void println(String message) {
         message = message.replace("\n", "\n[Alset] ");
         System.out.println(Constants.ALSET_PREFIX + message);
     }
 
+    /**
+     * Prints an empty message in console using the Alset format
+     */
     public static void println() {
         println("");
     }

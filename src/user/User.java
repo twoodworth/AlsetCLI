@@ -144,11 +144,11 @@ public class User {
         return vehicles;
     }
 
-    public boolean removeVehicle(Vehicle vehicle) {
+    boolean removeVehicle(Vehicle vehicle) {
        return vehicles.remove(vehicle);
     }
 
-    public boolean addVehicle(Vehicle vehicle) {
+    boolean addVehicle(Vehicle vehicle) {
         return vehicles.add(vehicle);
     }
 

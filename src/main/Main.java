@@ -4,6 +4,9 @@ import constants.Constants;
 import menu.MenuInitializer;
 import menu.MenuManager;
 
+/**
+ * Main class of the Alset CLI program. Initializes and starts the program.
+ */
 public class Main {
 
     /**

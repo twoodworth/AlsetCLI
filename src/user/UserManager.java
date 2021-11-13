@@ -58,7 +58,14 @@ public class UserManager {
         }
     }
 
-
+    /**
+     * Logs the user out.
+     * <p>
+     * Current gets set to null, and the function
+     * returns false if current was already set to null.
+     *
+     * @return False if the user was already logged out, otherwise true.
+     */
     public static boolean logout() {
         if (current == null) return false;
         current = null;

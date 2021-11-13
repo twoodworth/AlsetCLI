@@ -51,6 +51,13 @@ public class MenuManager {
         }
     }
 
+    /**
+     * Adds an option to the menu with the given ID.
+     *
+     * @param id:     ID of menu
+     * @param option: Option to add to the menu
+     * @throws NoSuchElementException if no menus exist with the given ID
+     */
     public static void addOption(String id, MenuOption option) throws NoSuchElementException {
         Menu menu = menus.get(id);
         if (menu == null) throw new NoSuchElementException("No menu exists with id " + id);
@@ -59,6 +66,13 @@ public class MenuManager {
         }
     }
 
+    /**
+     * Removes a menu option from a menu
+     *
+     * @param id:    ID of menu
+     * @param index: Option index to remove
+     * @throws NoSuchElementException if no menus exist with the given ID
+     */
     public static void removeOption(String id, int index) throws NoSuchElementException {
         Menu menu = menus.get(id);
         if (menu == null) throw new NoSuchElementException("No menu exists with id " + id);
@@ -89,6 +103,13 @@ public class MenuManager {
         showMenu(previous);
     }
 
+    /**
+     * Returns the size of a menu, which equals the number of menuOptions that the menu has.
+     *
+     * @param id: ID of menu
+     * @return size of menu
+     * @throws NoSuchElementException if no menus exist with the given ID
+     */
     public static int getSize(String id) throws NoSuchElementException {
         Menu menu = menus.get(id);
         if (menu == null) throw new NoSuchElementException("No menu with ID of " + id + " exists.");

@@ -22,6 +22,12 @@ public class Sequences {
 
     /**
      * Runs the alset login sequence
+     * <p>
+     * This login sequence logs the user into Alset.
+     * <p>
+     * This sequence interacts with the database in order to
+     * verify the account exists, and to fetch user data upon logging
+     * in successfully.
      */
     static void alsetLoginSequence() {
         String email = IOManager.getStringInput("Enter your Alset email:");
@@ -42,7 +48,7 @@ public class Sequences {
             // Load in the user's vehicles to the vehicle manager menu.
             HashSet<Vehicle> vehicles = current.getVehicles();
             for (Vehicle v : vehicles) {
-                String num = v.getSerial_num();
+                String num = v.getSerialNum();
                 String s = v.getYear() + " Model " + v.getModel() + " (SN: " + num + ")";
 
                 // Create menu for vehicle
@@ -63,9 +69,17 @@ public class Sequences {
         } else IOManager.println("Unable to login. Please try again.");
     }
 
+    /**
+     * Begins the edgar1 login sequence.
+     * <p>
+     * This login sequence logs the user into edgar1.
+     */
     static void edgar1LoginSequence() {
+        // Get credentials
         String id = IOManager.getStringInput("Enter your Oracle id for edgar1:");
         String pwd = IOManager.getPasswordInput("Enter your Oracle password for edgar1:");
+
+        // Connect to database
         IOManager.println("Connecting to database...");
         Connection conn = ConnectionManager.createEdgar1Connection(id, pwd);
         if (conn == null)
@@ -76,6 +90,9 @@ public class Sequences {
         }
     }
 
+    /**
+     * Begins the Alset logout sequence, which logs the user out of the program.
+     */
     static void alsetLogoutSequence() {
         IOManager.println("Logging out of " + UserManager.getCurrent().getEmail() + "...");
 
@@ -86,7 +103,7 @@ public class Sequences {
 
         // Remove vehicle menus
         for (Vehicle v : UserManager.getCurrent().getVehicles())
-            MenuManager.deleteMenu(v.getSerial_num());
+            MenuManager.deleteMenu(v.getSerialNum());
 
         // Log user out + display login menu
         UserManager.logout();
@@ -107,6 +124,19 @@ public class Sequences {
         System.exit(0);
     }
 
+    /**
+     * Allows the user to change their password without
+     * logging in.
+     * <p>
+     * The user enters their email, and a message gets sent
+     * to that email. (Since this is just a class project,
+     * and the emails are not real, the would-be emailed
+     * message gets printed out into the console).
+     * <p>
+     * The user must then enter the verification key sent
+     * via email. If correct, the user is prompted to enter
+     * their new password, which is then saved to the database.
+     */
     static void forgotPwdSequence() {
         String email = IOManager.getStringInput("Enter your Alset email:");
         boolean exists = DBManager.emailExists(email);
@@ -147,6 +177,10 @@ public class Sequences {
     static void adminLoginSequence() {//todo add code
     }
 
+    /**
+     * Closes the database connection
+     * and displays the edgar1 login menu.
+     */
     static void endConnectionSequence() {
         IOManager.println("Closing Connection...");
         ConnectionManager.closeConnection();

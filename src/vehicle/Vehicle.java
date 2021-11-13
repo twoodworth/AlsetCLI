@@ -1,31 +1,77 @@
 package vehicle;
 
+/**
+ * Represents a Vehicle, and contains vehicle data.
+ */
 public class Vehicle {
 
-    private final String serial_num;
+    /**
+     * The vehicle's serial number.
+     */
+    private final String serialNum;
+
+    /**
+     * The vehicle's model year
+     */
     private final int year;
+
+    /**
+     * The vehicle's model name
+     */
     private final String model;
+
+    /**
+     * Whether the vehicle is manufactured or not
+     */
     private boolean isManufactured;
 
-    public Vehicle(String serial_num, int year, String model, boolean isManufactured) {
-        this.serial_num = serial_num;
+    /**
+     * Constructs a new vehicle
+     *
+     * @param serialNum:      Serial number of vehicle
+     * @param year:           model year of vehicle
+     * @param model:          model name of vehicle
+     * @param isManufactured: Whether the vehicle is manufactured or not
+     */
+    public Vehicle(String serialNum, int year, String model, boolean isManufactured) {
+        this.serialNum = serialNum;
         this.year = year;
         this.model = model;
         this.isManufactured = isManufactured;
     }
 
-    public String getSerial_num() {
-        return serial_num;
+    /**
+     * Returns the vehicle's serial number
+     *
+     * @return serial number of vehicle
+     */
+    public String getSerialNum() {
+        return serialNum;
     }
 
+    /**
+     * Returns the vehicle's model year.
+     *
+     * @return model year
+     */
     public int getYear() {
         return year;
     }
 
+    /**
+     * Returns the vehicle's model name.
+     *
+     * @return model name
+     */
     public String getModel() {
         return model;
     }
 
+    /**
+     * Returns whether the vehicle is manufactured or not
+     *
+     * @return isManufactured
+     */
     public boolean isManufactured() {
         return isManufactured;
     }
