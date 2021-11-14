@@ -1,8 +1,13 @@
 package database;
 
+import com.sun.istack.internal.NotNull;
 import connection.ConnectionManager;
-import constants.Constants;
-import main.IOManager;
+import constants.Keys;
+import constants.Printouts;
+import constants.Statements;
+import io.IOManager;
+import location.Address;
+import location.ServiceLocation;
 import menu.MenuManager;
 import vehicle.Condition;
 import vehicle.Vehicle;
@@ -33,15 +38,17 @@ public class DBManager {
     public static boolean validLoginData(String email, String pwd) {
         try {
             boolean valid;
-            PreparedStatement s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT password FROM customer WHERE email=?");
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.VALID_LOGIN_DATA);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next() && rs.getString("password").equals(pwd);
             rs.close();
             return valid;
         } catch (SQLException e) {
-            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
     }
@@ -55,15 +62,17 @@ public class DBManager {
     public static boolean emailExists(String email) {
         try {
             boolean valid;
-            PreparedStatement s = ConnectionManager.getCurrentConnection().prepareStatement("SELECT * FROM customer WHERE email=?");
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.EMAIL_EXISTS);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next();
             rs.close();
             return valid;
         } catch (SQLException e) {
-            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
     }
@@ -79,16 +88,14 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(
-                            "UPDATE customer SET password=? WHERE email=?"
-                    );
+                    .prepareStatement(Statements.UPDATE_PASSWORD);
             s.setString(1, pass);
             s.setString(2, email);
             s.execute();
             return true;
         } catch (SQLException e) {
-            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
     }
@@ -103,7 +110,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement("SELECT first, middle, last FROM customer_name WHERE email=?");
+                    .prepareStatement(Statements.GET_CUSTOMER_NAME);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -116,8 +123,8 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
     }
@@ -126,7 +133,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement("SELECT mileage, last_inspection, has_damage FROM vehicle_condition WHERE serial_num=?");
+                    .prepareStatement(Statements.GET_VEHICLE_CONDITION);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -138,8 +145,8 @@ public class DBManager {
             }
             return null;
         } catch (SQLException e) {
-            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
     }
@@ -154,7 +161,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement("SELECT serial_num, year, name, is_manufactured FROM owner NATURAL JOIN vehicle_model NATURAL JOIN vehicle WHERE email=?");
+                    .prepareStatement(Statements.GET_USER_VEHICLES);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             HashSet<Vehicle> vehicles = new HashSet<>();
@@ -172,8 +179,48 @@ public class DBManager {
             }
             return vehicles;
         } catch (SQLException e) {
-            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+            return null;
+        }
+    }
+
+    /**
+     * Returns a set of all service locations that are able to
+     * repair a given vehicle.
+     *
+     * @param vehicle: vehicle to repair
+     * @return set of locations
+     */
+    public static HashSet<ServiceLocation> getRepairableLocations(@NotNull Vehicle vehicle) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.GET_REPAIRABLE_LOCATIONS);
+            s.setInt(1, vehicle.getYear());
+            s.setString(2, vehicle.getModel());
+            ResultSet rs = s.executeQuery();
+            HashSet<ServiceLocation> locations = new HashSet<>();
+
+            while (rs.next()) {
+                String id = rs.getString("location_id");
+                String name = rs.getString("location_name");
+                Address address = new Address(
+                        rs.getString("planet"),
+                        rs.getString("country"),
+                        rs.getString("state"),
+                        rs.getString("city"),
+                        rs.getString("street"),
+                        rs.getString("zip"),
+                        null
+                );
+                locations.add(new ServiceLocation(id, name, address));
+            }
+            return locations;
+        } catch (SQLException e) {
+            e.printStackTrace();//todo remove
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
     }
@@ -198,8 +245,8 @@ public class DBManager {
             }
             return options;
         } catch (SQLException e) {
-            IOManager.println("Error: Lost connection to database. Please log back into Edgar1");
-            MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
     }

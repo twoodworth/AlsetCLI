@@ -1,6 +1,6 @@
 package menu;
 
-import main.IOManager;
+import io.IOManager;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;

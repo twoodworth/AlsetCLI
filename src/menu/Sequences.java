@@ -1,9 +1,10 @@
 package menu;
 
 import connection.ConnectionManager;
-import constants.Constants;
+import constants.Keys;
 import database.DBManager;
-import main.IOManager;
+import io.IOManager;
+import location.ServiceLocation;
 import user.User;
 import user.UserManager;
 import vehicle.Condition;
@@ -55,20 +56,70 @@ public class Sequences {
                 // Create menu for vehicle
                 MenuManager.createMenu(num, s,
                         new MenuOption("Vehicle Overview", Sequences::vehicleOverviewSequence),
-                        new MenuOption("Schedule a Repair/Inspection //todo add", () -> {
+                        new MenuOption("Inspect Vehicle //todo add", Sequences::inspectVehicleSequence), //todo add functionality
+                        new MenuOption("Repair Vehicle //todo add", () -> {
                         }), //todo add functionality
-                        new MenuOption("Maintenance Status //todo add", () -> {
+                        new MenuOption("Service Status //todo add", () -> {
                         }), // todo add functionality
-                        new MenuOption("Return to My Vehicles", () -> MenuManager.showMenu(Constants.MY_VEHICLES_KEY))
+                        new MenuOption("Return to My Vehicles", () -> MenuManager.showMenu(Keys.MY_VEHICLES_KEY))
                 );
 
                 // Add menu option to access the vehicle's menu
-                MenuManager.addOption(Constants.MY_VEHICLES_KEY, new MenuOption(s, () -> MenuManager.showMenu(num))); //todo add functionality
+                MenuManager.addOption(Keys.MY_VEHICLES_KEY, new MenuOption(s, () -> MenuManager.showMenu(num))); //todo add functionality
             }
 
             // display the main menu
-            MenuManager.showMenu(Constants.ALSET_MAIN_MENU_KEY);
+            MenuManager.showMenu(Keys.ALSET_MAIN_MENU_KEY);
         } else IOManager.println("Unable to login. Please try again.");
+    }
+
+    /**
+     * Returns the vehicle associated with the menu currently being
+     * viewed, or null if none exists.
+     *
+     * @return vehicle of current menu
+     */
+    private static Vehicle getCurrentMenuVehicle() {
+        // get vehicle serial number
+        String serialNum = MenuManager.getCurrentKey();
+        if (serialNum == null) return null;
+
+        // get vehicle
+        for (Vehicle v : UserManager.getCurrent().getVehicles())
+            if (v.getSerialNum().equals(serialNum)) return v;
+        return null;
+    }
+
+    /**
+     *
+     */
+    static void inspectVehicleSequence() { //todo add code
+        // get vehicle
+        Vehicle v = getCurrentMenuVehicle();
+        if (v == null) {
+            IOManager.println("Error loading vehicle info.");
+            return;
+        }
+
+        // get service locations
+        HashSet<ServiceLocation> locs = DBManager.getRepairableLocations(v);
+        if (locs == null) {
+            IOManager.println("Error loading service info.");
+            return;
+        }
+
+        // Remove previous vehicles from 'My Vehicles' Menu
+        int size = MenuManager.getSize(Keys.INSPECTION_LOCATIONS_LIST);
+        for (int i = size - 1; i > 0; i--) {
+            MenuManager.removeOption(Keys.INSPECTION_LOCATIONS_LIST, i);
+        }
+
+        for (ServiceLocation l : locs) {
+            MenuManager.addOption(Keys.INSPECTION_LOCATIONS_LIST, new MenuOption(l.getName(), () -> {
+            })); //todo add functionality
+        }
+
+        MenuManager.showMenu(Keys.INSPECTION_LOCATIONS_LIST);
     }
 
     /**
@@ -88,7 +139,7 @@ public class Sequences {
             IOManager.println("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
             IOManager.println("Connected successfully.");
-            MenuManager.showMenu(Constants.ALSET_LOGIN_MENU_KEY);
+            MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY);
         }
     }
 
@@ -99,9 +150,9 @@ public class Sequences {
         IOManager.println("Logging out of " + UserManager.getCurrent().getEmail() + "...");
 
         // Remove user's vehicles from 'My Vehicles' Menu
-        int size = MenuManager.getSize(Constants.MY_VEHICLES_KEY);
+        int size = MenuManager.getSize(Keys.MY_VEHICLES_KEY);
         for (int i = size - 1; i > 0; i--)
-            MenuManager.removeOption(Constants.MY_VEHICLES_KEY, i);
+            MenuManager.removeOption(Keys.MY_VEHICLES_KEY, i);
 
         // Remove vehicle menus
         for (Vehicle v : UserManager.getCurrent().getVehicles())
@@ -109,7 +160,7 @@ public class Sequences {
 
         // Log user out + display login menu
         UserManager.logout();
-        MenuManager.showMenu(Constants.ALSET_LOGIN_MENU_KEY);
+        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY);
     }
 
     /**
@@ -186,35 +237,24 @@ public class Sequences {
     static void endConnectionSequence() {
         IOManager.println("Closing Connection...");
         ConnectionManager.closeConnection();
-        MenuManager.showMenu(Constants.EDGAR1_MENU_KEY);
+        MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
     }
 
     static void vehicleOverviewSequence() {
-        // get vehicle serial number
-        String serialNum = MenuManager.getCurrentKey();
-        if (serialNum == null) {
+        // get vehicle
+        Vehicle v = getCurrentMenuVehicle();
+        if (v == null) {
             IOManager.println("Error loading vehicle overview.");
             return;
         }
 
-        // get vehicle
-        Vehicle vehicle = null;
-        for (Vehicle v : UserManager.getCurrent().getVehicles()) {
-            if (v.getSerialNum().equals(serialNum)) {
-                vehicle = v;
-                break;
-            }
-        }
-        if (vehicle == null) {
-            IOManager.println("Error loading vehicle overview.");
-            return;
-        }
+        String sn = v.getSerialNum();
 
         // get options
-        HashSet<String> options = DBManager.getOptions(serialNum);
+        HashSet<String> options = DBManager.getOptions(sn);
 
         // get condition
-        Condition condition = vehicle.getCondition();
+        Condition condition = v.getCondition();
         if (condition == null) {
             IOManager.println("Error loading vehicle overview.");
             return;
@@ -224,9 +264,9 @@ public class Sequences {
         // print basic info
         IOManager.println();
         IOManager.println("Vehicle Overview:");
-        IOManager.println("\tSerial Number: " + serialNum);
-        IOManager.println("\tModel: " + vehicle.getModel());
-        IOManager.println("\tYear: " + vehicle.getYear());
+        IOManager.println("\tSerial Number: " + sn);
+        IOManager.println("\tModel: " + v.getModel());
+        IOManager.println("\tYear: " + v.getYear());
 
         // print condition
         IOManager.println("\tMileage: " + condition.getMileage() + " miles");

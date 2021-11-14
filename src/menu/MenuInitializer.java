@@ -1,6 +1,6 @@
 package menu;
 
-import constants.Constants;
+import constants.Keys;
 
 /**
  * Initializes all of the menus in the program.
@@ -22,6 +22,7 @@ public class MenuInitializer {
             initializeAlsetLoginMenu();
             initializeMainMenu();
             initializeMyVehiclesMenu();
+            initializeInspectionLocation();
             initialized = true;
         }
     }
@@ -31,7 +32,7 @@ public class MenuInitializer {
      */
     private static void initializeAlsetLoginMenu() {
         MenuManager.createMenu(
-                Constants.ALSET_LOGIN_MENU_KEY,
+                Keys.ALSET_LOGIN_MENU_KEY,
                 "Alset Login Menu",
                 new MenuOption("Log Into Alset \t // Sample: (email=ghost@sbcglobal.net, password=O0y8q6WPXFxo)", Sequences::alsetLoginSequence),
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
@@ -47,7 +48,7 @@ public class MenuInitializer {
      */
     private static void initializeEdgar1Menu() {
         MenuManager.createMenu(
-                Constants.EDGAR1_MENU_KEY,
+                Keys.EDGAR1_MENU_KEY,
                 "Edgar1 Login Menu",
                 new MenuOption("Log Into Edgar1 \t//todo remove: user=trw324 | pwd=P823539274", Sequences::edgar1LoginSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
@@ -59,9 +60,9 @@ public class MenuInitializer {
      */
     private static void initializeMainMenu() {
         MenuManager.createMenu(
-                Constants.ALSET_MAIN_MENU_KEY,
+                Keys.ALSET_MAIN_MENU_KEY,
                 "Alset Main Menu",
-                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Constants.MY_VEHICLES_KEY)),
+                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Keys.MY_VEHICLES_KEY)),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
                 new MenuOption("Manage Account //todo add functionality", () -> {
@@ -78,9 +79,20 @@ public class MenuInitializer {
      */
     private static void initializeMyVehiclesMenu() {
         MenuManager.createMenu(
-                Constants.MY_VEHICLES_KEY,
+                Keys.MY_VEHICLES_KEY,
                 "My Vehicles",
-                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Constants.ALSET_MAIN_MENU_KEY))
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Keys.ALSET_MAIN_MENU_KEY))
+        );
+    }
+
+    /**
+     * Initializes the 'Inspection Location' menu
+     */
+    private static void initializeInspectionLocation() {
+        MenuManager.createMenu(
+                Keys.INSPECTION_LOCATIONS_LIST,
+                "Inspection Locations",
+                new MenuOption("Return to Vehicle Menu", MenuManager::showPrevious)
         );
     }
 }

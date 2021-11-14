@@ -1,24 +1,6 @@
 package constants;
 
-/**
- * Stores a list of constant String values for other classes to reference.
- */
-public class Constants {
-
-    /**
-     * Key mapping to the start menu
-     */
-    public static final String ALSET_LOGIN_MENU_KEY = "a";
-
-    /**
-     * Key mapping to the main menu
-     */
-    public static final String ALSET_MAIN_MENU_KEY = "c";
-
-    /**
-     * Key mapping to the 'My Vehicles' menu
-     */
-    public static final String MY_VEHICLES_KEY = "d";
+public class Printouts {
 
     /**
      * Prefix for all printouts
@@ -26,20 +8,9 @@ public class Constants {
     public static final String ALSET_PREFIX = "[Alset] ";
 
     /**
-     * Key mapping to the Edgar1 Login menu
+     * Printout for database connection errors
      */
-    public static final String EDGAR1_MENU_KEY = "b";
-
-    /**
-     * URL of edgar1
-     */
-    public static final String EDGAR1_URL = "jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241";
-
-    /**
-     * String containing all possible characters that
-     * can appear in a random password.
-     */
-    public static final String RANDOM_PASS_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    public static final String DB_ERROR = "Error: Lost connection to database. Please log back into Edgar1";
 
     /**
      * String representation of Alset Logo
@@ -57,9 +28,4 @@ public class Constants {
                     "|                                                                                                     |\n" +
                     "+-----------------------------------------------------------------------------------------------------+\n";
 
-    /**
-     * Private constructor of Constants
-     */
-    private Constants() {
-    }
 }
