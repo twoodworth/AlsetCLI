@@ -3,6 +3,7 @@ package constants;
 public class Statements {
 
     public static String VALID_LOGIN_DATA = "SELECT password FROM customer WHERE email=?";
+    public static String SERVICE_LOCATION_LOGIN = "SELECT * FROM service_location NATURAL JOIN service_address WHERE password=?";
     public static String EMAIL_EXISTS = "SELECT * FROM customer WHERE email=?";
     public static String UPDATE_PASSWORD = "UPDATE customer SET password=? WHERE email=?";
     public static String GET_CUSTOMER_NAME = "SELECT first, middle, last FROM customer_name WHERE email=?";

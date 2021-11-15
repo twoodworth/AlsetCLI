@@ -54,6 +54,46 @@ public class DBManager {
     }
 
     /**
+     * Returns the service location which has the given address,
+     * or null if none exist.
+     *
+     * @param pwd: pwd of service location
+     * @return service location
+     */
+    public static ServiceLocation getServiceLocation(String pwd) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.SERVICE_LOCATION_LOGIN);
+            s.setString(1, pwd);
+            ResultSet rs = s.executeQuery();
+
+            if (rs.next()) {
+                return new ServiceLocation(
+                        rs.getString("location_id"),
+                        rs.getString("location_name"),
+                        new Address(
+                                rs.getString("planet"),
+                                rs.getString("country"),
+                                rs.getString("state"),
+                                rs.getString("city"),
+                                rs.getString("street"),
+                                rs.getString("zip"),
+                                null
+                        )
+
+                );
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+            return null;
+        }
+    }
+
+    /**
      * Checks if there is an account belonging to the given email.
      *
      * @param email: Email to check

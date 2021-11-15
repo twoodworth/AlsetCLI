@@ -5,6 +5,7 @@ import constants.Keys;
 import database.DBManager;
 import io.IOManager;
 import location.ServiceLocation;
+import location.ServiceManager;
 import user.User;
 import user.UserManager;
 import vehicle.Condition;
@@ -202,7 +203,33 @@ public class Sequences {
     static void createAcctSequence() {//todo add code
     }
 
-    static void storeManagerSequence() {//todo add code
+    static void serviceManagerSequence() {//todo add code
+        String password = IOManager.getPasswordInput("Enter password:");
+        ServiceLocation location = DBManager.getServiceLocation(password);
+        if (location == null) {
+            IOManager.println("Invalid password.");
+        } else {
+            ServiceManager.setCurrent(location);
+            IOManager.println("Logged in as " + location.getName() + " Service Manager.");
+            MenuManager.deleteMenu(Keys.SERVICE_MANAGER_KEY);
+            MenuManager.createMenu(Keys.SERVICE_MANAGER_KEY, location.getName(),
+                    new MenuOption("Location Overview \t//todo add", () -> {}),//todo add
+                    new MenuOption("View Showroom \t//todo add", () -> {}),//todo add
+                    new MenuOption("View Listings\t//todo add", () -> {}),//todo add
+                    new MenuOption("View Repair Garage\t//todo add", () -> {}),
+                    new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
+                    new MenuOption("Exit Program", Sequences::exitSequence)
+
+                    );
+
+            MenuManager.showMenu(Keys.SERVICE_MANAGER_KEY);
+        }
+    }
+
+    static void serviceManagerLogoutSequence() {
+        IOManager.println("Logging out of " + ServiceManager.getCurrent().getName() + "...");
+        ServiceManager.logout();
+        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY);
     }
 
     /**
