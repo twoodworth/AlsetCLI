@@ -235,7 +235,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement("SELECT option_name FROM vehicle_options WHERE serial_num=?");
+                    .prepareStatement(Statements.GET_OPTIONS);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
             HashSet<String> options = new HashSet<>();
@@ -244,6 +244,71 @@ public class DBManager {
                 options.add(rs.getString("option_name"));
             }
             return options;
+        } catch (SQLException e) {
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+            return null;
+        }
+    }
+
+    public static boolean isAtServiceLocation(Vehicle vehicle) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.GET_PICKUP_ROW);
+            s.setString(1, vehicle.getSerialNum());
+            return s.executeQuery().next();
+        } catch (SQLException e) {
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+            return false;
+        }
+    }
+
+    public static boolean isReadyForPickup(Vehicle vehicle) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.GET_PICKUP_ROW);
+            s.setString(1, vehicle.getSerialNum());
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                return Boolean.parseBoolean(rs.getString("ready"));
+            } else {
+                throw new IllegalArgumentException("Vehicle is not at a service location.");
+            }
+        } catch (SQLException e) {
+            IOManager.println(Printouts.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+            return false;
+        }
+    }
+
+    public static ServiceLocation getServiceLocation(Vehicle vehicle) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.GET_SERVICE_LOCATION_OF_VEHICLE);
+            s.setString(1, vehicle.getSerialNum());
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                return new ServiceLocation(
+                        rs.getString("location_id"),
+                        rs.getString("location_name"),
+                        new Address(
+                                rs.getString("planet"),
+                                rs.getString("country"),
+                                rs.getString("state"),
+                                rs.getString("city"),
+                                rs.getString("street"),
+                                rs.getString("zip"),
+                                null
+                        )
+
+                );
+            } else {
+                return null;
+            }
         } catch (SQLException e) {
             IOManager.println(Printouts.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);

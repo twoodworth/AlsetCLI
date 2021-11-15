@@ -34,10 +34,11 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Keys.ALSET_LOGIN_MENU_KEY,
                 "Alset Login Menu",
-                new MenuOption("Log Into Alset \t // Sample: (email=ghost@sbcglobal.net, password=O0y8q6WPXFxo)", Sequences::alsetLoginSequence),
+                new MenuOption("Login as Customer \t // Sample: (email=ghost@sbcglobal.net, password=O0y8q6WPXFxo)", Sequences::alsetLoginSequence),
+                new MenuOption("Login as Store Manager \t//todo add functionality", Sequences::storeManagerSequence),//todo add functionality
+                new MenuOption("Login as Product Manager \t//todo add functionality", Sequences::productManagerSequence),//todo add functionality
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
                 new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),//todo add functionality
-                new MenuOption("Admin Login //todo add functionality", Sequences::adminLoginSequence),//todo add functionality
                 new MenuOption("Close connection", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );

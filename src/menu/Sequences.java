@@ -53,19 +53,8 @@ public class Sequences {
                 String num = v.getSerialNum();
                 String s = v.getYear() + " Model " + v.getModel() + " (SN: " + num + ")";
 
-                // Create menu for vehicle
-                MenuManager.createMenu(num, s,
-                        new MenuOption("Vehicle Overview", Sequences::vehicleOverviewSequence),
-                        new MenuOption("Inspect Vehicle //todo add", Sequences::inspectVehicleSequence), //todo add functionality
-                        new MenuOption("Repair Vehicle //todo add", () -> {
-                        }), //todo add functionality
-                        new MenuOption("Service Status //todo add", () -> {
-                        }), // todo add functionality
-                        new MenuOption("Return to My Vehicles", () -> MenuManager.showMenu(Keys.MY_VEHICLES_KEY))
-                );
-
                 // Add menu option to access the vehicle's menu
-                MenuManager.addOption(Keys.MY_VEHICLES_KEY, new MenuOption(s, () -> MenuManager.showMenu(num))); //todo add functionality
+                MenuManager.addOption(Keys.MY_VEHICLES_KEY, new MenuOption(s, () -> vehicleOverviewSequence(v)));
             }
 
             // display the main menu
@@ -73,54 +62,43 @@ public class Sequences {
         } else IOManager.println("Unable to login. Please try again.");
     }
 
-    /**
-     * Returns the vehicle associated with the menu currently being
-     * viewed, or null if none exists.
-     *
-     * @return vehicle of current menu
-     */
-    private static Vehicle getCurrentMenuVehicle() {
-        // get vehicle serial number
-        String serialNum = MenuManager.getCurrentKey();
-        if (serialNum == null) return null;
-
-        // get vehicle
-        for (Vehicle v : UserManager.getCurrent().getVehicles())
-            if (v.getSerialNum().equals(serialNum)) return v;
-        return null;
-    }
-
-    /**
-     *
-     */
-    static void inspectVehicleSequence() { //todo add code
-        // get vehicle
-        Vehicle v = getCurrentMenuVehicle();
-        if (v == null) {
-            IOManager.println("Error loading vehicle info.");
-            return;
-        }
-
-        // get service locations
-        HashSet<ServiceLocation> locs = DBManager.getRepairableLocations(v);
-        if (locs == null) {
-            IOManager.println("Error loading service info.");
-            return;
-        }
-
-        // Remove previous vehicles from 'My Vehicles' Menu
-        int size = MenuManager.getSize(Keys.INSPECTION_LOCATIONS_LIST);
-        for (int i = size - 1; i > 0; i--) {
-            MenuManager.removeOption(Keys.INSPECTION_LOCATIONS_LIST, i);
-        }
-
-        for (ServiceLocation l : locs) {
-            MenuManager.addOption(Keys.INSPECTION_LOCATIONS_LIST, new MenuOption(l.getName(), () -> {
-            })); //todo add functionality
-        }
-
-        MenuManager.showMenu(Keys.INSPECTION_LOCATIONS_LIST);
-    }
+//    static void inspectVehicleSequence() { //todo add code
+//        // get vehicle
+//        if (v == null) {
+//            IOManager.println("Error loading vehicle info.");
+//            return;
+//        }
+//
+//        // determine if it is currently being worked on
+//        ServiceLocation location = DBManager.getServiceLocation(v);
+//        if (location != null) {
+//            IOManager.println("This vehicle is currently being serviced at " + location.getName() + ".");
+//            IOManager.println("Please pick it up before ordering an inspection.");
+//            IOManager.println();
+//            IOManager.getStringInput("Enter any value to continue:");
+//            return;
+//        }
+//
+//        // get service locations
+//        HashSet<ServiceLocation> locs = DBManager.getRepairableLocations(v);
+//        if (locs == null) {
+//            IOManager.println("Error loading service info.");
+//            return;
+//        }
+//
+//        // Remove previous vehicles from 'My Vehicles' Menu
+//        int size = MenuManager.getSize(Keys.INSPECTION_LOCATIONS_LIST);
+//        for (int i = size - 1; i > 0; i--) {
+//            MenuManager.removeOption(Keys.INSPECTION_LOCATIONS_LIST, i);
+//        }
+//
+//        for (ServiceLocation l : locs) {
+//            MenuManager.addOption(Keys.INSPECTION_LOCATIONS_LIST, new MenuOption(l.getName(), () -> {
+//            })); //todo add functionality
+//        }
+//
+//        MenuManager.showMenu(Keys.INSPECTION_LOCATIONS_LIST);
+//    }
 
     /**
      * Begins the edgar1 login sequence.
@@ -154,9 +132,6 @@ public class Sequences {
         for (int i = size - 1; i > 0; i--)
             MenuManager.removeOption(Keys.MY_VEHICLES_KEY, i);
 
-        // Remove vehicle menus
-        for (Vehicle v : UserManager.getCurrent().getVehicles())
-            MenuManager.deleteMenu(v.getSerialNum());
 
         // Log user out + display login menu
         UserManager.logout();
@@ -227,7 +202,7 @@ public class Sequences {
     static void createAcctSequence() {//todo add code
     }
 
-    static void adminLoginSequence() {//todo add code
+    static void storeManagerSequence() {//todo add code
     }
 
     /**
@@ -240,14 +215,7 @@ public class Sequences {
         MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
     }
 
-    static void vehicleOverviewSequence() {
-        // get vehicle
-        Vehicle v = getCurrentMenuVehicle();
-        if (v == null) {
-            IOManager.println("Error loading vehicle overview.");
-            return;
-        }
-
+    static void vehicleOverviewSequence(Vehicle v) {
         String sn = v.getSerialNum();
 
         // get options
@@ -260,10 +228,18 @@ public class Sequences {
             return;
         }
 
+        ServiceLocation location = DBManager.getServiceLocation(v);
+        // Print service status
+        IOManager.println("\nVehicle Overview:");
+        if (location != null) {
+            if (DBManager.isReadyForPickup(v)) {
+                IOManager.println("\tVEHICLE IS READY FOR PICKUP AT " + location.getName().toUpperCase());
+            } else {
+                IOManager.println("\tVEHICLE IS CURRENTLY BEING SERVICED AT " + location.getName().toUpperCase());
+            }
+        }
 
         // print basic info
-        IOManager.println();
-        IOManager.println("Vehicle Overview:");
         IOManager.println("\tSerial Number: " + sn);
         IOManager.println("\tModel: " + v.getModel());
         IOManager.println("\tYear: " + v.getYear());
@@ -286,5 +262,8 @@ public class Sequences {
         // pause until user enters value
         IOManager.println();
         IOManager.getStringInput("Enter any value to continue:");
+    }
+
+    public static void productManagerSequence() {//todo add
     }
 }
