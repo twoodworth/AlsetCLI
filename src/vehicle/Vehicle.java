@@ -11,14 +11,9 @@ public class Vehicle {
     private final String serialNum;
 
     /**
-     * The vehicle's model year
-     */
-    private final int year;
-
-    /**
      * The vehicle's model name
      */
-    private final String model;
+    private final Model model;
 
     /**
      * Whether the vehicle is manufactured or not
@@ -40,8 +35,7 @@ public class Vehicle {
      */
     public Vehicle(String serialNum, int year, String model, boolean isManufactured, Condition condition) {
         this.serialNum = serialNum;
-        this.year = year;
-        this.model = model;
+        this.model = new Model(year, model);
         this.isManufactured = isManufactured;
         this.condition = condition;
     }
@@ -70,7 +64,7 @@ public class Vehicle {
      * @return model year
      */
     public int getYear() {
-        return year;
+        return model.getYear();
     }
 
     /**
@@ -78,7 +72,16 @@ public class Vehicle {
      *
      * @return model name
      */
-    public String getModel() {
+    public String getModelName() {
+        return model.getName();
+    }
+
+    /**
+     * Returns the Vehicle's model
+     *
+     * @return vehicle model
+     */
+    public Model getModel() {
         return model;
     }
 
