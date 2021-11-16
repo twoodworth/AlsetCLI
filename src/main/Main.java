@@ -1,7 +1,7 @@
 package main;
 
 import constants.Keys;
-import constants.Printouts;
+import constants.Strings;
 import io.IOManager;
 import menu.MenuInitializer;
 import menu.MenuManager;
@@ -33,7 +33,7 @@ public class Main {
      * displays the Edgar1 login menu.
      */
     private static void startSequence() {
-        IOManager.println(Printouts.ALSET_LOGO);
+        IOManager.println(Strings.ALSET_LOGO);
         MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
     }
 }

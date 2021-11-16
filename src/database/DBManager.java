@@ -3,13 +3,14 @@ package database;
 import com.sun.istack.internal.NotNull;
 import connection.ConnectionManager;
 import constants.Keys;
-import constants.Printouts;
 import constants.Statements;
+import constants.Strings;
 import io.IOManager;
 import location.Address;
 import location.ServiceLocation;
 import menu.MenuManager;
 import vehicle.Condition;
+import vehicle.Model;
 import vehicle.Vehicle;
 
 import java.sql.PreparedStatement;
@@ -47,7 +48,7 @@ public class DBManager {
             rs.close();
             return valid;
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
@@ -87,7 +88,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
@@ -111,7 +112,7 @@ public class DBManager {
             rs.close();
             return valid;
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
@@ -134,7 +135,7 @@ public class DBManager {
             s.execute();
             return true;
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
@@ -163,7 +164,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
@@ -185,7 +186,7 @@ public class DBManager {
             }
             return null;
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
@@ -219,10 +220,30 @@ public class DBManager {
             }
             return vehicles;
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
+    }
+
+    public static HashSet<Model> getRepairableModels(ServiceLocation location) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.GET_REPAIRABLE_MODELS);
+            s.setString(1, location.getId());
+            ResultSet rs = s.executeQuery();
+            HashSet<Model> models = new HashSet<>();
+            while (rs.next()) {
+                models.add(new Model(rs.getInt("year"), rs.getString("name")));
+            }
+            return models;
+        } catch (SQLException e) {
+            IOManager.println(Strings.DB_ERROR);
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+            return null;
+        }
+
     }
 
     /**
@@ -238,7 +259,7 @@ public class DBManager {
                     .getCurrentConnection()
                     .prepareStatement(Statements.GET_REPAIRABLE_LOCATIONS);
             s.setInt(1, vehicle.getYear());
-            s.setString(2, vehicle.getModel());
+            s.setString(2, vehicle.getModelName());
             ResultSet rs = s.executeQuery();
             HashSet<ServiceLocation> locations = new HashSet<>();
 
@@ -258,8 +279,7 @@ public class DBManager {
             }
             return locations;
         } catch (SQLException e) {
-            e.printStackTrace();//todo remove
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
@@ -285,7 +305,7 @@ public class DBManager {
             }
             return options;
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }
@@ -299,7 +319,7 @@ public class DBManager {
             s.setString(1, vehicle.getSerialNum());
             return s.executeQuery().next();
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
@@ -318,7 +338,7 @@ public class DBManager {
                 throw new IllegalArgumentException("Vehicle is not at a service location.");
             }
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return false;
         }
@@ -350,7 +370,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            IOManager.println(Printouts.DB_ERROR);
+            IOManager.println(Strings.DB_ERROR);
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
             return null;
         }

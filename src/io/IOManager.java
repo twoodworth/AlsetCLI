@@ -1,6 +1,6 @@
 package io;
 
-import constants.Printouts;
+import constants.Strings;
 
 import java.util.Scanner;
 
@@ -38,7 +38,7 @@ public class IOManager {
      */
     public static void print(String message) {
         message = message.replace("\n", "\n[Alset] ");
-        System.out.print(Printouts.ALSET_PREFIX + message);
+        System.out.print(Strings.ALSET_PREFIX + message);
     }
 
     /**
@@ -55,7 +55,7 @@ public class IOManager {
      */
     public static void println(String message) {
         message = message.replace("\n", "\n[Alset] ");
-        System.out.println(Printouts.ALSET_PREFIX + message);
+        System.out.println(Strings.ALSET_PREFIX + message);
     }
 
     /**

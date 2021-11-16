@@ -4,14 +4,19 @@ import connection.ConnectionManager;
 import constants.Keys;
 import database.DBManager;
 import io.IOManager;
+import location.Address;
 import location.ServiceLocation;
 import location.ServiceManager;
 import user.User;
 import user.UserManager;
 import vehicle.Condition;
+import vehicle.Model;
 import vehicle.Vehicle;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -52,7 +57,7 @@ public class Sequences {
             HashSet<Vehicle> vehicles = current.getVehicles();
             for (Vehicle v : vehicles) {
                 String num = v.getSerialNum();
-                String s = v.getYear() + " Model " + v.getModel() + " (SN: " + num + ")";
+                String s = v.getYear() + " Model " + v.getModelName() + " (SN: " + num + ")";
 
                 // Add menu option to access the vehicle's menu
                 MenuManager.addOption(Keys.MY_VEHICLES_KEY, new MenuOption(s, () -> vehicleOverviewSequence(v)));
@@ -213,17 +218,76 @@ public class Sequences {
             IOManager.println("Logged in as " + location.getName() + " Service Manager.");
             MenuManager.deleteMenu(Keys.SERVICE_MANAGER_KEY);
             MenuManager.createMenu(Keys.SERVICE_MANAGER_KEY, location.getName(),
-                    new MenuOption("Location Overview \t//todo add", () -> {}),//todo add
-                    new MenuOption("View Showroom \t//todo add", () -> {}),//todo add
-                    new MenuOption("View Listings\t//todo add", () -> {}),//todo add
-                    new MenuOption("View Repair Garage\t//todo add", () -> {}),
+                    new MenuOption("Location Overview \t//todo add", Sequences::locationOverviewSequence),
+                    new MenuOption("Manage Showroom \t//todo add", () -> {
+                    }),//todo add
+                    new MenuOption("Manage Listings\t//todo add", () -> {
+                    }),//todo add
+                    new MenuOption("Manage Repairs \t//todo add", () -> {
+                    }),
                     new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                     new MenuOption("Exit Program", Sequences::exitSequence)
 
-                    );
+            );
 
             MenuManager.showMenu(Keys.SERVICE_MANAGER_KEY);
         }
+    }
+
+    static void locationOverviewSequence() {
+        // get location
+        ServiceLocation location = ServiceManager.getCurrent();
+        if (location == null) {
+            IOManager.println("Unable to load info.");
+            return;
+        }
+
+        HashSet<Model> models = DBManager.getRepairableModels(location);
+        if (models == null) {
+            IOManager.println("Unable to load info.");
+            return;
+        }
+
+        HashMap<String, ArrayList<Integer>> modelMap = new HashMap<>();
+
+        // insert data into map
+        for (Model model : models) {
+            String name = model.getName();
+            modelMap.putIfAbsent(name, new ArrayList<>());
+            modelMap.get(name).add(model.getYear());
+        }
+
+        // sort data in map
+        for (String name : modelMap.keySet())
+            modelMap.get(name).sort(Integer::compareTo);
+        String[] keys = new String[modelMap.size()];
+        modelMap.keySet().toArray(keys);
+        Arrays.sort(keys);
+
+
+        Address address = location.getAddress();
+
+        // print basic info
+        IOManager.println("\nLocation Overview:");
+        IOManager.println("\tLocation Name: " + location.getName());
+        IOManager.println("\tLocation ID: " + location.getId());
+        IOManager.println("\tAddress: " + address.getStreet());
+        IOManager.println("\t\t " + address.getCity() + ", " + address.getState() + " " + address.getZip());
+        IOManager.println("\t\t " + address.getCountry() + ", " + address.getPlanet());
+
+        // print repairable models
+        IOManager.println("\tRepairable Models:");
+        for (String key : keys) {
+            StringBuilder sb = new StringBuilder("\t\t- Model ").append(key).append(" [Years: ");
+            ArrayList<Integer> years = modelMap.get(key);
+            int l = years.size();
+            for (int i = 0; i < l - 1; i++)
+                sb.append(years.get(i)).append(", ");
+            sb.append(years.get(l - 1)).append("]");
+            IOManager.println(sb.toString());
+        }
+        IOManager.println();
+        IOManager.getStringInput("Enter any value to continue:");
     }
 
     static void serviceManagerLogoutSequence() {
@@ -268,7 +332,7 @@ public class Sequences {
 
         // print basic info
         IOManager.println("\tSerial Number: " + sn);
-        IOManager.println("\tModel: " + v.getModel());
+        IOManager.println("\tModel: " + v.getModelName());
         IOManager.println("\tYear: " + v.getYear());
 
         // print condition

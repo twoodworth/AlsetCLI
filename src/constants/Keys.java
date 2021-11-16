@@ -3,7 +3,7 @@ package constants;
 /**
  * Stores a list of constant String values used as keys.
  */
-public class Keys {
+public class Keys {//todo convert to enum
 
     /**
      * Key mapping to the start menu

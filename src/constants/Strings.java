@@ -1,6 +1,6 @@
 package constants;
 
-public class Printouts {
+public class Strings {
 
     /**
      * Prefix for all printouts

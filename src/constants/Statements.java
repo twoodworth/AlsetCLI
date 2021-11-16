@@ -13,4 +13,5 @@ public class Statements {
     public static String GET_OPTIONS = "SELECT option_name FROM vehicle_options WHERE serial_num=?";
     public static String GET_PICKUP_ROW = "SELECT * FROM pickup WHERE serial_num=?";
     public static String GET_SERVICE_LOCATION_OF_VEHICLE = "SELECT location_id, location_name, planet, country, state, city, street, zip FROM pickup NATURAL JOIN service_location NATURAL JOIN service_address WHERE serial_num=?";
+    public static String GET_REPAIRABLE_MODELS = "SELECT year, name FROM repairable WHERE location_id=?";
 }
