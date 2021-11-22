@@ -100,4 +100,13 @@ public class IOManager {
         }
         return sb.toString();
     }
+
+    public static void clear(String message) {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        IOManager.println(Strings.ALSET_LOGO);
+        IOManager.println();
+        IOManager.println(message);
+        IOManager.println();
+    }
 }

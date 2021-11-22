@@ -1,4 +1,4 @@
-package vehicle;
+package product;
 
 import java.util.Date;
 

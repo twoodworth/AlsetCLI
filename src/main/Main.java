@@ -33,7 +33,6 @@ public class Main {
      * displays the Edgar1 login menu.
      */
     private static void startSequence() {
-        IOManager.println(Strings.ALSET_LOGO);
-        MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+        MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, "");
     }
 }

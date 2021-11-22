@@ -18,6 +18,7 @@ public class MenuManager {
      */
     private static final HashMap<String, Menu> menus = new HashMap<>();
 
+
     /**
      * Contains a history of all the menus the user has viewed. Every time the user
      * views a new menu, the old menu is added to history.
@@ -28,6 +29,8 @@ public class MenuManager {
      * The menu currently being displayed to the user.
      */
     private static Menu current = null;
+
+    private static String nextMessage = "";
 
     /**
      * Private constructor of MenuManager
@@ -88,20 +91,20 @@ public class MenuManager {
      * @param id ID of menu to show
      * @throws NoSuchElementException if no menu exists with the given ID
      */
-    public static void showMenu(String id) throws NoSuchElementException {
+    public static void showMenu(String id, String message) throws NoSuchElementException {
         Menu menu = menus.get(id);
         if (menu == null) throw new NoSuchElementException("No menu with ID of " + id + " exists.");
         history.push(current);
-        showMenu(menu);
+        showMenu(menu, message);
     }
 
     /**
      * Pops the top menu in the history stack and
      * displays it to the user.
      */
-    public static void showPrevious() {
+    public static void showPrevious(String message) {
         Menu previous = history.pop();
-        showMenu(previous);
+        showMenu(previous, message);
     }
 
     /**
@@ -122,9 +125,12 @@ public class MenuManager {
      *
      * @param menu: Menu to display to the user
      */
-    private static void showMenu(Menu menu) {
+    private static void showMenu(Menu menu, String message) {
         current = menu;
+        nextMessage = message;
         while (current == menu) {
+            IOManager.clear(nextMessage);
+            nextMessage = "";
             IOManager.println(menu.toString());
             int l = menu.options.length;
             Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
@@ -134,6 +140,10 @@ public class MenuManager {
                 menu.options[input].runAction();
             }
         }
+    }
+
+    public static void setNextMessage(String message) {
+        nextMessage = message;
     }
 
     /**

@@ -1,7 +1,7 @@
 package user;
 
 import database.DBManager;
-import vehicle.Vehicle;
+import product.Vehicle;
 
 import java.util.HashSet;
 

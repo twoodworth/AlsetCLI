@@ -23,6 +23,7 @@ public class MenuInitializer {
             initializeMainMenu();
             initializeMyVehiclesMenu();
             initializeInspectionLocation();
+            initializeManageGarageMenu();
             initialized = true;
         }
     }
@@ -63,7 +64,7 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Keys.ALSET_MAIN_MENU_KEY,
                 "Alset Main Menu",
-                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Keys.MY_VEHICLES_KEY)),
+                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Keys.MY_VEHICLES_KEY, "")),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
                 new MenuOption("Manage Account //todo add functionality", () -> {
@@ -75,6 +76,17 @@ public class MenuInitializer {
         );
     }
 
+    private static void initializeManageGarageMenu() {
+        MenuManager.createMenu(
+                Keys.MANAGE_GARAGE_KEY,
+                "Manage Garage",
+                new MenuOption("View Vehicles", Sequences::viewGarageSequence),
+                new MenuOption("Add Vehicle\t //todo add", () -> {}),//todo add
+                new MenuOption("Remove Vehicle\t //todo add", () -> {}),//todo add
+                new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious(""))
+        );
+    }
+
     /**
      * Initializes the 'My Vehicles' menu
      */
@@ -82,7 +94,7 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Keys.MY_VEHICLES_KEY,
                 "My Vehicles",
-                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Keys.ALSET_MAIN_MENU_KEY))
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Keys.ALSET_MAIN_MENU_KEY, ""))
         );
     }
 
@@ -93,7 +105,7 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Keys.INSPECTION_LOCATIONS_LIST,
                 "Inspection Locations",
-                new MenuOption("Return to Vehicle Menu", MenuManager::showPrevious)
+                new MenuOption("Return to Vehicle Menu", () -> MenuManager.showPrevious(""))
         );
     }
 }

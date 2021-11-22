@@ -1,4 +1,4 @@
-package vehicle;
+package product;
 
 /**
  * Represents a Vehicle, and contains vehicle data.

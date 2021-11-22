@@ -42,6 +42,8 @@ public class Keys {//todo convert to enum
      * can appear in a random password.
      */
     public static final String RANDOM_PASS_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    public static final String VIEW_GARAGE_KEY = "f";
+    public static final String MANAGE_GARAGE_KEY = "g";
 
     /**
      * Private constructor of Constants

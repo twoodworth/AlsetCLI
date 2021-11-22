@@ -1,4 +1,4 @@
-package vehicle;
+package product;
 
 public class Model {
     private final int year;

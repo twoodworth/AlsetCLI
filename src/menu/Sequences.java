@@ -5,13 +5,14 @@ import constants.Keys;
 import database.DBManager;
 import io.IOManager;
 import location.Address;
+import location.GarageData;
 import location.ServiceLocation;
 import location.ServiceManager;
+import product.Condition;
+import product.Model;
+import product.Vehicle;
 import user.User;
 import user.UserManager;
-import vehicle.Condition;
-import vehicle.Model;
-import vehicle.Vehicle;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -38,20 +39,16 @@ public class Sequences {
      * in successfully.
      */
     static void alsetLoginSequence() {
+        // clear console
+        IOManager.clear("");
+
+        // get credentials
         String email = IOManager.getStringInput("Enter your Alset email:");
         String password = IOManager.getPasswordInput("Enter your Alset password:");
         boolean success = UserManager.login(email, password);
 
         if (success) {
             User current = UserManager.getCurrent();
-
-            // welcome the user back
-            StringBuilder sb = new StringBuilder("Welcome back, ");
-            sb.append(current.getFirst()).append(" ");
-            String mid = current.getMiddle();
-            if (mid != null && !mid.isEmpty()) sb.append(mid.charAt(0)).append(". ");
-            sb.append(current.getLast()).append("!");
-            IOManager.println(sb.toString());
 
             // Load in the user's vehicles to the vehicle manager menu.
             HashSet<Vehicle> vehicles = current.getVehicles();
@@ -63,9 +60,17 @@ public class Sequences {
                 MenuManager.addOption(Keys.MY_VEHICLES_KEY, new MenuOption(s, () -> vehicleOverviewSequence(v)));
             }
 
+
+            // create welcome message
+            StringBuilder sb = new StringBuilder("Welcome back, ");
+            sb.append(current.getFirst()).append(" ");
+            String mid = current.getMiddle();
+            if (mid != null && !mid.isEmpty()) sb.append(mid.charAt(0)).append(". ");
+            sb.append(current.getLast()).append("!");
+
             // display the main menu
-            MenuManager.showMenu(Keys.ALSET_MAIN_MENU_KEY);
-        } else IOManager.println("Unable to login. Please try again.");
+            MenuManager.showMenu(Keys.ALSET_MAIN_MENU_KEY, sb.toString());
+        } else MenuManager.setNextMessage("Unable to login. Please try again.");
     }
 
 //    static void inspectVehicleSequence() { //todo add code
@@ -112,6 +117,9 @@ public class Sequences {
      * This login sequence logs the user into edgar1.
      */
     static void edgar1LoginSequence() {
+        // clear console
+        IOManager.clear("");
+
         // Get credentials
         String id = IOManager.getStringInput("Enter your Oracle id for edgar1:");
         String pwd = IOManager.getPasswordInput("Enter your Oracle password for edgar1:");
@@ -120,10 +128,9 @@ public class Sequences {
         IOManager.println("Connecting to database...");
         Connection conn = ConnectionManager.createEdgar1Connection(id, pwd);
         if (conn == null)
-            IOManager.println("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
+            MenuManager.setNextMessage("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
-            IOManager.println("Connected successfully.");
-            MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY);
+            MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Connected successfully as " + id);
         }
     }
 
@@ -141,7 +148,7 @@ public class Sequences {
 
         // Log user out + display login menu
         UserManager.logout();
-        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY);
+        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
     }
 
     /**
@@ -172,6 +179,9 @@ public class Sequences {
      * their new password, which is then saved to the database.
      */
     static void forgotPwdSequence() {
+        //clear console
+        IOManager.clear("");
+
         String email = IOManager.getStringInput("Enter your Alset email:");
         boolean exists = DBManager.emailExists(email);
         if (exists) {
@@ -188,20 +198,20 @@ public class Sequences {
                     if (newPass.equals(newPass2)) {
                         boolean success = DBManager.updatePassword(email, newPass);
                         if (success) {
-                            IOManager.println("Password has been updated successfully.");
-                            break;
+                            MenuManager.setNextMessage("Password has been updated successfully.");
                         } else {
-                            IOManager.println("Error while updating password. Please try again.");
+                            MenuManager.setNextMessage("Error while updating password. Please try again.");
                         }
+                        break;
                     } else {
-                        IOManager.println("Password confirmation does not match. Please try again.");
+                        IOManager.clear("Password confirmation does not match. Please Try again");
                     }
                 }
             } else {
-                IOManager.println("Verification failed.");
+                MenuManager.setNextMessage("Verification failed.");
             }
         } else {
-            IOManager.print("Unrecognised email, please try again.");
+            MenuManager.setNextMessage("Unrecognised email, please try again.");
         }
     }
 
@@ -209,42 +219,110 @@ public class Sequences {
     }
 
     static void serviceManagerSequence() {//todo add code
+        // clear console
+        IOManager.clear("");
+
         String password = IOManager.getPasswordInput("Enter password:");
         ServiceLocation location = DBManager.getServiceLocation(password);
         if (location == null) {
-            IOManager.println("Invalid password.");
+            MenuManager.setNextMessage("Invalid password.");
         } else {
             ServiceManager.setCurrent(location);
-            IOManager.println("Logged in as " + location.getName() + " Service Manager.");
             MenuManager.deleteMenu(Keys.SERVICE_MANAGER_KEY);
             MenuManager.createMenu(Keys.SERVICE_MANAGER_KEY, location.getName(),
-                    new MenuOption("Location Overview \t//todo add", Sequences::locationOverviewSequence),
+                    new MenuOption("Location Overview", Sequences::locationOverviewSequence),
                     new MenuOption("Manage Showroom \t//todo add", () -> {
                     }),//todo add
                     new MenuOption("Manage Listings\t//todo add", () -> {
                     }),//todo add
-                    new MenuOption("Manage Repairs \t//todo add", () -> {
-                    }),
+                    new MenuOption("Manage Garage", () -> MenuManager.showMenu(Keys.MANAGE_GARAGE_KEY, "")),
                     new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                     new MenuOption("Exit Program", Sequences::exitSequence)
 
             );
 
-            MenuManager.showMenu(Keys.SERVICE_MANAGER_KEY);
+            MenuManager.showMenu(Keys.SERVICE_MANAGER_KEY, "Successfully logged in as " + location.getName() + " Service Manager.");
         }
+    }
+
+    static void viewGarageSequence() {
+        // get all vehicles being repaired or ready for pickup in the garage
+        ServiceLocation loc = ServiceManager.getCurrent();
+        HashSet<GarageData> data = DBManager.getGarageData(loc);
+        if (data == null) {
+            MenuManager.setNextMessage("Unable to load info.");
+            return;
+        }
+        MenuManager.deleteMenu(Keys.VIEW_GARAGE_KEY);
+        MenuManager.createMenu(Keys.VIEW_GARAGE_KEY, "Garage Vehicles");
+        MenuManager.addOption(Keys.VIEW_GARAGE_KEY, new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious("")));
+        for (GarageData gd : data) {
+            String sn = gd.getSerialNum();
+            Vehicle v = DBManager.getVehicle(sn);
+            if (v == null) {
+                MenuManager.setNextMessage("Unable to load info.");
+                return;
+            }
+            MenuManager.addOption(
+                    Keys.VIEW_GARAGE_KEY,
+                    new MenuOption(
+                            v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
+                            () -> {
+                                // clear console
+                                IOManager.clear("");
+                                // print basic info
+                                IOManager.println("\nVehicle Overview:");
+                                IOManager.println("\tSerial Number: " + sn);
+                                IOManager.println("\tOwner email: " + gd.getOwner());
+                                IOManager.println("\tModel: " + v.getModelName());
+                                IOManager.println("\tYear: " + v.getYear());
+
+                                // print condition
+                                Condition condition = v.getCondition();
+                                IOManager.println("\tMileage: " + condition.getMileage() + " miles");
+                                IOManager.println("\tLast Inspection: " + condition.getLastInspectionFormatted());
+                                IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
+
+                                HashSet<String> options = DBManager.getOptions(sn);
+                                // print additional options
+                                if (options == null || options.isEmpty()) {
+                                    IOManager.println("\tAdditional Features: None");
+                                } else {
+                                    IOManager.println("\tAdditional Features:");
+                                    for (String option : options) {
+                                        IOManager.println("\t\t- " + option);
+                                    }
+                                }
+                                IOManager.println("\nVehicle Status:");
+                                IOManager.println("\tReady for pickup: " + gd.isReady());
+                                if (gd.getStartTime() > 0)
+                                    IOManager.println("\tRepair Started: " + gd.getStartTimeFormatted());
+                                if (gd.getEndTime() > 0)
+                                    IOManager.println("\tRepair Ended: " + gd.getEndTimeFormatted());
+                                if (gd.getReason() == null)
+                                    IOManager.println("\tService Provided: Manufacturing & Delivering Vehicle");
+                                else IOManager.println("\tService Provided: " + gd.getReason());
+                                // pause until user enters value
+                                IOManager.println();
+                                IOManager.getStringInput("Enter any value to continue:");
+                            }
+                    )
+            );
+        }
+        MenuManager.showMenu(Keys.VIEW_GARAGE_KEY, "");
     }
 
     static void locationOverviewSequence() {
         // get location
         ServiceLocation location = ServiceManager.getCurrent();
         if (location == null) {
-            IOManager.println("Unable to load info.");
+            MenuManager.setNextMessage("Unable to load info.");
             return;
         }
 
         HashSet<Model> models = DBManager.getRepairableModels(location);
         if (models == null) {
-            IOManager.println("Unable to load info.");
+            MenuManager.setNextMessage("Unable to load info.");
             return;
         }
 
@@ -266,6 +344,9 @@ public class Sequences {
 
 
         Address address = location.getAddress();
+
+        //clear console
+        IOManager.clear("");
 
         // print basic info
         IOManager.println("\nLocation Overview:");
@@ -293,7 +374,7 @@ public class Sequences {
     static void serviceManagerLogoutSequence() {
         IOManager.println("Logging out of " + ServiceManager.getCurrent().getName() + "...");
         ServiceManager.logout();
-        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY);
+        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
     }
 
     /**
@@ -303,7 +384,7 @@ public class Sequences {
     static void endConnectionSequence() {
         IOManager.println("Closing Connection...");
         ConnectionManager.closeConnection();
-        MenuManager.showMenu(Keys.EDGAR1_MENU_KEY);
+        MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, "Connection Successfully closed.");
     }
 
     static void vehicleOverviewSequence(Vehicle v) {
@@ -315,11 +396,15 @@ public class Sequences {
         // get condition
         Condition condition = v.getCondition();
         if (condition == null) {
-            IOManager.println("Error loading vehicle overview.");
+            MenuManager.setNextMessage("Error loading vehicle overview.");
             return;
         }
 
         ServiceLocation location = DBManager.getServiceLocation(v);
+
+        //clear console
+        IOManager.clear("");
+
         // Print service status
         IOManager.println("\nVehicle Overview:");
         if (location != null) {
