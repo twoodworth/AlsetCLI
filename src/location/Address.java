@@ -1,13 +1,13 @@
 package location;
 
 public class Address {
-    private String planet;
-    private String country;
-    private String state;
-    private String city;
-    private String street;
-    private String zip;
-    private String apartment;
+    private final String planet;
+    private final String country;
+    private final String state;
+    private final String city;
+    private final String street;
+    private final String zip;
+    private final String apartment;
 
     public Address(String planet, String country, String state, String city, String street, String zip, String apartment) {
         this.planet = planet;

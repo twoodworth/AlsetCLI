@@ -1,6 +1,6 @@
 package constants;
 
-public class Statements {
+public class Statement {
 
     // select
     public static String VALID_LOGIN_DATA = "SELECT password FROM customer WHERE email=?";

@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Condition {
-    private long mileage;
-    private long lastInspection;
-    private boolean hasDamage;
+    private final long mileage;
+    private final long lastInspection;
+    private final boolean hasDamage;
 
     public Condition(long mileage, long lastInspection, boolean hasDamage) {
         this.mileage = mileage;

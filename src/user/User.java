@@ -1,6 +1,5 @@
 package user;
 
-import constants.Keys;
 import constants.Strings;
 import product.Vehicle;
 

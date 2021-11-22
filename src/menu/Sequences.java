@@ -1,7 +1,7 @@
 package menu;
 
 import connection.ConnectionManager;
-import constants.Keys;
+import constants.Key;
 import database.DBManager;
 import io.IOManager;
 import location.Address;
@@ -57,7 +57,7 @@ public class Sequences {
                 String s = v.getYear() + " Model " + v.getModelName() + " (SN: " + num + ")";
 
                 // Add menu option to access the vehicle's menu
-                MenuManager.addOption(Keys.MY_VEHICLES_KEY, new MenuOption(s, () -> vehicleOverviewSequence(v)));
+                MenuManager.addOption(Key.MY_VEHICLES_KEY, new MenuOption(s, () -> vehicleOverviewSequence(v)));
             }
 
 
@@ -69,47 +69,9 @@ public class Sequences {
             sb.append(current.getLast()).append("!");
 
             // display the main menu
-            MenuManager.showMenu(Keys.ALSET_MAIN_MENU_KEY, sb.toString());
+            MenuManager.showMenu(Key.ALSET_MAIN_MENU_KEY, sb.toString());
         } else MenuManager.setNextMessage("Unable to login. Please try again.");
     }
-
-//    static void inspectVehicleSequence() { //todo add code
-//        // get vehicle
-//        if (v == null) {
-//            IOManager.println("Error loading vehicle info.");
-//            return;
-//        }
-//
-//        // determine if it is currently being worked on
-//        ServiceLocation location = DBManager.getServiceLocation(v);
-//        if (location != null) {
-//            IOManager.println("This vehicle is currently being serviced at " + location.getName() + ".");
-//            IOManager.println("Please pick it up before ordering an inspection.");
-//            IOManager.println();
-//            IOManager.getStringInput("Enter any value to continue:");
-//            return;
-//        }
-//
-//        // get service locations
-//        HashSet<ServiceLocation> locs = DBManager.getRepairableLocations(v);
-//        if (locs == null) {
-//            IOManager.println("Error loading service info.");
-//            return;
-//        }
-//
-//        // Remove previous vehicles from 'My Vehicles' Menu
-//        int size = MenuManager.getSize(Keys.INSPECTION_LOCATIONS_LIST);
-//        for (int i = size - 1; i > 0; i--) {
-//            MenuManager.removeOption(Keys.INSPECTION_LOCATIONS_LIST, i);
-//        }
-//
-//        for (ServiceLocation l : locs) {
-//            MenuManager.addOption(Keys.INSPECTION_LOCATIONS_LIST, new MenuOption(l.getName(), () -> {
-//            })); //todo add functionality
-//        }
-//
-//        MenuManager.showMenu(Keys.INSPECTION_LOCATIONS_LIST);
-//    }
 
     /**
      * Begins the edgar1 login sequence.
@@ -130,7 +92,7 @@ public class Sequences {
         if (conn == null)
             MenuManager.setNextMessage("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
-            MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Connected successfully as " + id + ".");
+            MenuManager.showMenu(Key.ALSET_LOGIN_MENU_KEY, "Connected successfully as " + id + ".");
         }
     }
 
@@ -141,14 +103,14 @@ public class Sequences {
         IOManager.println("Logging out of " + UserManager.getCurrent().getEmail() + "...");
 
         // Remove user's vehicles from 'My Vehicles' Menu
-        int size = MenuManager.getSize(Keys.MY_VEHICLES_KEY);
+        int size = MenuManager.getSize(Key.MY_VEHICLES_KEY);
         for (int i = size - 1; i > 0; i--)
-            MenuManager.removeOption(Keys.MY_VEHICLES_KEY, i);
+            MenuManager.removeOption(Key.MY_VEHICLES_KEY, i);
 
 
         // Log user out + display login menu
         UserManager.logout();
-        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
+        MenuManager.showMenu(Key.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
     }
 
     /**
@@ -261,7 +223,7 @@ public class Sequences {
                 if (customerVehicles == null) {
                     MenuManager.setNextMessage("Unable to load data. Please try again.");
                     return;
-                } else if (!customerVehicles.contains(v)) {//todo fix
+                } else if (!customerVehicles.contains(v)) {
                     MenuManager.setNextMessage("Error: Customer does not own the vehicle with the SN " + sn);
                     return;
                 } else {
@@ -373,20 +335,20 @@ public class Sequences {
             MenuManager.setNextMessage("Invalid password.");
         } else {
             ServiceManager.setCurrent(location);
-            MenuManager.deleteMenu(Keys.SERVICE_MANAGER_KEY);
-            MenuManager.createMenu(Keys.SERVICE_MANAGER_KEY, location.getName(),
+            MenuManager.deleteMenu(Key.SERVICE_MANAGER_KEY);
+            MenuManager.createMenu(Key.SERVICE_MANAGER_KEY, location.getName(),
                     new MenuOption("Location Overview", Sequences::locationOverviewSequence),
                     new MenuOption("Manage Showroom \t//todo add", () -> {
                     }),//todo add
                     new MenuOption("Manage Listings\t//todo add", () -> {
                     }),//todo add
-                    new MenuOption("Manage Garage", () -> MenuManager.showMenu(Keys.MANAGE_GARAGE_KEY, "")),
+                    new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_KEY, "")),
                     new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                     new MenuOption("Exit Program", Sequences::exitSequence)
 
             );
 
-            MenuManager.showMenu(Keys.SERVICE_MANAGER_KEY, "Successfully logged in as " + location.getName() + " Service Manager.");
+            MenuManager.showMenu(Key.SERVICE_MANAGER_KEY, "Successfully logged in as " + location.getName() + " Service Manager.");
         }
     }
 
@@ -401,9 +363,9 @@ public class Sequences {
         if (data.size() == 0) {
             MenuManager.setNextMessage("Garage is empty.");
         }
-        MenuManager.deleteMenu(Keys.VIEW_GARAGE_KEY);
-        MenuManager.createMenu(Keys.VIEW_GARAGE_KEY, "Garage Vehicles");
-        MenuManager.addOption(Keys.VIEW_GARAGE_KEY, new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious("")));
+        MenuManager.deleteMenu(Key.VIEW_GARAGE_KEY);
+        MenuManager.createMenu(Key.VIEW_GARAGE_KEY, "Garage Vehicles");
+        MenuManager.addOption(Key.VIEW_GARAGE_KEY, new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious("")));
         for (GarageData gd : data) {
             String sn = gd.getSerialNum();
             Vehicle v = DBManager.getVehicle(sn);
@@ -412,7 +374,7 @@ public class Sequences {
                 return;
             }
             MenuManager.addOption(
-                    Keys.VIEW_GARAGE_KEY,
+                    Key.VIEW_GARAGE_KEY,
                     new MenuOption(
                             v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
                             () -> {
@@ -457,7 +419,7 @@ public class Sequences {
                     )
             );
         }
-        MenuManager.showMenu(Keys.VIEW_GARAGE_KEY, "");
+        MenuManager.showMenu(Key.VIEW_GARAGE_KEY, "");
     }
 
     static void locationOverviewSequence() {
@@ -522,7 +484,7 @@ public class Sequences {
     static void serviceManagerLogoutSequence() {
         IOManager.println("Logging out of " + ServiceManager.getCurrent().getName() + "...");
         ServiceManager.logout();
-        MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
+        MenuManager.showMenu(Key.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
     }
 
     /**
@@ -532,7 +494,7 @@ public class Sequences {
     static void endConnectionSequence() {
         IOManager.println("Closing Connection...");
         ConnectionManager.closeConnection();
-        MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, "Connection Successfully closed.");
+        MenuManager.showMenu(Key.EDGAR1_MENU_KEY, "Connection Successfully closed.");
     }
 
     static void vehicleOverviewSequence(Vehicle v) {

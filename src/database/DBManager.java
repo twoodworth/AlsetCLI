@@ -1,10 +1,9 @@
 package database;
 
 import connection.ConnectionManager;
-import constants.Keys;
-import constants.Statements;
+import constants.Key;
+import constants.Statement;
 import constants.Strings;
-import io.IOManager;
 import location.Address;
 import location.GarageData;
 import location.ServiceLocation;
@@ -42,14 +41,14 @@ public class DBManager {
             boolean valid;
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.VALID_LOGIN_DATA);
+                    .prepareStatement(Statement.VALID_LOGIN_DATA);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next() && rs.getString("password").equals(pwd);
             rs.close();
             return valid;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return false;
         }
     }
@@ -65,7 +64,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.SERVICE_LOCATION_LOGIN);
+                    .prepareStatement(Statement.SERVICE_LOCATION_LOGIN);
             s.setString(1, pwd);
             ResultSet rs = s.executeQuery();
 
@@ -88,7 +87,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -104,14 +103,14 @@ public class DBManager {
             boolean valid;
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.EMAIL_EXISTS);
+                    .prepareStatement(Statement.EMAIL_EXISTS);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next();
             rs.close();
             return valid;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return false;
         }
     }
@@ -127,13 +126,13 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.UPDATE_PASSWORD);
+                    .prepareStatement(Statement.UPDATE_PASSWORD);
             s.setString(1, pass);
             s.setString(2, email);
             s.execute();
             return true;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return false;
         }
     }
@@ -148,7 +147,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_CUSTOMER_NAME);
+                    .prepareStatement(Statement.GET_CUSTOMER_NAME);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -161,7 +160,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -170,7 +169,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_VEHICLE_CONDITION);
+                    .prepareStatement(Statement.GET_VEHICLE_CONDITION);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -182,7 +181,7 @@ public class DBManager {
             }
             return null;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -197,7 +196,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_USER_VEHICLES);
+                    .prepareStatement(Statement.GET_USER_VEHICLES);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             HashSet<Vehicle> vehicles = new HashSet<>();
@@ -215,7 +214,7 @@ public class DBManager {
             }
             return vehicles;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -224,7 +223,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_VEHICLE);
+                    .prepareStatement(Statement.GET_VEHICLE);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
 
@@ -237,11 +236,11 @@ public class DBManager {
                         getCondition(serialNum)
                 );
             } else {
-                MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+                MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -250,7 +249,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_REPAIRABLE_MODELS);
+                    .prepareStatement(Statement.GET_REPAIRABLE_MODELS);
             s.setString(1, location.getId());
             ResultSet rs = s.executeQuery();
             HashSet<Model> models = new HashSet<>();
@@ -259,7 +258,7 @@ public class DBManager {
             }
             return models;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
 
@@ -276,7 +275,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_REPAIRABLE_LOCATIONS);
+                    .prepareStatement(Statement.GET_REPAIRABLE_LOCATIONS);
             s.setInt(1, vehicle.getYear());
             s.setString(2, vehicle.getModelName());
             ResultSet rs = s.executeQuery();
@@ -298,7 +297,7 @@ public class DBManager {
             }
             return locations;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -313,7 +312,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_OPTIONS);
+                    .prepareStatement(Statement.GET_OPTIONS);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
             HashSet<String> options = new HashSet<>();
@@ -323,7 +322,7 @@ public class DBManager {
             }
             return options;
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -332,11 +331,11 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_PICKUP_ROW);
+                    .prepareStatement(Statement.GET_PICKUP_ROW);
             s.setString(1, vehicle.getSerialNum());
             return s.executeQuery().next();
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return false;
         }
     }
@@ -345,7 +344,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_GARAGE_VEHICLES);
+                    .prepareStatement(Statement.GET_GARAGE_VEHICLES);
             s.setString(1, location.getId());
             ResultSet rs = s.executeQuery();
             HashSet<GarageData> data = new HashSet<>();
@@ -365,7 +364,7 @@ public class DBManager {
             return data;
         } catch (SQLException e) {
             e.printStackTrace();
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -374,7 +373,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_PICKUP_ROW);
+                    .prepareStatement(Statement.GET_PICKUP_ROW);
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -383,7 +382,7 @@ public class DBManager {
                 throw new IllegalArgumentException("Vehicle is not at a service location.");
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return false;
         }
     }
@@ -392,7 +391,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_SERVICE_LOCATION_OF_VEHICLE);
+                    .prepareStatement(Statement.GET_SERVICE_LOCATION_OF_VEHICLE);
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -414,7 +413,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
         }
     }
@@ -423,7 +422,7 @@ public class DBManager {
         try {
             PreparedStatement s = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.GET_VEHICLE_GARAGE);
+                    .prepareStatement(Statement.GET_VEHICLE_GARAGE);
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -434,7 +433,7 @@ public class DBManager {
                 return false;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return true;
         }
     }
@@ -444,7 +443,7 @@ public class DBManager {
             // add to repair
             PreparedStatement s1 = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.START_REPAIR);
+                    .prepareStatement(Statement.START_REPAIR);
             long start = new Date().getTime() / 1000L;
             s1.setLong(1, start);
             s1.setLong(2, 0L);
@@ -456,7 +455,7 @@ public class DBManager {
             // add to repairs
             PreparedStatement s2 = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.START_VEHICLE_REPAIR);
+                    .prepareStatement(Statement.START_VEHICLE_REPAIR);
             s2.setString(1, email);
             s2.setString(2, vehicle.getSerialNum());
             s2.setLong(3, start);
@@ -469,7 +468,7 @@ public class DBManager {
             // add to pickup
             PreparedStatement s3 = ConnectionManager
                     .getCurrentConnection()
-                    .prepareStatement(Statements.ADD_GARAGE_VEHICLE);
+                    .prepareStatement(Statement.ADD_GARAGE_VEHICLE);
             s3.setString(1, location.getId());
             s3.setString(2, email);
             s3.setString(3, vehicle.getSerialNum());
@@ -479,7 +478,7 @@ public class DBManager {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return false;
         }
     }

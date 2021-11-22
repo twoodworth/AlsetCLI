@@ -1,5 +1,6 @@
 package menu;
 
+import constants.Key;
 import io.IOManager;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class MenuManager {
     /**
      * Maps a set of IDs to corresponding menus.
      */
-    private static final HashMap<String, Menu> menus = new HashMap<>();
+    private static final HashMap<Key, Menu> menus = new HashMap<>();
 
 
     /**
@@ -41,30 +42,30 @@ public class MenuManager {
     /**
      * Creates a new menu using the given parameters
      *
-     * @param id:      ID of menu
+     * @param key:     ID of menu
      * @param title:   Title of menu
      * @param options: Array of menu options
      * @throws IllegalArgumentException if a menu with the given ID already exists.
      */
-    public static void createMenu(String id, String title, MenuOption... options) throws IllegalArgumentException {
-        if (menus.containsKey(id)) {
-            throw new IllegalArgumentException("A menu with id " + id + "already exists.");
+    public static void createMenu(Key key, String title, MenuOption... options) throws IllegalArgumentException {
+        if (menus.containsKey(key)) {
+            throw new IllegalArgumentException("A menu with key " + key + "already exists.");
         } else {
             Menu menu = new Menu(title, options);
-            menus.put(id, menu);
+            menus.put(key, menu);
         }
     }
 
     /**
      * Adds an option to the menu with the given ID.
      *
-     * @param id:     ID of menu
+     * @param key:     Key of menu
      * @param option: Option to add to the menu
      * @throws NoSuchElementException if no menus exist with the given ID
      */
-    public static void addOption(String id, MenuOption option) throws NoSuchElementException {
-        Menu menu = menus.get(id);
-        if (menu == null) throw new NoSuchElementException("No menu exists with id " + id);
+    public static void addOption(Key key, MenuOption option) throws NoSuchElementException {
+        Menu menu = menus.get(key);
+        if (menu == null) throw new NoSuchElementException("No menu exists with id " + key.toString());
         else {
             menu.addOption(option);
         }
@@ -73,13 +74,13 @@ public class MenuManager {
     /**
      * Removes a menu option from a menu
      *
-     * @param id:    ID of menu
+     * @param key:    key of menu
      * @param index: Option index to remove
      * @throws NoSuchElementException if no menus exist with the given ID
      */
-    public static void removeOption(String id, int index) throws NoSuchElementException {
-        Menu menu = menus.get(id);
-        if (menu == null) throw new NoSuchElementException("No menu exists with id " + id);
+    public static void removeOption(Key key, int index) throws NoSuchElementException {
+        Menu menu = menus.get(key);
+        if (menu == null) throw new NoSuchElementException("No menu exists with key " + key.toString());
         else {
             menu.removeOption(index);
         }
@@ -88,12 +89,12 @@ public class MenuManager {
     /**
      * Shows the user the menu with the given ID
      *
-     * @param id ID of menu to show
+     * @param key Key of menu to show
      * @throws NoSuchElementException if no menu exists with the given ID
      */
-    public static void showMenu(String id, String message) throws NoSuchElementException {
-        Menu menu = menus.get(id);
-        if (menu == null) throw new NoSuchElementException("No menu with ID of " + id + " exists.");
+    public static void showMenu(Key key, String message) throws NoSuchElementException {
+        Menu menu = menus.get(key);
+        if (menu == null) throw new NoSuchElementException("No menu with key of " + key.toString() + " exists.");
         history.push(current);
         showMenu(menu, message);
     }
@@ -110,13 +111,13 @@ public class MenuManager {
     /**
      * Returns the size of a menu, which equals the number of menuOptions that the menu has.
      *
-     * @param id: ID of menu
+     * @param key: key of menu
      * @return size of menu
      * @throws NoSuchElementException if no menus exist with the given ID
      */
-    public static int getSize(String id) throws NoSuchElementException {
-        Menu menu = menus.get(id);
-        if (menu == null) throw new NoSuchElementException("No menu with ID of " + id + " exists.");
+    public static int getSize(Key key) throws NoSuchElementException {
+        Menu menu = menus.get(key);
+        if (menu == null) throw new NoSuchElementException("No menu with key of " + key + " exists.");
         return menu.size();
     }
 
@@ -155,23 +156,23 @@ public class MenuManager {
      * <p>
      * Otherwise, the function will return true.
      *
-     * @param id: ID of menu to delete
+     * @param key: Key of menu to delete
      * @return true if the menu was deleted, false if it was not or does not exist.
      */
-    static boolean deleteMenu(String id) {
-        Menu menu = menus.get(id);
+    static boolean deleteMenu(Key key) {
+        Menu menu = menus.get(key);
         if (menu == null) return false;
         if (current.equals(menu)) return false;
-        menus.remove(id);
+        menus.remove(key);
         history.remove(menu);
         return true;
     }
 
-    static String getCurrentKey() {
+    static Key getCurrentKey() {
         if (current == null) return null;
 
-        Set<String> keys = menus.keySet();
-        for (String key : keys) {
+        Set<Key> keys = menus.keySet();
+        for (Key key : keys) {
             if (menus.get(key).equals(current)) {
                 return key;
             }
