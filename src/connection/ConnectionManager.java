@@ -1,6 +1,7 @@
 package connection;
 
 import constants.Keys;
+import constants.Strings;
 import io.IOManager;
 
 import java.sql.Connection;
@@ -31,7 +32,7 @@ public class ConnectionManager {
      * @return The established connection, or null if a connection was unable to be made.
      */
     public static Connection createEdgar1Connection(String user, String pwd) {
-        return createConnection(Keys.EDGAR1_URL, user, pwd);
+        return createConnection(Strings.EDGAR1_URL, user, pwd);
     }
 
     /**

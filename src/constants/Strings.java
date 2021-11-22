@@ -12,6 +12,18 @@ public class Strings {
      */
     public static final String DB_ERROR = "Error: Lost connection to database. Please log back into Edgar1";
 
+
+    /**
+     * String containing all possible characters that
+     * can appear in a random password.
+     */
+    public static final String RANDOM_PASS_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    /**
+     * URL of edgar1
+     */
+    public static final String EDGAR1_URL = "jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241";
+
     /**
      * String representation of Alset Logo
      */

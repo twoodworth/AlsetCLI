@@ -1,6 +1,7 @@
 package user;
 
 import constants.Keys;
+import constants.Strings;
 import product.Vehicle;
 
 import java.util.HashSet;
@@ -160,9 +161,9 @@ public class User {
     public static String getRandomPassword() {
         int length = (int) (Math.random() * 20) + 10;
         StringBuilder sb = new StringBuilder();
-        int charCount = Keys.RANDOM_PASS_CHARS.length();
+        int charCount = Strings.RANDOM_PASS_CHARS.length();
         for (int i = 0; i < length; i++) {
-            sb.append(Keys.RANDOM_PASS_CHARS.charAt((int) (Math.random() * charCount)));
+            sb.append(Strings.RANDOM_PASS_CHARS.charAt((int) (Math.random() * charCount)));
         }
         return sb.toString();
     }

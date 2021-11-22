@@ -31,17 +31,6 @@ public class Keys {//todo convert to enum
      * Key mapping to the Inspection Locations menu
      */
     public static final String INSPECTION_LOCATIONS_LIST = "i";
-
-    /**
-     * URL of edgar1
-     */
-    public static final String EDGAR1_URL = "jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241";
-
-    /**
-     * String containing all possible characters that
-     * can appear in a random password.
-     */
-    public static final String RANDOM_PASS_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     public static final String VIEW_GARAGE_KEY = "f";
     public static final String MANAGE_GARAGE_KEY = "g";
 
