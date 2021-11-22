@@ -22,7 +22,10 @@ public class IOManager {
      */
     public static String getStringInput(String message) {
         print(message + " ");
-        return scanner.next();
+        StringBuilder sb = new StringBuilder(scanner.next());
+        String nextLine = scanner.nextLine();
+        if (!nextLine.isEmpty()) sb.append(nextLine);
+        return sb.toString();
     }
 
     /**
