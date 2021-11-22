@@ -1,5 +1,7 @@
 package product;
 
+import java.util.Objects;
+
 /**
  * Represents a Vehicle, and contains vehicle data.
  */
@@ -92,5 +94,21 @@ public class Vehicle {
      */
     public boolean isManufactured() {
         return isManufactured;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vehicle vehicle = (Vehicle) o;
+        return isManufactured == vehicle.isManufactured &&
+                serialNum.equals(vehicle.serialNum) &&
+                model.equals(vehicle.model) &&
+                condition.equals(vehicle.condition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serialNum, model, isManufactured, condition);
     }
 }
