@@ -52,7 +52,7 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Keys.EDGAR1_MENU_KEY,
                 "Edgar1 Login Menu",
-                new MenuOption("Log Into Edgar1 \t//todo remove: user=trw324 | pwd=P823539274", Sequences::edgar1LoginSequence),
+                new MenuOption("Log Into Edgar1", Sequences::edgar1LoginSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
     }
@@ -81,7 +81,8 @@ public class MenuInitializer {
                 Keys.MANAGE_GARAGE_KEY,
                 "Manage Garage",
                 new MenuOption("View Vehicles", Sequences::viewGarageSequence),
-                new MenuOption("Add Vehicle\t //todo add", () -> {}),//todo add
+                new MenuOption("Add Vehicle", Sequences::addGarageVehicleSequence),
+                new MenuOption("Finish Vehicle\t //todo add", () -> {}),//todo add
                 new MenuOption("Remove Vehicle\t //todo add", () -> {}),//todo add
                 new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious(""))
         );

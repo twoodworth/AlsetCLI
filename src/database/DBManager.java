@@ -16,6 +16,7 @@ import product.Vehicle;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashSet;
 
 /**
@@ -415,6 +416,50 @@ public class DBManager {
         } catch (SQLException e) {
             MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
             return null;
+        }
+    }
+
+    public static boolean addGarageVehicle(ServiceLocation location, Vehicle vehicle, String type, String email) {
+        try {
+            // add to repair
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.START_REPAIR);
+            long start = new Date().getTime();
+            s.setLong(1, start);
+            s.setLong(2, 0L);
+            s.setString(3, type);
+            s.setLong(4, 0);
+            s.executeQuery();
+            s.close();
+
+            // add to repairs
+            s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.START_VEHICLE_REPAIR);
+            s.setString(1, email);
+            s.setString(2, vehicle.getSerialNum());
+            s.setLong(3, start);
+            s.setLong(4, 0);
+            s.setString(5, type);
+            s.setLong(6, 0);
+            s.executeQuery();
+            s.close();
+
+            // add to pickup
+            s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statements.ADD_GARAGE_VEHICLE);
+            s.setString(1, location.getId());
+            s.setString(2, email);
+            s.setString(3, vehicle.getSerialNum());
+            s.setString(4, "False");
+            s.executeQuery();
+            s.close();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Keys.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            return false;
         }
     }
 }

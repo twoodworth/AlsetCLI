@@ -6,6 +6,9 @@ public class Statements {
     public static String SERVICE_LOCATION_LOGIN = "SELECT * FROM service_location NATURAL JOIN service_address WHERE password=?";
     public static String EMAIL_EXISTS = "SELECT * FROM customer WHERE email=?";
     public static String UPDATE_PASSWORD = "UPDATE customer SET password=? WHERE email=?";
+    public static String START_REPAIR = "INSERT INTO repair start_time, end_time, repair_type, price VALUES ?, ?, ?, ?";
+    public static String START_VEHICLE_REPAIR = "INSERT INTO repairs email, serial_num, start_time, end_time, repair_type, price VALUES ?, ?, ?, ?, ?, ?";
+    public static String ADD_GARAGE_VEHICLE = "INSERT INTO pickup location_id, email, serial_num, ready VALUES ?, ?, ?, ?";
     public static String GET_CUSTOMER_NAME = "SELECT first, middle, last FROM customer_name WHERE email=?";
     public static String GET_VEHICLE_CONDITION = "SELECT mileage, last_inspection, has_damage FROM vehicle_condition WHERE serial_num=?";
     public static String GET_USER_VEHICLES = "SELECT serial_num, year, name, is_manufactured FROM owner NATURAL JOIN vehicle_model NATURAL JOIN vehicle WHERE email=?";

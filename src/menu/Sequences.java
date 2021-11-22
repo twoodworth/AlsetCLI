@@ -130,7 +130,7 @@ public class Sequences {
         if (conn == null)
             MenuManager.setNextMessage("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
-            MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Connected successfully as " + id);
+            MenuManager.showMenu(Keys.ALSET_LOGIN_MENU_KEY, "Connected successfully as " + id + ".");
         }
     }
 
@@ -155,6 +155,7 @@ public class Sequences {
      * Exits the program.
      */
     static void exitSequence() {
+        IOManager.clear("");
         Connection current = ConnectionManager.getCurrentConnection();
         if (current != null) {
             IOManager.println("Closing connection...");
@@ -218,7 +219,146 @@ public class Sequences {
     static void createAcctSequence() {//todo add code
     }
 
-    static void serviceManagerSequence() {//todo add code
+    static void addGarageVehicleSequence() {
+        ServiceLocation loc = ServiceManager.getCurrent();
+
+        // clear console
+        IOManager.clear("");
+
+        // Get vehicle/repair info
+        String sn = IOManager.getStringInput("Enter 9-digit vehicle serial number:");
+        Vehicle v = DBManager.getVehicle(sn);
+        if (v == null) {
+            MenuManager.setNextMessage("Error: No vehicle found with the given serial number.");
+            return;
+        }
+        HashSet<Model> repairable = DBManager.getRepairableModels(loc);
+        if (repairable == null) {
+            MenuManager.setNextMessage("Error: Unable to load data. Please try again.");
+            return;
+        }
+        Model m = v.getModel();
+        if (!repairable.contains(m)) {
+            MenuManager.setNextMessage(loc.getName() + " cannot repair a " + m.getYear() + " Model " + m.getName());
+            return;
+        }
+        String type = IOManager.getStringInput("Enter Repair/Service Type:");
+        IOManager.clear("Please hand the console over to the customer.");
+        IOManager.getStringInput("Enter any value to continue:");
+        IOManager.clear("Welcome to " + loc.getName() + "!");
+        User user = null;
+        int i = 0;
+        while (user == null) {
+            String email = IOManager.getStringInput("Enter your Alset email:");
+            String password = IOManager.getPasswordInput("Enter your Alset password:");
+            boolean valid = DBManager.validLoginData(email, password);
+            if (valid) {
+                HashSet<Vehicle> customerVehicles = DBManager.getVehicles(email);
+                if (customerVehicles == null) {
+                    MenuManager.setNextMessage("Unable to load data. Please try again.");
+                    return;
+                } else if (!customerVehicles.contains(v)) {
+                    MenuManager.setNextMessage("Error: Customer does not own the vehicle with the SN " + sn);
+                    return;
+                } else {
+                    String[] name = DBManager.getName(email);
+                    if (name == null) {
+                        MenuManager.setNextMessage("Unable to load data. Please try again.");
+                        return;
+                    } else {
+                        user = new User(name[0], name[1], name[2], email, password, customerVehicles);
+                    }
+                }
+            } else if (i == 4) {
+                IOManager.clear("Failed too many times. Please return console to employee.");
+                IOManager.getStringInput("Enter any value to continue:");
+                return;
+            } else {
+                IOManager.clear("Invalid Username/Password. Please try again.");
+                i++;
+            }
+        }
+        IOManager.clear("Please confirm the following information:");
+
+        // customer confirmation
+        while (true) {
+            // customer info
+            IOManager.println("Customer Info: ");
+            IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
+            IOManager.println("\tEmail: " + user.getEmail());
+
+            // Vehicle Info
+            IOManager.println("\nVehicle Info: ");
+            IOManager.println("\tSerial Number: " + v.getSerialNum());
+            IOManager.println("\tModel Name: " + v.getModelName());
+            IOManager.println("\tModel Year: " + v.getYear());
+
+            // Service Info
+            IOManager.println("\nService Info: ");
+            IOManager.println("\tService Location: " + loc.getName());
+            IOManager.println("\tService Requested: " + type);
+            IOManager.println();
+            // get confirmation
+            String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
+            if (confirm.equals("y")) {
+                IOManager.clear("Information has been confirmed as correct. Return console to employee.");
+                IOManager.getStringInput("Enter any value to continue:");
+                break;
+            } else if (confirm.equals("n")) {
+                IOManager.clear("Information is incorrect. Return console to employee.");
+                IOManager.getStringInput("Enter any value to continue:");
+                return;
+            } else {
+                IOManager.clear("Invalid response, please try again.");
+            }
+        }
+
+        // employee confirmation
+        while (true) {
+            // customer info
+            IOManager.println("Customer Info: ");
+            IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
+            IOManager.println("\tEmail: " + user.getEmail());
+
+            // Vehicle Info
+            IOManager.println("\nVehicle Info: ");
+            IOManager.println("\tSerial Number: " + v.getSerialNum());
+            IOManager.println("\tModel Name: " + v.getModelName());
+            IOManager.println("\tModel Year: " + v.getYear());
+
+            // Service Info
+            IOManager.println("\nService Info: ");
+            IOManager.println("\tService Location: " + loc.getName());
+            IOManager.println("\tService Requested: " + type);
+            IOManager.println();
+            // get confirmation
+            String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
+            if (confirm.equals("y")) {
+                break;
+            } else if (confirm.equals("n")) {
+                IOManager.clear("Information is incorrect.");
+                IOManager.getStringInput("Enter any value to continue:");
+                return;
+            } else {
+                IOManager.clear("Invalid response, please try again.");
+            }
+        }
+
+
+        boolean success = DBManager.addGarageVehicle(loc, v, type, user.getEmail());
+
+        if (success) {
+            IOManager.clear("Service request has been accepted.");
+            IOManager.println("Bring the vehicle into your garage and begin services.");
+        } else {
+            IOManager.clear("Error while processing service request, Please try again.");
+        }
+        IOManager.getStringInput("Enter any value to continue:");
+
+
+    }
+
+    static void serviceManagerSequence() {
         // clear console
         IOManager.clear("");
 
@@ -252,6 +392,9 @@ public class Sequences {
         if (data == null) {
             MenuManager.setNextMessage("Unable to load info.");
             return;
+        }
+        if (data.size() == 0) {
+            MenuManager.setNextMessage("Garage is empty.");
         }
         MenuManager.deleteMenu(Keys.VIEW_GARAGE_KEY);
         MenuManager.createMenu(Keys.VIEW_GARAGE_KEY, "Garage Vehicles");
