@@ -232,6 +232,10 @@ public class Sequences {
             MenuManager.setNextMessage("Error: No vehicle found with the given serial number.");
             return;
         }
+        if (DBManager.isAtGarage(v)) {
+            MenuManager.setNextMessage("Vehicle is already being serviced. If you think this is an error, please try again.");
+            return;
+        }
         HashSet<Model> repairable = DBManager.getRepairableModels(loc);
         if (repairable == null) {
             MenuManager.setNextMessage("Error: Unable to load data. Please try again.");
@@ -257,7 +261,7 @@ public class Sequences {
                 if (customerVehicles == null) {
                     MenuManager.setNextMessage("Unable to load data. Please try again.");
                     return;
-                } else if (!customerVehicles.contains(v)) {
+                } else if (!customerVehicles.contains(v)) {//todo fix
                     MenuManager.setNextMessage("Error: Customer does not own the vehicle with the SN " + sn);
                     return;
                 } else {
@@ -314,6 +318,7 @@ public class Sequences {
         }
 
         // employee confirmation
+        IOManager.clear("Please confirm the following information:");
         while (true) {
             // customer info
             IOManager.println("Customer Info: ");
