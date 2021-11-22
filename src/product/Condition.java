@@ -1,6 +1,7 @@
 package product;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Condition {
     private long mileage;
@@ -28,6 +29,21 @@ public class Condition {
 
     public boolean hasDamage() {
         return hasDamage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Condition condition = (Condition) o;
+        return mileage == condition.mileage &&
+                lastInspection == condition.lastInspection &&
+                hasDamage == condition.hasDamage;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mileage, lastInspection, hasDamage);
     }
 }
 
