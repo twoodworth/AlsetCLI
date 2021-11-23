@@ -22,7 +22,6 @@ public class MenuInitializer {
             initializeAlsetLoginMenu();
             initializeMainMenu();
             initializeMyVehiclesMenu();
-            initializeInspectionLocation();
             initializeManageGarageMenu();
             initialized = true;
         }
@@ -33,9 +32,9 @@ public class MenuInitializer {
      */
     private static void initializeAlsetLoginMenu() {
         MenuManager.createMenu(
-                Key.ALSET_LOGIN_MENU_KEY,
+                Key.ALSET_LOGIN_MENU,
                 "Alset Login Menu",
-                new MenuOption("Login as Customer \t // Sample: (email=ghost@sbcglobal.net, password=O0y8q6WPXFxo)", Sequences::alsetLoginSequence),
+                new MenuOption("Login as Customer", Sequences::alsetLoginSequence),
                 new MenuOption("Login as Service Manager \t// Sample: (password=KuB[$W2e)", Sequences::serviceManagerSequence),
                 new MenuOption("Login as Product Manager \t//todo add functionality", Sequences::productManagerSequence),//todo add functionality
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
@@ -50,7 +49,7 @@ public class MenuInitializer {
      */
     private static void initializeEdgar1Menu() {
         MenuManager.createMenu(
-                Key.EDGAR1_MENU_KEY,
+                Key.EDGAR1_LOGIN_MENU,
                 "Edgar1 Login Menu",
                 new MenuOption("Log Into Edgar1", Sequences::edgar1LoginSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
@@ -62,9 +61,9 @@ public class MenuInitializer {
      */
     private static void initializeMainMenu() {
         MenuManager.createMenu(
-                Key.ALSET_MAIN_MENU_KEY,
+                Key.CUSTOMER_MENU,
                 "Alset Main Menu",
-                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.MY_VEHICLES_KEY, "")),
+                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.CUSTOMER_VEHICLES_MENU, "")),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
                 new MenuOption("Manage Account //todo add functionality", () -> {
@@ -93,20 +92,9 @@ public class MenuInitializer {
      */
     private static void initializeMyVehiclesMenu() {
         MenuManager.createMenu(
-                Key.MY_VEHICLES_KEY,
+                Key.CUSTOMER_VEHICLES_MENU,
                 "My Vehicles",
-                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.ALSET_MAIN_MENU_KEY, ""))
-        );
-    }
-
-    /**
-     * Initializes the 'Inspection Location' menu
-     */
-    private static void initializeInspectionLocation() {
-        MenuManager.createMenu(
-                Key.INSPECTION_LOCATIONS_LIST,
-                "Inspection Locations",
-                new MenuOption("Return to Vehicle Menu", () -> MenuManager.showPrevious(""))
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.CUSTOMER_MENU, ""))
         );
     }
 }

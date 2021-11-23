@@ -31,6 +31,6 @@ public class Main {
      * displays the Edgar1 login menu.
      */
     private static void startSequence() {
-        MenuManager.showMenu(Key.EDGAR1_MENU_KEY, "Welcome to Alset, please connect to the database.");
+        MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, "Welcome to Alset, please connect to the database.");
     }
 }

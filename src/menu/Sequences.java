@@ -57,7 +57,7 @@ public class Sequences {
                 String s = v.getYear() + " Model " + v.getModelName() + " (SN: " + num + ")";
 
                 // Add menu option to access the vehicle's menu
-                MenuManager.addOption(Key.MY_VEHICLES_KEY, new MenuOption(s, () -> vehicleOverviewSequence(v)));
+                MenuManager.addOption(Key.CUSTOMER_VEHICLES_MENU, new MenuOption(s, () -> vehicleOverviewSequence(v)));
             }
 
 
@@ -69,7 +69,7 @@ public class Sequences {
             sb.append(current.getLast()).append("!");
 
             // display the main menu
-            MenuManager.showMenu(Key.ALSET_MAIN_MENU_KEY, sb.toString());
+            MenuManager.showMenu(Key.CUSTOMER_MENU, sb.toString());
         } else MenuManager.setNextMessage("Unable to login. Please try again.");
     }
 
@@ -92,7 +92,7 @@ public class Sequences {
         if (conn == null)
             MenuManager.setNextMessage("Invalid id/password (make sure are you connected to Lehigh wifi or using the Lehigh VPN)");
         else {
-            MenuManager.showMenu(Key.ALSET_LOGIN_MENU_KEY, "Connected successfully as " + id + ".");
+            MenuManager.showMenu(Key.ALSET_LOGIN_MENU, "Connected successfully as " + id + ".");
         }
     }
 
@@ -103,14 +103,14 @@ public class Sequences {
         IOManager.println("Logging out of " + UserManager.getCurrent().getEmail() + "...");
 
         // Remove user's vehicles from 'My Vehicles' Menu
-        int size = MenuManager.getSize(Key.MY_VEHICLES_KEY);
+        int size = MenuManager.getSize(Key.CUSTOMER_VEHICLES_MENU);
         for (int i = size - 1; i > 0; i--)
-            MenuManager.removeOption(Key.MY_VEHICLES_KEY, i);
+            MenuManager.removeOption(Key.CUSTOMER_VEHICLES_MENU, i);
 
 
         // Log user out + display login menu
         UserManager.logout();
-        MenuManager.showMenu(Key.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
+        MenuManager.showMenu(Key.ALSET_LOGIN_MENU, "Successfully logged out.");
     }
 
     /**
@@ -335,8 +335,8 @@ public class Sequences {
             MenuManager.setNextMessage("Invalid password.");
         } else {
             ServiceManager.setCurrent(location);
-            MenuManager.deleteMenu(Key.SERVICE_MANAGER_KEY);
-            MenuManager.createMenu(Key.SERVICE_MANAGER_KEY, location.getName(),
+            MenuManager.deleteMenu(Key.SERVICE_MANAGER_MENU);
+            MenuManager.createMenu(Key.SERVICE_MANAGER_MENU, location.getName(),
                     new MenuOption("Location Overview", Sequences::locationOverviewSequence),
                     new MenuOption("Manage Showroom \t//todo add", () -> {
                     }),//todo add
@@ -348,7 +348,7 @@ public class Sequences {
 
             );
 
-            MenuManager.showMenu(Key.SERVICE_MANAGER_KEY, "Successfully logged in as " + location.getName() + " Service Manager.");
+            MenuManager.showMenu(Key.SERVICE_MANAGER_MENU, "Successfully logged in as " + location.getName() + " Service Manager.");
         }
     }
 
@@ -484,7 +484,7 @@ public class Sequences {
     static void serviceManagerLogoutSequence() {
         IOManager.println("Logging out of " + ServiceManager.getCurrent().getName() + "...");
         ServiceManager.logout();
-        MenuManager.showMenu(Key.ALSET_LOGIN_MENU_KEY, "Successfully logged out.");
+        MenuManager.showMenu(Key.ALSET_LOGIN_MENU, "Successfully logged out.");
     }
 
     /**
@@ -494,7 +494,7 @@ public class Sequences {
     static void endConnectionSequence() {
         IOManager.println("Closing Connection...");
         ConnectionManager.closeConnection();
-        MenuManager.showMenu(Key.EDGAR1_MENU_KEY, "Connection Successfully closed.");
+        MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, "Connection Successfully closed.");
     }
 
     static void vehicleOverviewSequence(Vehicle v) {

@@ -48,7 +48,7 @@ public class DBManager {
             rs.close();
             return valid;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
     }
@@ -87,7 +87,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -110,7 +110,7 @@ public class DBManager {
             rs.close();
             return valid;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
     }
@@ -132,7 +132,7 @@ public class DBManager {
             s.execute();
             return true;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
     }
@@ -160,7 +160,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -181,7 +181,7 @@ public class DBManager {
             }
             return null;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -214,7 +214,7 @@ public class DBManager {
             }
             return vehicles;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -236,11 +236,11 @@ public class DBManager {
                         getCondition(serialNum)
                 );
             } else {
-                MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+                MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -258,7 +258,7 @@ public class DBManager {
             }
             return models;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
 
@@ -297,7 +297,7 @@ public class DBManager {
             }
             return locations;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -322,7 +322,7 @@ public class DBManager {
             }
             return options;
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -335,7 +335,7 @@ public class DBManager {
             s.setString(1, vehicle.getSerialNum());
             return s.executeQuery().next();
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
     }
@@ -364,7 +364,7 @@ public class DBManager {
             return data;
         } catch (SQLException e) {
             e.printStackTrace();
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -382,7 +382,7 @@ public class DBManager {
                 throw new IllegalArgumentException("Vehicle is not at a service location.");
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
     }
@@ -413,7 +413,7 @@ public class DBManager {
                 return null;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
     }
@@ -433,7 +433,7 @@ public class DBManager {
                 return false;
             }
         } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return true;
         }
     }
@@ -478,7 +478,7 @@ public class DBManager {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            MenuManager.showMenu(Key.EDGAR1_MENU_KEY, Strings.DB_ERROR);
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
     }
