@@ -144,10 +144,22 @@ public class User {
         return vehicles;
     }
 
+    /**
+     * Removes a vehicle from the user's set of vehicles
+     *
+     * @param vehicle: Vehicle to remove
+     * @return true if successful, otherwise false
+     */
     boolean removeVehicle(Vehicle vehicle) {
-       return vehicles.remove(vehicle);
+        return vehicles.remove(vehicle);
     }
 
+    /**
+     * Adds a vehicle to the user's set of vehicles
+     *
+     * @param vehicle: Vehicle to add
+     * @return true if successful, otherwise false
+     */
     boolean addVehicle(Vehicle vehicle) {
         return vehicles.add(vehicle);
     }

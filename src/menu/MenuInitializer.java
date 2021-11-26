@@ -75,6 +75,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the Garage Manager menu
+     */
     private static void initializeManageGarageMenu() {
         MenuManager.createMenu(
                 Key.MANAGE_GARAGE_MENU,

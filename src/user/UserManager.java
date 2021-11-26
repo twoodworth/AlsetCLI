@@ -72,6 +72,11 @@ public class UserManager {
         return true;
     }
 
+    /**
+     * Sends a message to the given email address via email
+     * @param email: Email to send to
+     * @param message: Message to send
+     */
     public static void sendEmail(String email, String message) {
         /*
             For the sake of this project, an actual email does not get sent.

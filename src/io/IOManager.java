@@ -144,6 +144,11 @@ public class IOManager {
         return sb.toString();
     }
 
+    /**
+     * Clears the console, prints the Alset logo, and prints a given message.
+     *
+     * @param message: Message to print
+     */
     public static void clear(String message) {
         System.out.print("\033[H\033[2J");
         System.out.flush();

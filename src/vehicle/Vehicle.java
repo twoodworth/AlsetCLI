@@ -96,6 +96,12 @@ public class Vehicle {
         return isManufactured;
     }
 
+    /**
+     * Checks if this is equal to another object
+     *
+     * @param o: Other object
+     * @return true if equal, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -107,6 +113,11 @@ public class Vehicle {
                 condition.equals(vehicle.condition);
     }
 
+    /**
+     * Generates hash code for this
+     *
+     * @return hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(serialNum, model, isManufactured, condition);

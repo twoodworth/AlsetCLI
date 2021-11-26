@@ -168,6 +168,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Returns the condition of a given vehicle
+     *
+     * @param serialNum: serial number of vehicle
+     * @return condition of vehicle
+     */
     public static Condition getCondition(String serialNum) {
         try {
             PreparedStatement s = ConnectionManager
@@ -222,6 +228,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Creates a vehicle object using the vehicle's serial number
+     *
+     * @param serialNum: Serial number of vehicle
+     * @return object representing vehicle
+     */
     public static Vehicle getVehicle(String serialNum) {
         try {
             PreparedStatement s = ConnectionManager
@@ -248,6 +260,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Gets a set of models that a given service location is capable of repairing.
+     *
+     * @param location: Service location
+     * @return hash set of repairable models
+     */
     public static HashSet<Model> getRepairableModels(ServiceLocation location) {
         try {
             PreparedStatement s = ConnectionManager
@@ -330,19 +348,13 @@ public class DBManager {
         }
     }
 
-    public static boolean isAtServiceLocation(Vehicle vehicle) {
-        try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_PICKUP_ROW);
-            s.setString(1, vehicle.getSerialNum());
-            return s.executeQuery().next();
-        } catch (SQLException e) {
-            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
-            return false;
-        }
-    }
-
+    /**
+     * Returns a set of garage data. Each garage data object contains information
+     * about a vehicle and relevant service/repair information
+     *
+     * @param location: Service location
+     * @return hash set of garage data
+     */
     public static HashSet<GarageData> getGarageData(ServiceLocation location) {
         try {
             PreparedStatement s = ConnectionManager
@@ -359,7 +371,7 @@ public class DBManager {
                                 rs.getLong("start_time"),
                                 rs.getLong("end_time"),
                                 rs.getString("repair_type"),
-                                rs.getDouble("price"),
+                                rs.getLong("price"),
                                 rs.getBoolean("ready")
                         )
                 );
@@ -372,6 +384,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * Determines if a given vehicle is ready for pickup from
+     * a service location.
+     *
+     * @param vehicle: Vehicle
+     * @return true if vehicle is ready for pickup, otherwise false
+     */
     public static boolean isReadyForPickup(Vehicle vehicle) {
         try {
             PreparedStatement s = ConnectionManager
@@ -390,6 +409,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * Determines the service location that a vehicle is currently
+     * being serviced at.
+     *
+     * @param vehicle: Vehicle
+     * @return service location that vehicle is being serviced at
+     */
     public static ServiceLocation getServiceLocation(Vehicle vehicle) {
         try {
             PreparedStatement s = ConnectionManager
@@ -421,6 +447,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * Determines if a given vehicle is currently being held
+     * at a service location's garage.
+     *
+     * @param vehicle: Vehicle
+     * @return true if at service location garage, otherwise false
+     */
     public static boolean isAtGarage(Vehicle vehicle) {
         try {
             PreparedStatement s = ConnectionManager
@@ -441,6 +474,17 @@ public class DBManager {
         }
     }
 
+    /**
+     * Adds a given vehicle to a service location's garage
+     *
+     * @param location: Service location
+     * @param vehicle:  Vehicle
+     * @param type:     Type of servicing
+     * @param email:    Email of vehicle owner
+     * @param price:    Price of service provided
+     * @param length:   Duration of servicing
+     * @return true if successfully added, otherwise false
+     */
     public static boolean addGarageVehicle(ServiceLocation location, Vehicle vehicle, String type, String email, long price, long length) {
         try {
             // add to repair
@@ -487,6 +531,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Returns the email of a vehicle's owner
+     *
+     * @param vehicle: Vehicle
+     * @return owner's email
+     */
     public static String getEmail(Vehicle vehicle) {
         try {
             PreparedStatement s = ConnectionManager
@@ -508,6 +558,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * Updates the database to express that a vehicle has finished
+     * being manufactured, and has arrived at a service location.
+     *
+     * @param serialNum: serial number of vehicle
+     * @return true if successful, otherwise false.
+     */
     public static boolean finishManufactured(String serialNum) {
         try {
             Connection current = ConnectionManager.getCurrentConnection();
@@ -551,6 +608,14 @@ public class DBManager {
         }
     }
 
+    /**
+     * Updates the database to express that an inspection has been completed on a given
+     * vehicle.
+     *
+     * @param vehicle:          Vehicle inspected
+     * @param needsMaintenance: If the vehicle needs maintenance
+     * @return true if successful, otherwise false
+     */
     public static boolean finishInspection(Vehicle vehicle, boolean needsMaintenance) {
         try {
             String hasDamage;
@@ -596,12 +661,18 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();//todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
     }
 
+    /**
+     * Updates the database to express that a vehicle servicing has been
+     * completed.
+     *
+     * @param vehicle: Vehicle serviced
+     * @return true if successful, otherwise false
+     */
     public static boolean finishServicing(Vehicle vehicle) {
         try {
 
@@ -618,7 +689,6 @@ public class DBManager {
             // insert new condition (if needed)
             Condition condition = vehicle.getCondition();
             boolean oldDamage = condition.hasDamage();
-//76270	1586715822	False
             if (oldDamage) {
                 PreparedStatement s2 = current.prepareStatement(Statement.INSERT_CONDITION);
                 s2.setLong(1, condition.getMileage());
@@ -647,7 +717,6 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace(); //todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

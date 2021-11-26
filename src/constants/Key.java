@@ -1,7 +1,7 @@
 package constants;
 
 /**
- * Stores a list of enum values used as keys.
+ * Stores a list of enum values used as keys by MenuManager.
  */
 public enum Key {
     ALSET_LOGIN_MENU,

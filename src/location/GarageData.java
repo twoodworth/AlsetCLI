@@ -2,16 +2,58 @@ package location;
 
 import java.util.Date;
 
+/**
+ * Contains data for a vehicle being serviced/held at
+ * a service location garage
+ */
 public class GarageData {
-    private String owner;
-    private String serialNum;
-    private long startTime;
-    private long endTime;
-    private String reason;
-    private double repairPrice;
-    private boolean isReady;
+    /**
+     * Vehicle owner
+     */
+    private final String owner;
 
-    public GarageData(String owner, String serialNum, long startTime, long endTime, String reason, double repairPrice, boolean isReady) {
+    /**
+     * Vehicle serial number
+     */
+    private final String serialNum;
+
+    /**
+     * Repair start time
+     */
+    private final long startTime;
+
+    /**
+     * Repair end time
+     */
+    private final long endTime;
+
+    /**
+     * Reason for vehicle being at garage
+     */
+    private final String reason;
+
+    /**
+     * Price of repair
+     */
+    private final long repairPrice;
+
+    /**
+     * If the vehicle is ready for pickup
+     */
+    private final boolean isReady;
+
+    /**
+     * Constructs a new GarageData
+     *
+     * @param owner:       Onwer
+     * @param serialNum:   Serial Number
+     * @param startTime:   Repair start time
+     * @param endTime:     Repair end time
+     * @param reason:      Repair type
+     * @param repairPrice: Repair type
+     * @param isReady:     Ready for pickup
+     */
+    public GarageData(String owner, String serialNum, long startTime, long endTime, String reason, long repairPrice, boolean isReady) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.reason = reason;
@@ -21,70 +63,81 @@ public class GarageData {
         this.serialNum = serialNum;
     }
 
+    /**
+     * Returns the vehicle owner's email
+     *
+     * @return owner's email
+     */
     public String getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
+    /**
+     * Returns the vehicle serial number
+     *
+     * @return serial number
+     */
     public String getSerialNum() {
         return serialNum;
     }
 
-    public void setSerialNum(String serialNum) {
-        this.serialNum = serialNum;
-    }
-
+    /**
+     * Returns the repair start time
+     *
+     * @return start time
+     */
     public long getStartTime() {
         return startTime;
     }
 
+    /**
+     * Returns the start time as a formatted string
+     *
+     * @return formatted start time
+     */
     public String getStartTimeFormatted() {
         Date date = new java.util.Date(startTime * 1000);
         return date.toString();
     }
 
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
+    /**
+     * Gets the end time
+     * @return end time
+     */
     public long getEndTime() {
         return endTime;
     }
 
+    /**
+     * Returns the end time as a formatted string
+     * @return end time formatted
+     */
     public String getEndTimeFormatted() {
         Date date = new java.util.Date(endTime * 1000);
         return date.toString();
     }
 
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
-    }
-
+    /**
+     * Returns the service reason
+     * @return service reason
+     */
     public String getReason() {
         return reason;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public double getRepairPrice() {
+    /**
+     * Gets the repair price
+     * @return repair price
+     */
+    public long getRepairPrice() {
         return repairPrice;
     }
 
-    public void setRepairPrice(double repairPrice) {
-        this.repairPrice = repairPrice;
-    }
-
+    /**
+     * Gets if the vehicle is ready for pickup
+     * @return ready for pickup
+     */
     public boolean isReady() {
         return isReady;
-    }
-
-    public void setReady(boolean ready) {
-        this.isReady = ready;
     }
 }

@@ -173,6 +173,11 @@ public class MenuManager {
         }
     }
 
+    /**
+     * Sets the message to be displayed next time MenuManager#showMenu(Key) is called.
+     *
+     * @param message: Message to display
+     */
     public static void setNextMessage(String message) {
         nextMessage = message;
     }
@@ -198,6 +203,10 @@ public class MenuManager {
         return true;
     }
 
+    /**
+     * Returns the key of the menu currently being displayed
+     * @return
+     */
     static Key getCurrentKey() {
         if (current == null) return null;
 

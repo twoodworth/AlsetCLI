@@ -15,7 +15,10 @@ import vehicle.Model;
 import vehicle.Vehicle;
 
 import java.sql.Connection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Contains all the sequence functions in the program.
@@ -178,6 +181,10 @@ public class Sequences {
     static void createAcctSequence() {//todo add code
     }
 
+    /**
+     * Allows a service manager to formally complete servicing
+     * a vehicle in their service location's garage
+     */
     static void finishGarageVehicleSequence() {
         ServiceLocation loc = ServiceManager.getCurrent();
 
@@ -366,6 +373,9 @@ public class Sequences {
         MenuManager.showMenu(Key.FINISH_GARAGE_VEHICLE_MENU, "");
     }
 
+    /**
+     * Allows a service manager to add a vehicle into their garage.
+     */
     static void addGarageVehicleSequence() {
         ServiceLocation loc = ServiceManager.getCurrent();
 
@@ -529,6 +539,9 @@ public class Sequences {
 
     }
 
+    /**
+     * Allows a service manager to log into their service location.
+     */
     static void serviceManagerSequence() {
         // clear console
         IOManager.clear("");
@@ -556,6 +569,10 @@ public class Sequences {
         }
     }
 
+    /**
+     * Allows a service manager to view all the vehicles
+     * currently in their garage.
+     */
     static void viewGarageSequence() {
         // get all vehicles being repaired or ready for pickup in the garage
         ServiceLocation loc = ServiceManager.getCurrent();
@@ -626,6 +643,10 @@ public class Sequences {
         MenuManager.showMenu(Key.VIEW_GARAGE_MENU, "");
     }
 
+    /**
+     * Allows a service manager to overview information
+     * about their service location.
+     */
     static void locationOverviewSequence() {
         // get location
         ServiceLocation location = ServiceManager.getCurrent();
@@ -685,6 +706,9 @@ public class Sequences {
         IOManager.getStringInput("Enter any value to continue:");
     }
 
+    /**
+     * Allows a service manager to log out of their service location.
+     */
     static void serviceManagerLogoutSequence() {
         IOManager.println("Logging out of " + ServiceManager.getCurrent().getName() + "...");
         ServiceManager.logout();
@@ -701,6 +725,11 @@ public class Sequences {
         MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, "Connection Successfully closed.");
     }
 
+    /**
+     * Allows the user to overview information about a given vehicle.
+     *
+     * @param v: Vehicle
+     */
     static void vehicleOverviewSequence(Vehicle v) {
         String sn = v.getSerialNum();
 
