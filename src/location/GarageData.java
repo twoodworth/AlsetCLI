@@ -122,6 +122,7 @@ public class GarageData {
      * @return service reason
      */
     public String getReason() {
+        if (reason == null) return "Vehicle Purchase";
         return reason;
     }
 

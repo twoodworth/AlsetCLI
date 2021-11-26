@@ -100,6 +100,19 @@ public class MenuManager {
     }
 
     /**
+     * Shows the user the menu with the given ID once
+     *
+     * @param key Key of menu to show
+     * @throws NoSuchElementException if no menu exists with the given ID
+     */
+    public static void showMenuOnce(Key key, String message) throws NoSuchElementException {
+        Menu menu = menus.get(key);
+        if (menu == null) throw new NoSuchElementException("No menu with key of " + key.toString() + " exists.");
+        history.push(current);
+        showMenuOnce(menu, message);
+    }
+
+    /**
      * Pops the top menu in the history stack and
      * displays it to the user.
      */
@@ -149,6 +162,27 @@ public class MenuManager {
             } else {
                 menu.options[input].runAction();
             }
+        }
+    }
+
+    /**
+     * Displays the provided menu to user for only one round of option selection.
+     *
+     * @param menu:    menu to display
+     * @param message: message to display
+     */
+    public static void showMenuOnce(Menu menu, String message) {
+        current = menu;
+        nextMessage = message;
+        IOManager.clear(nextMessage);
+        nextMessage = "";
+        IOManager.println(menu.toString());
+        int l = menu.options.length;
+        Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
+        if (input == null) {
+            IOManager.println("Input is invalid.");
+        } else {
+            menu.options[input].runAction();
         }
     }
 
@@ -205,7 +239,8 @@ public class MenuManager {
 
     /**
      * Returns the key of the menu currently being displayed
-     * @return
+     *
+     * @return key
      */
     static Key getCurrentKey() {
         if (current == null) return null;

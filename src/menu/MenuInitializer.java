@@ -1,6 +1,11 @@
 package menu;
 
+import card.Card;
+import card.CardManager;
 import constants.Key;
+import database.DBManager;
+
+import java.util.HashSet;
 
 /**
  * Initializes all of the menus in the program.
@@ -23,6 +28,7 @@ public class MenuInitializer {
             initializeMainMenu();
             initializeMyVehiclesMenu();
             initializeManageGarageMenu();
+            initializeSelectCardMenu();
             initialized = true;
         }
     }
@@ -85,10 +91,41 @@ public class MenuInitializer {
                 new MenuOption("View Vehicles", Sequences::viewGarageSequence),
                 new MenuOption("Add Vehicle", Sequences::addGarageVehicleSequence),
                 new MenuOption("Finish Vehicle", Sequences::finishGarageVehicleSequence),
-                new MenuOption("Remove Vehicle\t //todo add", () -> {}),//todo add
+                new MenuOption("Remove Vehicle", Sequences::removeGarageVehicleSequence),//todo add
                 new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious(""))
         );
     }
+
+    /**
+     * Initializes the 'Select Card' menu
+     */
+    private static void initializeSelectCardMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_CARD_MENU,
+                "Select Card",
+                new MenuOption("Add New Card", Sequences::addNewCardSequence)
+        );
+    }
+
+    public static boolean reloadSelectCardMenu(String email) {
+        int size = MenuManager.getSize(Key.SELECT_CARD_MENU);
+        for (int i = size - 1; i > 0; i--) {
+            MenuManager.removeOption(Key.SELECT_CARD_MENU, i);
+        }
+        HashSet<Card> cards = DBManager.getCards(email);
+        if (cards == null) return false;
+        for (Card card : cards) {
+            MenuManager.addOption(
+                    Key.SELECT_CARD_MENU,
+                    new MenuOption(
+                            "XXXXXXXXXXXX" + card.getNumCensored(),
+                            () -> CardManager.setSelected(card)
+                    )
+            );
+        }
+        return true;
+    }
+
 
     /**
      * Initializes the 'My Vehicles' menu

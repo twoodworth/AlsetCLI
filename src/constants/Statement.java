@@ -136,14 +136,14 @@ public class Statement {
     public static String GET_VEHICLE_GARAGE =
             "SELECT repairs.email, repairs.serial_num, start_time, end_time, repair_type, price, ready " +
                     "FROM repairs " +
-                        "FULL OUTER JOIN pickup " +
-                        "ON repairs.serial_num = pickup.serial_num " +
-                            "AND repairs.email = pickup.email " +
+                    "FULL OUTER JOIN pickup " +
+                    "ON repairs.serial_num = pickup.serial_num " +
+                    "AND repairs.email = pickup.email " +
                     "WHERE repairs.serial_num=? " +
-                        "AND (start_time = (" +
-                            "SELECT MAX(start_time) " +
-                            "FROM repairs " +
-                            "WHERE serial_num = pickup.serial_num))";
+                    "AND (start_time = (" +
+                    "SELECT MAX(start_time) " +
+                    "FROM repairs " +
+                    "WHERE serial_num = pickup.serial_num))";
 
     /**
      * Used for getting the email of the owner of a given vehicle.
@@ -153,7 +153,34 @@ public class Statement {
                     "FROM owner " +
                     "WHERE serial_num=?";
 
+    /**
+     * Used for getting all the cards registered to a given vehicle owner.
+     */
+    public static String GET_CARDS =
+            "SELECT first, middle, last, card_num, cvv, exp_month, exp_year, zip, card_type " +
+                    "FROM customer " +
+                    "NATURAL JOIN customer_name " +
+                    "NATURAL JOIN card_holder " +
+                    "NATURAL JOIN card " +
+                    "WHERE email=?";
 
+    /**
+     * Used for checking if a name already exists in the database
+     */
+    public static String GET_NAME =
+            "SELECT * " +
+                    "FROM name " +
+                    "WHERE first=? " +
+                    "AND middle=? " +
+                    "AND last=?";
+
+    /**
+     * Used for checking if a card already exists in the database
+     */
+    public static String GET_CARD =
+            "SELECT * " +
+                    "FROM card " +
+                    "WHERE card_num=?";
 
     // UPDATE STATEMENTS
     /**
@@ -189,7 +216,15 @@ public class Statement {
                     "SET mileage=?, last_inspection=?, has_damage=? " +
                     "WHERE serial_num=?";
 
-
+    /**
+     * Used for adding a credit card number to a repair row after a repair transaction has been
+     * completed.
+     */
+    public static String ADD_REPAIRS_CARD_NUM =
+            "UPDATE repairs " +
+                    "SET card_num=? " +
+                    "WHERE serial_num=? " +
+                    "AND start_time=?";
 
     // INSERT STATEMENTS
     /**
@@ -227,6 +262,27 @@ public class Statement {
             "INSERT INTO vehicle_condition (serial_num, mileage, last_inspection, has_damage) " +
                     "VALUES (?, ?, ?, ?)";
 
+    /**
+     * Used for inserting a new row into name
+     */
+    public static String INSERT_NAME =
+            "INSERT INTO name (first, middle, last) " +
+                    "VALUES (?, ?, ?)";
+
+    /**
+     * Used for inserting a new row into card
+     */
+    public static String INSERT_CARD =
+            "INSERT INTO card (card_num, cvv, exp_month, exp_year, zip, card_type) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
+
+    /**
+     * Used for inserting a new row into card_holder
+     */
+    public static String INSERT_CARD_HOLDER =
+            "INSERT INTO card_holder (card_num, first, middle, last) " +
+                    "VALUES (?, ?, ?, ?)";
+
 
     // DELETE STATEMENTS
     /**
@@ -245,4 +301,12 @@ public class Statement {
                     "WHERE mileage=? " +
                     "AND last_inspection=? " +
                     "AND has_damage=?";
+
+    /**
+     * Used from removing a row from pickup
+     * after a customer has picked up their vehicle.
+     */
+    public static String DELETE_PICKUP =
+            "DELETE FROM pickup " +
+                    "WHERE serial_num=?";
 }

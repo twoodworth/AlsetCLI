@@ -1,5 +1,6 @@
 package database;
 
+import card.Card;
 import connection.ConnectionManager;
 import constants.Key;
 import constants.Statement;
@@ -559,6 +560,103 @@ public class DBManager {
     }
 
     /**
+     * Gets a set of cards under a given customer's name
+     *
+     * @param email: Email of customer
+     * @return set of cards
+     */
+    public static HashSet<Card> getCards(String email) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statement.GET_CARDS);
+            s.setString(1, email);
+            ResultSet rs = s.executeQuery();
+            HashSet<Card> cards = new HashSet<>();
+            while (rs.next()) {
+                cards.add(
+                        new Card(
+                                rs.getString("card_num"),
+                                rs.getString("cvv"),
+                                rs.getInt("exp_month"),
+                                rs.getInt("exp_year"),
+                                rs.getString("zip"),
+                                rs.getString("card_type"),
+                                rs.getString("first"),
+                                rs.getString("middle"),
+                                rs.getString("last")
+                        )
+                );
+            }
+            s.close();
+            return cards;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
+
+    public static boolean addNewCard(Card card) {
+        try {
+            // Check if name is in database
+            Connection current = ConnectionManager.getCurrentConnection();
+            PreparedStatement s1 = current.prepareStatement(Statement.GET_NAME);
+            s1.setString(1, card.getFirst());
+            s1.setString(2, card.getMiddle());
+            s1.setString(3, card.getLast());
+            ResultSet rs1 = s1.executeQuery();
+            boolean hasName = rs1.next();
+            s1.close();
+
+            // add name if not in database
+            if (!hasName) {
+                PreparedStatement s1b = current.prepareStatement(Statement.INSERT_NAME);
+                s1b.setString(1, card.getFirst());
+                s1b.setString(2, card.getMiddle());
+                s1b.setString(3, card.getLast());
+                s1b.execute();
+                s1b.close();
+            }
+
+            // Check if card is in the database
+            PreparedStatement s2 = current.prepareStatement(Statement.GET_CARD);
+            s2.setString(1, card.getNum());
+            ResultSet rs2 = s2.executeQuery();
+            boolean hasCard = rs2.next();
+
+            // add card if not in database
+            if (!hasCard) {
+                PreparedStatement s2b = current.prepareStatement(Statement.INSERT_CARD);
+                s2b.setString(1, card.getNum());
+                s2b.setString(2, card.getCvv());
+                s2b.setInt(3, card.getExp_month());
+                s2b.setInt(4, card.getEx_year());
+                s2b.setString(5, card.getZip());
+                s2b.setString(6, card.getType());
+                s2b.execute();
+                s2b.close();
+            }
+
+            // add card_holder relationship if not in database
+            if (!hasCard || !hasName) {
+                PreparedStatement s3 = current.prepareStatement(Statement.INSERT_CARD_HOLDER);
+                s3.setString(1, card.getNum());
+                s3.setString(2, card.getFirst());
+                s3.setString(3, card.getMiddle());
+                s3.setString(4, card.getLast());
+                s3.execute();
+                s3.close();
+            }
+
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    /**
      * Updates the database to express that a vehicle has finished
      * being manufactured, and has arrived at a service location.
      *
@@ -715,6 +813,33 @@ public class DBManager {
             }
 
             ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean removeGarageVehicle(GarageData gd, Card card) {
+        try {
+            boolean isPurchase = gd.getReason().equals("Vehicle Purchase");
+            Connection current = ConnectionManager.getCurrentConnection();
+            if (!isPurchase) {
+                // add credit card to repairs row
+                PreparedStatement s = current.prepareStatement(Statement.ADD_REPAIRS_CARD_NUM);
+                s.setString(1, card.getNum());
+                s.setString(2, gd.getSerialNum());
+                s.setLong(3, gd.getStartTime());
+                s.execute();
+                s.close();
+            }
+
+            // remove vehicle from pickup
+            PreparedStatement s = current.prepareStatement(Statement.DELETE_PICKUP);
+            s.setString(1, gd.getSerialNum());
+            s.execute();
+            s.close();
+            current.commit();
             return true;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
