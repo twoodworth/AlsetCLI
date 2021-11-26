@@ -35,7 +35,7 @@ public class MenuInitializer {
                 Key.ALSET_LOGIN_MENU,
                 "Alset Login Menu",
                 new MenuOption("Login as Customer", Sequences::alsetLoginSequence),
-                new MenuOption("Login as Service Manager \t// Sample: (password=KuB[$W2e)", Sequences::serviceManagerSequence),
+                new MenuOption("Login as Service Manager", Sequences::serviceManagerSequence),
                 new MenuOption("Login as Product Manager \t//todo add functionality", Sequences::productManagerSequence),//todo add functionality
                 new MenuOption("Forgot password", Sequences::forgotPwdSequence),
                 new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),//todo add functionality
@@ -77,11 +77,11 @@ public class MenuInitializer {
 
     private static void initializeManageGarageMenu() {
         MenuManager.createMenu(
-                Key.MANAGE_GARAGE_KEY,
+                Key.MANAGE_GARAGE_MENU,
                 "Manage Garage",
                 new MenuOption("View Vehicles", Sequences::viewGarageSequence),
                 new MenuOption("Add Vehicle", Sequences::addGarageVehicleSequence),
-                new MenuOption("Finish Vehicle\t //todo add", () -> {}),//todo add
+                new MenuOption("Finish Vehicle", Sequences::finishGarageVehicleSequence),
                 new MenuOption("Remove Vehicle\t //todo add", () -> {}),//todo add
                 new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious(""))
         );

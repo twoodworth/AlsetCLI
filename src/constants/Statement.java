@@ -17,12 +17,22 @@ public class Statement {
     public static String GET_REPAIRABLE_MODELS = "SELECT year, name FROM repairable WHERE location_id=?";
     public static String GET_GARAGE_VEHICLES = "SELECT repairs.email, repairs.serial_num, start_time, end_time, repair_type, price, ready FROM repairs FULL OUTER JOIN pickup ON repairs.serial_num = pickup.serial_num AND repairs.email = pickup.email WHERE location_id=? AND (start_time = (SELECT MAX(start_time) FROM repairs WHERE serial_num = pickup.serial_num))";
     public static String GET_VEHICLE_GARAGE = "SELECT repairs.email, repairs.serial_num, start_time, end_time, repair_type, price, ready FROM repairs FULL OUTER JOIN pickup ON repairs.serial_num = pickup.serial_num AND repairs.email = pickup.email WHERE repairs.serial_num=? AND (start_time = (SELECT MAX(start_time) FROM repairs WHERE serial_num = pickup.serial_num))";
+    public static String GET_VEHICLE_OWNER_EMAIL = "SELECT email FROM owner WHERE serial_num=?";
 
     // update
     public static String UPDATE_PASSWORD = "UPDATE customer SET password=? WHERE email=?";
+    public static String UPDATE_PICKUP_STATUS = "UPDATE pickup SET ready=? WHERE serial_num=?";
+    public static String UPDATE_IS_MANUFACTURED = "UPDATE vehicle SET is_manufactured=? WHERE serial_num=?";
+
 
     // insert
     public static String START_REPAIR = "INSERT INTO repair (start_time, end_time, repair_type, price) VALUES (?, ?, ?, ?)";
     public static String START_VEHICLE_REPAIR = "INSERT INTO repairs (email, serial_num, start_time, end_time, repair_type, price) VALUES (?, ?, ?, ?, ?, ?)";
     public static String ADD_GARAGE_VEHICLE = "INSERT INTO pickup (location_id, email, serial_num, ready) VALUES (?, ?, ?, ?)";
+    public static String INSERT_CONDITION = "INSERT INTO condition (mileage, last_inspection, has_damage) VALUES (?, ?, ?)";
+    public static String INSERT_VEHICLE_CONDITION = "INSERT INTO vehicle_condition (serial_num, mileage, last_inspection, has_damage) VALUES (?, ?, ?, ?)";
+
+    // delete
+    public static String DELETE_CONDITION = "DELETE FROM condition WHERE mileage=? AND last_inspection=?";
+    public static String DELETE_CONDITION_HAS_DAMAGE = "DELETE FROM condition WHERE mileage=? AND last_inspection=? AND has_damage=?";
 }

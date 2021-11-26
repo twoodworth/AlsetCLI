@@ -8,17 +8,14 @@ import location.Address;
 import location.GarageData;
 import location.ServiceLocation;
 import location.ServiceManager;
-import product.Condition;
-import product.Model;
-import product.Vehicle;
 import user.User;
 import user.UserManager;
+import vehicle.Condition;
+import vehicle.Model;
+import vehicle.Vehicle;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Contains all the sequence functions in the program.
@@ -181,6 +178,193 @@ public class Sequences {
     static void createAcctSequence() {//todo add code
     }
 
+    static void finishGarageVehicleSequence() {
+        ServiceLocation loc = ServiceManager.getCurrent();
+
+        // Get unfinished vehicles in garage
+        HashSet<GarageData> data = DBManager.getGarageData(loc);
+        if (data == null) {
+            MenuManager.setNextMessage("Unable to load info.");
+            return;
+        }
+
+        // remove finished vehicles from set
+        for (GarageData gd : new HashSet<>(data)) {
+            if (gd.isReady()) data.remove(gd);
+        }
+
+        // check if there are no unfinished vehicles
+        if (data.size() == 0) {
+            MenuManager.setNextMessage("There are no unfinished vehicles in the garage.");
+        }
+
+        MenuManager.deleteMenu(Key.FINISH_GARAGE_VEHICLE_MENU);
+        MenuManager.createMenu(Key.FINISH_GARAGE_VEHICLE_MENU, "Finish Garage Vehicles");
+        MenuManager.addOption(Key.FINISH_GARAGE_VEHICLE_MENU, new MenuOption("Return to Previous Menu", MenuManager::showPrevious));
+        for (GarageData gd : data) {
+            String sn = gd.getSerialNum();
+            Vehicle v = DBManager.getVehicle(sn);
+            if (v == null) {
+                MenuManager.setNextMessage("Unable to load info.");
+                return;
+            }
+            boolean isInspection = gd.getReason().equals("Inspection");
+            boolean isManufactured = v.isManufactured();
+            MenuManager.addOption(
+                    Key.FINISH_GARAGE_VEHICLE_MENU,
+                    new MenuOption(
+                            v.getYear() + " " + v.getModelName() + " - " + gd.getReason() + " (SN: " + sn + ")",
+                            () -> {
+                                if (!isManufactured) {
+
+                                    // clear console
+                                    IOManager.clear("");
+
+                                    while (true) {
+                                        // ask if arrived
+                                        String arrived = IOManager.getStringInput("Has the vehicle with a serial number of " + sn + " arrived? (y/n): ");
+
+                                        if (arrived.equals("y")) {
+                                            break;
+                                        } else if (arrived.equals("n")) {
+                                            MenuManager.setNextMessage("Vehicle has not arrived.");
+                                            return;
+                                        } else {
+                                            IOManager.clear("Invalid response, please try again.");
+                                        }
+                                    }
+
+                                    while (true) {
+                                        IOManager.clear("Please confirm the following:");
+
+                                        // print basic info
+                                        IOManager.println("\tSerial Number: " + sn);
+                                        IOManager.println("\tModel: " + v.getModelName());
+                                        IOManager.println("\tYear: " + v.getYear());
+
+                                        HashSet<String> options = DBManager.getOptions(sn);
+                                        // print additional options
+                                        if (options == null || options.isEmpty()) {
+                                            IOManager.println("\tAdditional Features: None");
+                                        } else {
+                                            IOManager.println("\tAdditional Features:");
+                                            for (String option : options) {
+                                                IOManager.println("\t\t- " + option);
+                                            }
+                                        }
+
+                                        // ask if correct
+                                        String correct = IOManager.getStringInput("Is all of the information correct? (y/n): ");
+
+                                        if (correct.equals("y")) {
+                                            break;
+                                        } else if (correct.equals("n")) {
+                                            MenuManager.setNextMessage("Vehicle is not correct.");
+                                            return;
+                                        } else {
+                                            IOManager.clear("Invalid response, please try again.");
+                                        }
+                                    }
+
+                                    boolean success = DBManager.finishManufactured(sn);
+                                    if (!success) {
+                                        MenuManager.setNextMessage("Failed to update database. Please try again.");
+                                        return;
+                                    }
+                                    String email = DBManager.getEmail(v);
+                                    if (email != null) {
+                                        UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + "");
+                                        IOManager.clear("Vehicle pickup notification has been sent to " + email);
+                                    } else {
+                                        IOManager.clear("");
+                                    }
+                                    IOManager.println("Vehicle is now ready for pickup.");
+                                    IOManager.getStringInput("Enter any value to continue:");
+
+                                } else if (isInspection) {
+                                    while (true) {
+                                        // ask if finished
+                                        String response = IOManager.getStringInput("Have you finished inspecting the vehicle with serial number " + sn + "? (y/n): ");
+
+                                        if (response.equals("y")) {
+                                            break;
+                                        } else if (response.equals("n")) {
+                                            MenuManager.setNextMessage("Inspection is not finished.");
+                                            return;
+                                        } else {
+                                            IOManager.clear("Invalid response, please try again.");
+                                        }
+                                    }
+
+                                    boolean needs;
+                                    while (true) {
+                                        // ask if arrived
+                                        String response = IOManager.getStringInput("Is this vehicle in need of maintenance? (y/n): ");
+
+                                        if (response.equals("y")) {
+                                            needs = true;
+                                            break;
+                                        } else if (response.equals("n")) {
+                                            needs = false;
+                                            break;
+                                        } else {
+                                            IOManager.clear("Invalid response, please try again.");
+                                        }
+                                    }
+
+                                    boolean success = DBManager.finishInspection(v, needs);
+                                    if (!success) {
+                                        MenuManager.setNextMessage("Failed to update database. Please try again.");
+                                        return;
+                                    }
+
+                                    String email = DBManager.getEmail(v);
+                                    if (email != null) {
+                                        UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + "");
+                                        IOManager.clear("Vehicle pickup notification has been sent to " + email);
+                                    } else {
+                                        IOManager.clear("");
+                                    }
+                                    IOManager.println("Inspection has been completed.");
+                                    IOManager.getStringInput("Enter any value to continue:");
+                                } else {
+                                    while (true) {
+                                        // ask if finished
+                                        String response = IOManager.getStringInput("Have you finished servicing the vehicle with serial number " + sn + "? (y/n): ");
+
+                                        if (response.equals("y")) {
+                                            break;
+                                        } else if (response.equals("n")) {
+                                            MenuManager.setNextMessage("Service is not completed.");
+                                            return;
+                                        } else {
+                                            IOManager.clear("Invalid response, please try again.");
+                                        }
+                                    }
+
+                                    boolean success = DBManager.finishServicing(v);
+                                    if (!success) {
+                                        MenuManager.setNextMessage("Failed to update database. Please try again.");
+                                        return;
+                                    }
+
+                                    String email = DBManager.getEmail(v);
+                                    if (email != null) {
+                                        UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + "");
+                                        IOManager.clear("Vehicle pickup notification has been sent to " + email);
+                                    } else {
+                                        IOManager.clear("");
+                                    }
+                                    IOManager.println("Servicing has been completed.");
+                                    IOManager.getStringInput("Enter any value to continue:");
+                                }
+                            }
+                    )
+            );
+        }
+        MenuManager.showMenu(Key.FINISH_GARAGE_VEHICLE_MENU, "");
+    }
+
     static void addGarageVehicleSequence() {
         ServiceLocation loc = ServiceManager.getCurrent();
 
@@ -209,6 +393,21 @@ public class Sequences {
             return;
         }
         String type = IOManager.getStringInput("Enter Repair/Service Type:");
+        Long price = null;
+        while (price == null) {
+            price = IOManager.getLongInput("Enter Repair/Service Price:", 0, Long.MAX_VALUE);
+            if (price == null) {
+                IOManager.clear("Invalid value (must be an integer), please try again.");
+            }
+        }
+        Double time = null;
+        while (time == null) {
+            time = IOManager.getDoubleInput("Enter Expected Service Time (as a decimal, in hours):", 0.0, Double.MAX_VALUE);
+            if (time == null) {
+                IOManager.clear("Invalid value, please try again.");
+            }
+        }
+
         IOManager.clear("Please hand the console over to the customer.");
         IOManager.getStringInput("Enter any value to continue:");
         IOManager.clear("Welcome to " + loc.getName() + "!");
@@ -263,6 +462,8 @@ public class Sequences {
             IOManager.println("\nService Info: ");
             IOManager.println("\tService Location: " + loc.getName());
             IOManager.println("\tService Requested: " + type);
+            IOManager.println("\tService Price: $" + price);
+            IOManager.println("\tService Length: " + time + " hours");
             IOManager.println();
             // get confirmation
             String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
@@ -297,6 +498,8 @@ public class Sequences {
             IOManager.println("\nService Info: ");
             IOManager.println("\tService Location: " + loc.getName());
             IOManager.println("\tService Requested: " + type);
+            IOManager.println("\tService Price: $" + price);
+            IOManager.println("\tService Length: " + time + " hours");
             IOManager.println();
             // get confirmation
             String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
@@ -311,8 +514,8 @@ public class Sequences {
             }
         }
 
-
-        boolean success = DBManager.addGarageVehicle(loc, v, type, user.getEmail());
+        long length = (long) (time * 60.0 * 60.0);
+        boolean success = DBManager.addGarageVehicle(loc, v, type, user.getEmail(), price, length);
 
         if (success) {
             IOManager.clear("Service request has been accepted.");
@@ -342,7 +545,7 @@ public class Sequences {
                     }),//todo add
                     new MenuOption("Manage Listings\t//todo add", () -> {
                     }),//todo add
-                    new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_KEY, "")),
+                    new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "")),
                     new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                     new MenuOption("Exit Program", Sequences::exitSequence)
 
@@ -363,9 +566,9 @@ public class Sequences {
         if (data.size() == 0) {
             MenuManager.setNextMessage("Garage is empty.");
         }
-        MenuManager.deleteMenu(Key.VIEW_GARAGE_KEY);
-        MenuManager.createMenu(Key.VIEW_GARAGE_KEY, "Garage Vehicles");
-        MenuManager.addOption(Key.VIEW_GARAGE_KEY, new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious("")));
+        MenuManager.deleteMenu(Key.VIEW_GARAGE_MENU);
+        MenuManager.createMenu(Key.VIEW_GARAGE_MENU, "Garage Vehicles");
+        MenuManager.addOption(Key.VIEW_GARAGE_MENU, new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious("")));
         for (GarageData gd : data) {
             String sn = gd.getSerialNum();
             Vehicle v = DBManager.getVehicle(sn);
@@ -374,7 +577,7 @@ public class Sequences {
                 return;
             }
             MenuManager.addOption(
-                    Key.VIEW_GARAGE_KEY,
+                    Key.VIEW_GARAGE_MENU,
                     new MenuOption(
                             v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
                             () -> {
@@ -419,7 +622,7 @@ public class Sequences {
                     )
             );
         }
-        MenuManager.showMenu(Key.VIEW_GARAGE_KEY, "");
+        MenuManager.showMenu(Key.VIEW_GARAGE_MENU, "");
     }
 
     static void locationOverviewSequence() {

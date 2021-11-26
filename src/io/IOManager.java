@@ -89,6 +89,46 @@ public class IOManager {
     }
 
     /**
+     * Fetches an Integer input from the user
+     *
+     * @param message: The message to send to the user
+     * @param min:     The minimum value to be accepted
+     * @param max:     The maximum value to be accepted
+     * @return the user input
+     */
+    public static Double getDoubleInput(String message, double min, double max) {
+        IOManager.print(message + " ");
+        String s = scanner.next();
+        try {
+            double i = Double.parseDouble(s);
+            if (i < min || i > max) return null;
+            else return i;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Fetches a Long input from the user
+     *
+     * @param message: The message to send to the user
+     * @param min:     The minimum value to be accepted
+     * @param max:     The maximum value to be accepted
+     * @return the user input
+     */
+    public static Long getLongInput(String message, long min, long max) {
+        IOManager.print(message + " ");
+        String s = scanner.next();
+        try {
+            long i = Long.parseLong(s);
+            if (i < min || i > max) return null;
+            else return i;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
      * Fetches a String input from the user in a password-secure manner
      *
      * @param message: The message to send to the user

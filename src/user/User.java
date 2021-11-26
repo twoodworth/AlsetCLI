@@ -1,7 +1,7 @@
 package user;
 
 import constants.Strings;
-import product.Vehicle;
+import vehicle.Vehicle;
 
 import java.util.HashSet;
 

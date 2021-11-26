@@ -109,6 +109,15 @@ public class MenuManager {
     }
 
     /**
+     * Pops the top menu in the history stack and
+     * displays it to the user.
+     */
+    public static void showPrevious() {
+        Menu previous = history.pop();
+        showMenu(previous);
+    }
+
+    /**
      * Returns the size of a menu, which equals the number of menuOptions that the menu has.
      *
      * @param key: key of menu
@@ -129,6 +138,27 @@ public class MenuManager {
     private static void showMenu(Menu menu, String message) {
         current = menu;
         nextMessage = message;
+        while (current == menu) {
+            IOManager.clear(nextMessage);
+            nextMessage = "";
+            IOManager.println(menu.toString());
+            int l = menu.options.length;
+            Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
+            if (input == null) {
+                IOManager.println("Input is invalid.");
+            } else {
+                menu.options[input].runAction();
+            }
+        }
+    }
+
+    /**
+     * Displays the provided menu to the user.
+     *
+     * @param menu: Menu to display to the user
+     */
+    private static void showMenu(Menu menu) {
+        current = menu;
         while (current == menu) {
             IOManager.clear(nextMessage);
             nextMessage = "";

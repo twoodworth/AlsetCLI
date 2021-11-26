@@ -441,7 +441,7 @@ public class DBManager {
         }
     }
 
-    public static boolean addGarageVehicle(ServiceLocation location, Vehicle vehicle, String type, String email) {
+    public static boolean addGarageVehicle(ServiceLocation location, Vehicle vehicle, String type, String email, long price, long length) {
         try {
             // add to repair
             PreparedStatement s1 = ConnectionManager
@@ -449,10 +449,10 @@ public class DBManager {
                     .prepareStatement(Statement.START_REPAIR);
             long start = new Date().getTime() / 1000L;
             s1.setLong(1, start);
-            s1.setLong(2, 0L);
+            s1.setLong(2, start + length);
             s1.setString(3, type);
-            s1.setLong(4, 0);
-            s1.executeQuery();
+            s1.setLong(4, price);
+            s1.execute();
             s1.close();
 
             // add to repairs
@@ -462,10 +462,10 @@ public class DBManager {
             s2.setString(1, email);
             s2.setString(2, vehicle.getSerialNum());
             s2.setLong(3, start);
-            s2.setLong(4, 0);
+            s2.setLong(4, start + length);
             s2.setString(5, type);
-            s2.setLong(6, 0);
-            s2.executeQuery();
+            s2.setLong(6, price);
+            s2.execute();
             s2.close();
 
             // add to pickup
@@ -476,12 +476,175 @@ public class DBManager {
             s3.setString(2, email);
             s3.setString(3, vehicle.getSerialNum());
             s3.setString(4, "False");
-            s3.executeQuery();
+            s3.execute();
             s3.close();
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static String getEmail(Vehicle vehicle) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statement.GET_VEHICLE_OWNER_EMAIL);
+            s.setString(1, vehicle.getSerialNum());
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                s.close();
+                return rs.getString("email");
+            } else {
+                s.close();
+                return null;
+            }
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
+
+    public static boolean finishManufactured(String serialNum) {
+        try {
+            Connection current = ConnectionManager.getCurrentConnection();
+            // update pickup status
+            PreparedStatement s1 = current.prepareStatement(Statement.UPDATE_PICKUP_STATUS);
+            s1.setString(1, "True");
+            s1.setString(2, serialNum);
+            s1.execute();
+            s1.close();
+
+            // update isManufactured
+            PreparedStatement s2 = current.prepareStatement(Statement.UPDATE_IS_MANUFACTURED);
+            s2.setString(1, "True");
+            s2.setString(2, serialNum);
+            s2.execute();
+            s2.close();
+
+            // insert condition
+            long time = new Date().getTime() / 1000L;
+            PreparedStatement s3 = current.prepareStatement(Statement.INSERT_CONDITION);
+            s3.setLong(1, 0);
+            s3.setLong(2, time);
+            s3.setString(3, "False");
+            s3.execute();
+            s3.close();
+
+            // insert vehicle condition
+            PreparedStatement s4 = current.prepareStatement(Statement.INSERT_VEHICLE_CONDITION);
+            s4.setString(1, serialNum);
+            s4.setLong(2, 0);
+            s4.setLong(3, time);
+            s4.setString(4, "False");
+            s4.execute();
+            s4.close();
+
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean finishInspection(Vehicle vehicle, boolean needsMaintenance) {
+        try {
+            String hasDamage;
+            if (needsMaintenance) hasDamage = "True";
+            else hasDamage = "False";
+
+            String sn = vehicle.getSerialNum();
+            Connection current = ConnectionManager.getCurrentConnection();
+            // update pickup status
+            PreparedStatement s1 = current.prepareStatement(Statement.UPDATE_PICKUP_STATUS);
+            s1.setString(1, "True");
+            s1.setString(2, sn);
+            s1.execute();
+            s1.close();
+
+            // insert new condition
+            long time = new Date().getTime() / 1000L;
+            Condition condition = vehicle.getCondition();
+            long oldTime = condition.getLastInspection();
+            long mileage = condition.getMileage();
+            PreparedStatement s3 = current.prepareStatement(Statement.INSERT_CONDITION);
+            s3.setLong(1, mileage);
+            s3.setLong(2, time);
+            s3.setString(3, hasDamage);
+            s3.execute();
+            s3.close();
+
+            // update vehicle condition
+            PreparedStatement s4 = current.prepareStatement(Statement.INSERT_VEHICLE_CONDITION);
+            s4.setString(1, sn);
+            s4.setLong(2, vehicle.getCondition().getMileage());
+            s4.setLong(3, time);
+            s4.setString(4, hasDamage);
+            s4.execute();
+            s4.close();
+
+            // remove old vehicle condition
+            PreparedStatement s5 = current.prepareStatement(Statement.DELETE_CONDITION);
+            s5.setLong(1, mileage);
+            s5.setLong(2, oldTime);
+            s5.execute();
+
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean finishServicing(Vehicle vehicle) {
+        try {
+
+            String sn = vehicle.getSerialNum();
+            Connection current = ConnectionManager.getCurrentConnection();
+
+            // update pickup status
+            PreparedStatement s1 = current.prepareStatement(Statement.UPDATE_PICKUP_STATUS);
+            s1.setString(1, "True");
+            s1.setString(2, sn);
+            s1.execute();
+            s1.close();
+
+            // insert new condition (if needed)
+            Condition condition = vehicle.getCondition();
+            boolean oldDamage = condition.hasDamage();
+
+            if (oldDamage) {
+                PreparedStatement s2 = current.prepareStatement(Statement.INSERT_CONDITION);
+                s2.setLong(1, condition.getMileage());
+                s2.setLong(2, condition.getLastInspection());
+                s2.setString(3, "False");
+                s2.execute();
+                s2.close();
+
+                // update vehicle condition
+                PreparedStatement s3 = current.prepareStatement(Statement.INSERT_VEHICLE_CONDITION);
+                s3.setString(1, sn);
+                s3.setLong(2, condition.getMileage());
+                s3.setLong(3, condition.getLastInspection());
+                s3.setString(4, "False");
+                s3.execute();
+                s3.close();
+
+                // remove old vehicle condition
+                PreparedStatement s4 = current.prepareStatement(Statement.DELETE_CONDITION_HAS_DAMAGE);
+                s4.setLong(1, condition.getMileage());
+                s4.setLong(2, condition.getLastInspection());
+                s4.setString(3, "True");
+                s4.execute();
+            }
+
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

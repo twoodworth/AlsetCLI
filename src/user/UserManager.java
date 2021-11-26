@@ -1,7 +1,7 @@
 package user;
 
 import database.DBManager;
-import product.Vehicle;
+import vehicle.Vehicle;
 
 import java.util.HashSet;
 
@@ -72,4 +72,12 @@ public class UserManager {
         return true;
     }
 
+    public static void sendEmail(String email, String message) {
+        /*
+            For the sake of this project, an actual email does not get sent.
+            If this program were deployed into a fully-functioning company,
+            this method would then send out an actual email in place of this
+            comment.
+         */
+    }
 }
