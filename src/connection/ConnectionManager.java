@@ -50,11 +50,16 @@ public class ConnectionManager {
                 if (!closed) IOManager.println("Error while closing previous connection.");
             }
             current = conn;
-            current.setAutoCommit(true);
             return current;
         } catch (SQLException e) {
             current = null;
             return null;
+        }
+    }
+
+    public static void commit() throws SQLException {
+        if (current != null) {
+            current.commit();
         }
     }
 

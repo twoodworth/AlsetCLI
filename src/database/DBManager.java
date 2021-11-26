@@ -8,10 +8,11 @@ import location.Address;
 import location.GarageData;
 import location.ServiceLocation;
 import menu.MenuManager;
-import product.Condition;
-import product.Model;
-import product.Vehicle;
+import vehicle.Condition;
+import vehicle.Model;
+import vehicle.Vehicle;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -130,6 +131,8 @@ public class DBManager {
             s.setString(1, pass);
             s.setString(2, email);
             s.execute();
+            s.close();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -475,6 +478,7 @@ public class DBManager {
             s3.setString(4, "False");
             s3.executeQuery();
             s3.close();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
