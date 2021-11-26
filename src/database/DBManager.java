@@ -495,8 +495,9 @@ public class DBManager {
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
+                String email = rs.getString("email");
                 s.close();
-                return rs.getString("email");
+                return email;
             } else {
                 s.close();
                 return null;
@@ -578,15 +579,15 @@ public class DBManager {
             s3.close();
 
             // update vehicle condition
-            PreparedStatement s4 = current.prepareStatement(Statement.INSERT_VEHICLE_CONDITION);
-            s4.setString(1, sn);
-            s4.setLong(2, vehicle.getCondition().getMileage());
-            s4.setLong(3, time);
-            s4.setString(4, hasDamage);
+            PreparedStatement s4 = current.prepareStatement(Statement.UPDATE_VEHICLE_CONDITION);
+            s4.setLong(1, vehicle.getCondition().getMileage());
+            s4.setLong(2, time);
+            s4.setString(3, hasDamage);
+            s4.setString(4, sn);
             s4.execute();
             s4.close();
 
-            // remove old vehicle condition
+            // remove old condition
             PreparedStatement s5 = current.prepareStatement(Statement.DELETE_CONDITION);
             s5.setLong(1, mileage);
             s5.setLong(2, oldTime);
@@ -595,6 +596,7 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
+            e.printStackTrace();//todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
@@ -616,7 +618,7 @@ public class DBManager {
             // insert new condition (if needed)
             Condition condition = vehicle.getCondition();
             boolean oldDamage = condition.hasDamage();
-
+//76270	1586715822	False
             if (oldDamage) {
                 PreparedStatement s2 = current.prepareStatement(Statement.INSERT_CONDITION);
                 s2.setLong(1, condition.getMileage());
@@ -645,6 +647,7 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
+            e.printStackTrace(); //todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

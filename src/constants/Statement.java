@@ -23,6 +23,7 @@ public class Statement {
     public static String UPDATE_PASSWORD = "UPDATE customer SET password=? WHERE email=?";
     public static String UPDATE_PICKUP_STATUS = "UPDATE pickup SET ready=? WHERE serial_num=?";
     public static String UPDATE_IS_MANUFACTURED = "UPDATE vehicle SET is_manufactured=? WHERE serial_num=?";
+    public static String UPDATE_VEHICLE_CONDITION = "UPDATE vehicle_condition SET mileage=?, last_inspection=?, has_damage=? WHERE serial_num=?";
 
 
     // insert

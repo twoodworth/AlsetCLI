@@ -196,6 +196,7 @@ public class Sequences {
         // check if there are no unfinished vehicles
         if (data.size() == 0) {
             MenuManager.setNextMessage("There are no unfinished vehicles in the garage.");
+            return;
         }
 
         MenuManager.deleteMenu(Key.FINISH_GARAGE_VEHICLE_MENU);

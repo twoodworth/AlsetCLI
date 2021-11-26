@@ -50,6 +50,7 @@ public class ConnectionManager {
                 if (!closed) IOManager.println("Error while closing previous connection.");
             }
             current = conn;
+            current.setAutoCommit(false);
             return current;
         } catch (SQLException e) {
             current = null;
