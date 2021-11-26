@@ -1,4 +1,4 @@
-package product;
+package vehicle;
 
 public class Purchase {
 }
