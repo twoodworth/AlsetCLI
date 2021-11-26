@@ -239,7 +239,7 @@ public class DBManager {
                         getCondition(serialNum)
                 );
             } else {
-                MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+                MenuManager.setNextMessage(Strings.DB_ERROR);
                 return null;
             }
         } catch (SQLException e) {
