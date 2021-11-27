@@ -191,15 +191,10 @@ public class Sequences {
         ServiceLocation loc = ServiceManager.getCurrent();
 
         // Get unfinished vehicles in garage
-        HashSet<GarageData> data = DBManager.getGarageData(loc);
+        HashSet<GarageData> data = DBManager.getUnfinishedVehicleGarageData(loc);
         if (data == null) {
             MenuManager.setNextMessage("Unable to load info.");
             return;
-        }
-
-        // remove finished vehicles from set
-        for (GarageData gd : new HashSet<>(data)) {
-            if (gd.isReady()) data.remove(gd);
         }
 
         // check if there are no unfinished vehicles
@@ -208,171 +203,24 @@ public class Sequences {
             return;
         }
 
-        MenuManager.deleteMenu(Key.FINISH_GARAGE_VEHICLE_MENU);
-        MenuManager.createMenu(Key.FINISH_GARAGE_VEHICLE_MENU, "Finish Garage Vehicles");
-        MenuManager.addOption(Key.FINISH_GARAGE_VEHICLE_MENU, new MenuOption("Return to Previous Menu", MenuManager::showPrevious));
-        for (GarageData gd : data) {
-            String sn = gd.getSerialNum();
-            Vehicle v = DBManager.getVehicle(sn);
-            if (v == null) {
-                MenuManager.setNextMessage("Unable to load info.");
-                return;
-            }
-            boolean isManufactured = v.isManufactured();
-            boolean isInspection = gd.getReason().equals("Inspection");
-            MenuManager.addOption(
-                    Key.FINISH_GARAGE_VEHICLE_MENU,
-                    new MenuOption(
-                            v.getYear() + " " + v.getModelName() + " - " + gd.getReason() + " (SN: " + sn + ")",
-                            () -> {
-                                if (!isManufactured) {
-
-                                    // clear console
-                                    IOManager.clear("");
-
-                                    while (true) {
-                                        // ask if arrived
-                                        String arrived = IOManager.getStringInput("Has the vehicle with a serial number of " + sn + " arrived? (y/n): ");
-
-                                        if (arrived.equals("y")) {
-                                            break;
-                                        } else if (arrived.equals("n")) {
-                                            MenuManager.setNextMessage("Vehicle has not arrived.");
-                                            return;
-                                        } else {
-                                            IOManager.clear("Invalid response, please try again.");
-                                        }
-                                    }
-
-                                    while (true) {
-                                        IOManager.clear("Please confirm the following:");
-
-                                        // print basic info
-                                        IOManager.println("\tSerial Number: " + sn);
-                                        IOManager.println("\tModel: " + v.getModelName());
-                                        IOManager.println("\tYear: " + v.getYear());
-
-                                        HashSet<String> options = DBManager.getOptions(sn);
-                                        // print additional options
-                                        if (options == null || options.isEmpty()) {
-                                            IOManager.println("\tAdditional Features: None");
-                                        } else {
-                                            IOManager.println("\tAdditional Features:");
-                                            for (String option : options) {
-                                                IOManager.println("\t\t- " + option);
-                                            }
-                                        }
-
-                                        // ask if correct
-                                        String correct = IOManager.getStringInput("Is all of the information correct? (y/n): ");
-
-                                        if (correct.equals("y")) {
-                                            break;
-                                        } else if (correct.equals("n")) {
-                                            MenuManager.setNextMessage("Vehicle is not correct.");
-                                            return;
-                                        } else {
-                                            IOManager.clear("Invalid response, please try again.");
-                                        }
-                                    }
-
-                                    boolean success = DBManager.finishManufactured(sn);
-                                    if (!success) {
-                                        MenuManager.setNextMessage("Failed to update database. Please try again.");
-                                        return;
-                                    }
-                                    String email = DBManager.getEmail(v);
-                                    if (email != null) {
-                                        UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + "");
-                                        IOManager.clear("Vehicle pickup notification has been sent to " + email);
-                                    } else {
-                                        IOManager.clear("");
-                                    }
-                                    IOManager.println("Vehicle is now ready for pickup.");
-                                    IOManager.getStringInput("Enter any value to continue:");
-
-                                } else if (isInspection) {
-                                    while (true) {
-                                        // ask if finished
-                                        String response = IOManager.getStringInput("Have you finished inspecting the vehicle with serial number " + sn + "? (y/n): ");
-
-                                        if (response.equals("y")) {
-                                            break;
-                                        } else if (response.equals("n")) {
-                                            MenuManager.setNextMessage("Inspection is not finished.");
-                                            return;
-                                        } else {
-                                            IOManager.clear("Invalid response, please try again.");
-                                        }
-                                    }
-
-                                    boolean needs;
-                                    while (true) {
-                                        // ask if arrived
-                                        String response = IOManager.getStringInput("Is this vehicle in need of maintenance? (y/n): ");
-
-                                        if (response.equals("y")) {
-                                            needs = true;
-                                            break;
-                                        } else if (response.equals("n")) {
-                                            needs = false;
-                                            break;
-                                        } else {
-                                            IOManager.clear("Invalid response, please try again.");
-                                        }
-                                    }
-
-                                    boolean success = DBManager.finishInspection(v, needs);
-                                    if (!success) {
-                                        MenuManager.setNextMessage("Failed to update database. Please try again.");
-                                        return;
-                                    }
-
-                                    String email = DBManager.getEmail(v);
-                                    if (email != null) {
-                                        UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + "");
-                                        IOManager.clear("Vehicle pickup notification has been sent to " + email);
-                                    } else {
-                                        IOManager.clear("");
-                                    }
-                                    IOManager.println("Inspection has been completed.");
-                                    IOManager.getStringInput("Enter any value to continue:");
-                                } else {
-                                    while (true) {
-                                        // ask if finished
-                                        String response = IOManager.getStringInput("Have you finished servicing the vehicle with serial number " + sn + "? (y/n): ");
-
-                                        if (response.equals("y")) {
-                                            break;
-                                        } else if (response.equals("n")) {
-                                            MenuManager.setNextMessage("Service is not completed.");
-                                            return;
-                                        } else {
-                                            IOManager.clear("Invalid response, please try again.");
-                                        }
-                                    }
-
-                                    boolean success = DBManager.finishServicing(v);
-                                    if (!success) {
-                                        MenuManager.setNextMessage("Failed to update database. Please try again.");
-                                        return;
-                                    }
-
-                                    String email = DBManager.getEmail(v);
-                                    if (email != null) {
-                                        UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + "");
-                                        IOManager.clear("Vehicle pickup notification has been sent to " + email);
-                                    } else {
-                                        IOManager.clear("");
-                                    }
-                                    IOManager.println("Servicing has been completed.");
-                                    IOManager.getStringInput("Enter any value to continue:");
-                                }
-                            }
-                    )
-            );
-        }
         MenuManager.showMenu(Key.FINISH_GARAGE_VEHICLE_MENU, "");
+    }
+
+    static boolean confirmVehicleInfo(GarageData data, Vehicle v) {
+        String sn = data.getSerialNum();
+        HashSet<String> options = DBManager.getOptions(sn);
+
+        StringBuilder infoBuilder = new StringBuilder();
+        infoBuilder.append("\t").append("Serial Number: ").append(sn).append("\n");
+        infoBuilder.append("\t").append("Model: ").append(v.getModelName()).append("\n");
+        infoBuilder.append("\t").append("Year: ").append(v.getYear()).append("\n");
+        infoBuilder.append("\t").append("Additional Features: ");
+        if (options == null || options.isEmpty()) infoBuilder.append("None");
+        else for (String option : options) infoBuilder.append("\n\t\t- ").append(option);
+        infoBuilder.append("\n\n").append("Is all the above information correct?");
+
+        // determine if correct
+        return IOManager.getBooleanInput(infoBuilder.toString());
     }
 
     /**
@@ -550,99 +398,11 @@ public class Sequences {
 
         String password = IOManager.getPasswordInput("Enter password:");
         ServiceLocation location = DBManager.getServiceLocation(password);
-        if (location == null) {
+        if (location == null)
             MenuManager.setNextMessage("Invalid password.");
-        } else {
-            ServiceManager.setCurrent(location);
-            MenuManager.deleteMenu(Key.SERVICE_MANAGER_MENU);
-            MenuManager.createMenu(Key.SERVICE_MANAGER_MENU, location.getName(),
-                    new MenuOption("Location Overview", Sequences::locationOverviewSequence),
-                    new MenuOption("Manage Showroom \t//todo add", () -> {
-                    }),//todo add
-                    new MenuOption("Manage Listings\t//todo add", () -> {
-                    }),//todo add
-                    new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "")),
-                    new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
-                    new MenuOption("Exit Program", Sequences::exitSequence)
-
-            );
-
+        else
             MenuManager.showMenu(Key.SERVICE_MANAGER_MENU, "Successfully logged in as " + location.getName() + " Service Manager.");
-        }
-    }
 
-    /**
-     * Allows a service manager to view all the vehicles
-     * currently in their garage.
-     */
-    static void viewGarageSequence() {
-        // get all vehicles being repaired or ready for pickup in the garage
-        ServiceLocation loc = ServiceManager.getCurrent();
-        HashSet<GarageData> data = DBManager.getGarageData(loc);
-        if (data == null) {
-            MenuManager.setNextMessage("Unable to load info.");
-            return;
-        }
-        if (data.size() == 0) {
-            MenuManager.setNextMessage("Garage is empty.");
-        }
-        MenuManager.deleteMenu(Key.VIEW_GARAGE_MENU);
-        MenuManager.createMenu(Key.VIEW_GARAGE_MENU, "Garage Vehicles");
-        MenuManager.addOption(Key.VIEW_GARAGE_MENU, new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious("")));
-        for (GarageData gd : data) {
-            String sn = gd.getSerialNum();
-            Vehicle v = DBManager.getVehicle(sn);
-            if (v == null) {
-                MenuManager.setNextMessage("Unable to load info.");
-                return;
-            }
-            MenuManager.addOption(
-                    Key.VIEW_GARAGE_MENU,
-                    new MenuOption(
-                            v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
-                            () -> {
-                                // clear console
-                                IOManager.clear("");
-                                // print basic info
-                                IOManager.println("\nVehicle Overview:");
-                                IOManager.println("\tSerial Number: " + sn);
-                                IOManager.println("\tOwner email: " + gd.getOwner());
-                                IOManager.println("\tModel: " + v.getModelName());
-                                IOManager.println("\tYear: " + v.getYear());
-
-                                // print condition
-                                Condition condition = v.getCondition();
-                                IOManager.println("\tMileage: " + condition.getMileage() + " miles");
-                                IOManager.println("\tLast Inspection: " + condition.getLastInspectionFormatted());
-                                IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
-
-                                HashSet<String> options = DBManager.getOptions(sn);
-                                // print additional options
-                                if (options == null || options.isEmpty()) {
-                                    IOManager.println("\tAdditional Features: None");
-                                } else {
-                                    IOManager.println("\tAdditional Features:");
-                                    for (String option : options) {
-                                        IOManager.println("\t\t- " + option);
-                                    }
-                                }
-                                IOManager.println("\nVehicle Status:");
-                                IOManager.println("\tReady for pickup: " + gd.isReady());
-                                if (gd.getStartTime() > 0)
-                                    IOManager.println("\tRepair Started: " + gd.getStartTimeFormatted());
-                                if (gd.getEndTime() > 0)
-                                    IOManager.println("\tRepair Ended: " + gd.getEndTimeFormatted());
-                                if (gd.getReason().equals("Vehicle Purchase"))
-                                    IOManager.println("\tService Provided: Manufacturing & Delivering Vehicle");
-                                else IOManager.println("\tService Provided: " + gd.getReason());
-                                // pause until user enters value
-                                IOManager.println();
-                                IOManager.getStringInput("Enter any value to continue:");
-                            }
-                    )
-            );
-        }
-        MenuManager.showMenu(Key.VIEW_GARAGE_MENU, "");
     }
 
     /**
@@ -788,191 +548,47 @@ public class Sequences {
     public static void productManagerSequence() {//todo add
     }
 
-
-    /**
-     * Allows the service manager to remove a vehicle from their garage,
-     * returning it to its owner.
-     * <p>
-     * To pick up their vehicle, the owner must confirm their identity
-     * and pay for the provided service.
-     */
-    public static void removeGarageVehicleSequence() {
-        ServiceLocation loc = ServiceManager.getCurrent();
-
-        // Get finished vehicles in garage
-        HashSet<GarageData> data = DBManager.getGarageData(loc);
-        if (data == null) {
-            MenuManager.setNextMessage("Unable to load info.");
-            return;
-        }
-
-        // remove unfinished vehicles from set
-        for (GarageData gd : new HashSet<>(data)) {
-            if (!gd.isReady()) data.remove(gd);
-        }
-
-        // check if there are no finished vehicles
-        if (data.size() == 0) {
-            MenuManager.setNextMessage("There are no vehicles ready for pickup in the garage.");
-            return;
-        }
-
-        MenuManager.deleteMenu(Key.REMOVE_GARAGE_VEHICLE_MENU);
-        MenuManager.createMenu(Key.REMOVE_GARAGE_VEHICLE_MENU, "Remove Garage Vehicles");
-        MenuManager.addOption(Key.REMOVE_GARAGE_VEHICLE_MENU, new MenuOption("Return to Previous Menu", MenuManager::showPrevious));
-        for (GarageData gd : data) {
-            String sn = gd.getSerialNum();
-            Vehicle v = DBManager.getVehicle(sn);
-            if (v == null) {
-                MenuManager.setNextMessage("Unable to load info.");
-                return;
-            }
-            MenuManager.addOption(
-                    Key.REMOVE_GARAGE_VEHICLE_MENU,
-                    new MenuOption(
-                            v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ")",
-                            () -> {
-                                IOManager.clear("Please hand the console over to the customer.");
-                                IOManager.getStringInput("Enter any value to continue:");
-                                IOManager.clear("Welcome to " + loc.getName() + "!");
-                                User user = null;
-                                int i = 0;
-                                while (user == null) {
-                                    String email = IOManager.getStringInput("Enter your Alset email:");
-                                    String password = IOManager.getPasswordInput("Enter your Alset password:");
-                                    boolean valid = DBManager.validLoginData(email, password);
-                                    if (valid) {
-                                        HashSet<Vehicle> customerVehicles = DBManager.getVehicles(email);
-                                        if (customerVehicles == null) {
-                                            MenuManager.setNextMessage("Unable to load data. Please try again.");
-                                            return;
-                                        } else if (!customerVehicles.contains(v)) {
-                                            MenuManager.setNextMessage("Error: Customer does not own the vehicle with the SN " + sn);
-                                            return;
-                                        } else {
-                                            String[] name = DBManager.getName(email);
-                                            if (name == null) {
-                                                MenuManager.setNextMessage("Unable to load data. Please try again.");
-                                                return;
-                                            } else {
-                                                user = new User(name[0], name[1], name[2], email, password, customerVehicles);
-                                            }
-                                        }
-                                    } else if (i == 4) {
-                                        IOManager.clear("Failed too many times. Please return console to employee.");
-                                        IOManager.getStringInput("Enter any value to continue:");
-                                        return;
-                                    } else {
-                                        IOManager.clear("Invalid Username/Password. Please try again.");
-                                        i++;
-                                    }
-                                }
-                                IOManager.clear("Please confirm the following information:");
-
-                                // customer confirmation
-                                while (true) {
-                                    // customer info
-                                    IOManager.println("Customer Info: ");
-                                    IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
-                                    IOManager.println("\tEmail: " + user.getEmail());
-
-                                    // Vehicle Info
-                                    IOManager.println("\nVehicle Info: ");
-                                    IOManager.println("\tSerial Number: " + v.getSerialNum());
-                                    IOManager.println("\tModel Name: " + v.getModelName());
-                                    IOManager.println("\tModel Year: " + v.getYear());
-
-                                    // Service Info
-                                    IOManager.println("\nService Info: ");
-                                    IOManager.println("\tService Location: " + loc.getName());
-                                    IOManager.println("\tService Requested: " + gd.getReason());
-                                    IOManager.println("\tService Price: $" + gd.getRepairPrice());
-                                    IOManager.println();
-                                    // get confirmation
-                                    String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
-                                    if (confirm.equals("y")) {
-                                        IOManager.clear("Information has been confirmed as correct. Return console to employee.");
-                                        IOManager.getStringInput("Enter any value to continue:");
-                                        break;
-                                    } else if (confirm.equals("n")) {
-                                        IOManager.clear("Information is incorrect. Return console to employee.");
-                                        IOManager.getStringInput("Enter any value to continue:");
-                                        return;
-                                    } else {
-                                        IOManager.clear("Invalid response, please try again.");
-                                    }
-                                }
-
-                                // employee confirmation
-                                IOManager.clear("Please confirm the following information:");
-                                while (true) {
-                                    // customer info
-                                    IOManager.println("Customer Info: ");
-                                    IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
-                                    IOManager.println("\tEmail: " + user.getEmail());
-
-                                    // Vehicle Info
-                                    IOManager.println("\nVehicle Info: ");
-                                    IOManager.println("\tSerial Number: " + v.getSerialNum());
-                                    IOManager.println("\tModel Name: " + v.getModelName());
-                                    IOManager.println("\tModel Year: " + v.getYear());
-
-                                    // Service Info
-                                    IOManager.println("\nService Info: ");
-                                    IOManager.println("\tService Location: " + loc.getName());
-                                    IOManager.println("\tService Requested: " + gd.getReason());
-                                    IOManager.println("\tService Price: $" + gd.getRepairPrice());
-                                    IOManager.println();
-                                    // get confirmation
-                                    String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
-                                    if (confirm.equals("y")) {
-                                        break;
-                                    } else if (confirm.equals("n")) {
-                                        IOManager.clear("Information is incorrect.");
-                                        IOManager.getStringInput("Enter any value to continue:");
-                                        return;
-                                    } else {
-                                        IOManager.clear("Invalid response, please try again.");
-                                    }
-                                }
-
-                                IOManager.clear("Please give the console to the customer for payment.");
-                                IOManager.getStringInput("Enter any value to continue:");
-
-                                // get card
-                                Card card = getCardSequence(user.getEmail());
-                                if (card == null) {
-                                    IOManager.clear("Unable to load selected card. Please return console to employee.");
-                                    IOManager.getStringInput("Enter any value to continue:");
-                                    return;
-                                } else {
-                                    IOManager.println("Card Selected: " + card.getNumCensored());
-                                    IOManager.getStringInput("Enter any value to complete transaction: ");
-                                }
-
-                                // complete repair transaction
-                                boolean success = DBManager.removeGarageVehicle(gd, card);
-                                if (success) {
-                                    IOManager.clear("Transaction has been completed. You may now claim your vehicle.");
-                                    IOManager.println("Return console to employee.");
-                                    IOManager.getStringInput("Enter any value to continue:");
-                                } else {
-                                    MenuManager.setNextMessage("Failed to update database, please try again.");
-                                }
-                                MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "");
-                            }
-                    )
-            );
-        }
-        MenuManager.showMenu(Key.REMOVE_GARAGE_VEHICLE_MENU, "");
-    }
-
-    private static Card getCardSequence(String email) {
+    static Card getCardSequence(String email) {
         CardManager.setSelected(null);
-        MenuInitializer.reloadSelectCardMenu(email);
+        ServiceManager.setCurrentEmail(email);
         MenuManager.showMenuOnce(Key.SELECT_CARD_MENU, "");
         return CardManager.getSelected();
 
+    }
+
+    static User getPickupUserSequence(Vehicle v) {
+        User user = null;
+        int i = 0;
+        while (user == null) {
+            String email = IOManager.getStringInput("Enter your Alset email:");
+            String password = IOManager.getPasswordInput("Enter your Alset password:");
+            boolean valid = DBManager.validLoginData(email, password);
+            if (valid) {
+                HashSet<Vehicle> customerVehicles = DBManager.getVehicles(email);
+                if (customerVehicles == null) {
+                    return null;
+                } else if (!customerVehicles.contains(v)) {
+                    MenuManager.setNextMessage("Error: Customer does not own the vehicle with the SN " + v.getSerialNum());
+                    return null;
+                } else {
+                    String[] name = DBManager.getName(email);
+                    if (name == null) {
+                        MenuManager.setNextMessage("Unable to load data. Please try again.");
+                        return null;
+                    } else {
+                        user = new User(name[0], name[1], name[2], email, password, customerVehicles);
+                    }
+                }
+            } else if (i == 4) {
+                IOManager.clear("Failed too many times. Please return console to employee.");
+                IOManager.getStringInput("Enter any value to continue:");
+                return null;
+            } else {
+                IOManager.clear("Invalid Username/Password. Please try again.");
+                i++;
+            }
+        }
+        return user;
     }
 
     public static boolean addNewCardSequence() {

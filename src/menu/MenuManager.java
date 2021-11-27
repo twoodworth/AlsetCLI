@@ -57,9 +57,27 @@ public class MenuManager {
     }
 
     /**
+     * Creates a new menu using the given parameters
+     *
+     * @param key:            ID of menu
+     * @param title:          Title of menu
+     * @param reloadFunction: Function to run before showing the menu
+     * @param options:        Array of menu options
+     * @throws IllegalArgumentException if a menu with the given ID already exists.
+     */
+    public static void createMenu(Key key, Runnable reloadFunction, String title, MenuOption... options) throws IllegalArgumentException {
+        if (menus.containsKey(key)) {
+            throw new IllegalArgumentException("A menu with key " + key + "already exists.");
+        } else {
+            Menu menu = new Menu(title, options);
+            menus.put(key, menu);
+        }
+    }
+
+    /**
      * Adds an option to the menu with the given ID.
      *
-     * @param key:     Key of menu
+     * @param key:    Key of menu
      * @param option: Option to add to the menu
      * @throws NoSuchElementException if no menus exist with the given ID
      */
@@ -143,6 +161,12 @@ public class MenuManager {
         return menu.size();
     }
 
+    public static void setTitle(Key key, String title) throws NoSuchElementException {
+        Menu menu = menus.get(key);
+        if (menu == null) throw new NoSuchElementException("No menu with key of " + key + " exists.");
+        menu.setTitle(title);
+    }
+
     /**
      * Displays the provided menu to the user.
      *
@@ -151,6 +175,7 @@ public class MenuManager {
     private static void showMenu(Menu menu, String message) {
         current = menu;
         nextMessage = message;
+        menu.reload();
         while (current == menu) {
             IOManager.clear(nextMessage);
             nextMessage = "";
@@ -214,27 +239,6 @@ public class MenuManager {
      */
     public static void setNextMessage(String message) {
         nextMessage = message;
-    }
-
-    /**
-     * Deletes the menu with the given ID.
-     * <p>
-     * If the menu does not exist, or is currently being
-     * displayed to the user, no menu will be deleted and
-     * this function will return false.
-     * <p>
-     * Otherwise, the function will return true.
-     *
-     * @param key: Key of menu to delete
-     * @return true if the menu was deleted, false if it was not or does not exist.
-     */
-    static boolean deleteMenu(Key key) {
-        Menu menu = menus.get(key);
-        if (menu == null) return false;
-        if (current.equals(menu)) return false;
-        menus.remove(key);
-        history.remove(menu);
-        return true;
     }
 
     /**

@@ -19,6 +19,8 @@ class Menu {
      */
     MenuOption[] options;
 
+    Runnable reloadFunction;
+
     /**
      * Constructs a new menu with parameters title and options.
      *
@@ -28,6 +30,21 @@ class Menu {
     Menu(String title, MenuOption... options) {
         this.title = title;
         this.options = options;
+        this.reloadFunction = () -> {
+        };
+    }
+
+    /**
+     * Constructs a new menu with parameters title and options.
+     *
+     * @param title          the menu title
+     * @param reloadFunction function to run before showing
+     * @param options        an array of all the menu's options
+     */
+    Menu(String title, Runnable reloadFunction, MenuOption... options) {
+        this.title = title;
+        this.options = options;
+        this.reloadFunction = reloadFunction;
     }
 
     /**
@@ -48,6 +65,13 @@ class Menu {
      */
     String getTitle() {
         return title;
+    }
+
+    /**
+     * Sets the menu title
+     */
+    void setTitle(String title) {
+        this.title = title;
     }
 
     /**
@@ -83,6 +107,13 @@ class Menu {
      */
     int size() {
         return options.length;
+    }
+
+    /**
+     * Reloads the menu
+     */
+    void reload() {
+        reloadFunction.run();
     }
 
     /**

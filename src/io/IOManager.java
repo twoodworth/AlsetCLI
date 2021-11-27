@@ -157,4 +157,26 @@ public class IOManager {
         IOManager.println(message);
         IOManager.println();
     }
+
+    /**
+     * Fetches a boolean input from the user. This function is generally used
+     * by asking the user a question, to which they must reply with either 'y'
+     * or 'n'. If they fail to respond with one of these answers, the question
+     * will get repeated until they do.
+     *
+     * @param message: Message to print to user
+     * @return true if user responded with 'y', or false if user responded with 'n'
+     */
+    public static boolean getBooleanInput(String message) {
+        while (true) {
+            String response = IOManager.getStringInput(message + " (y/n):");
+            if (response.equals("y")) {
+                return true;
+            } else if (response.equals("n")) {
+                return false;
+            } else {
+                IOManager.clear("Invalid response. Valid responses are 'y' and 'n', please try again.");
+            }
+        }
+    }
 }

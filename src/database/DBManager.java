@@ -5,6 +5,7 @@ import connection.ConnectionManager;
 import constants.Key;
 import constants.Statement;
 import constants.Strings;
+import io.IOManager;
 import location.Address;
 import location.GarageData;
 import location.ServiceLocation;
@@ -347,6 +348,42 @@ public class DBManager {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
+    }
+
+    /**
+     * Returns a set of garage data belonging to vehicles of unfinished services.
+     *
+     * @param location: Service location to collect data from
+     * @return data of unfinished vehicles at location
+     */
+    public static HashSet<GarageData> getUnfinishedVehicleGarageData(ServiceLocation location) {
+        // get garage data
+        HashSet<GarageData> data = getGarageData(location);
+        if (data == null) return null;
+
+        // remove finished vehicle data
+        data.removeIf(GarageData::isReady);
+
+        // return data
+        return data;
+    }
+
+    /**
+     * Returns a set of garage data belonging to vehicles of finished services.
+     *
+     * @param location: Service location to collect data from
+     * @return data of finished vehicles at location
+     */
+    public static HashSet<GarageData> getFinishedVehicleGarageData(ServiceLocation location) {
+        // get garage data
+        HashSet<GarageData> data = getGarageData(location);
+        if (data == null) return null;
+
+        // remove unfinished vehicles from set
+        data.removeIf(gd -> !gd.isReady());
+
+        // return data
+        return data;
     }
 
     /**
@@ -711,11 +748,12 @@ public class DBManager {
      * vehicle.
      *
      * @param vehicle:          Vehicle inspected
-     * @param needsMaintenance: If the vehicle needs maintenance
      * @return true if successful, otherwise false
      */
-    public static boolean finishInspection(Vehicle vehicle, boolean needsMaintenance) {
+    public static boolean finishInspection(Vehicle vehicle) {
         try {
+            boolean needsMaintenance = IOManager.getBooleanInput("Is this vehicle in need of maintenance?");
+
             String hasDamage;
             if (needsMaintenance) hasDamage = "True";
             else hasDamage = "False";
