@@ -52,17 +52,6 @@ public class Sequences {
         if (success) {
             User current = UserManager.getCurrent();
 
-            // Load in the user's vehicles to the vehicle manager menu.
-            HashSet<Vehicle> vehicles = current.getVehicles();
-            for (Vehicle v : vehicles) {
-                String num = v.getSerialNum();
-                String s = v.getYear() + " Model " + v.getModelName() + " (SN: " + num + ")";
-
-                // Add menu option to access the vehicle's menu
-                MenuManager.addOption(Key.CUSTOMER_VEHICLES_MENU, new MenuOption(s, () -> vehicleOverviewSequence(v)));
-            }
-
-
             // create welcome message
             StringBuilder sb = new StringBuilder("Welcome back, ");
             sb.append(current.getFirst()).append(" ");
@@ -103,12 +92,6 @@ public class Sequences {
      */
     static void alsetLogoutSequence() {
         IOManager.println("Logging out of " + UserManager.getCurrent().getEmail() + "...");
-
-        // Remove user's vehicles from 'My Vehicles' Menu
-        int size = MenuManager.getSize(Key.CUSTOMER_VEHICLES_MENU);
-        for (int i = size - 1; i > 0; i--)
-            MenuManager.removeOption(Key.CUSTOMER_VEHICLES_MENU, i);
-
 
         // Log user out + display login menu
         UserManager.logout();
@@ -400,8 +383,10 @@ public class Sequences {
         ServiceLocation location = DBManager.getServiceLocation(password);
         if (location == null)
             MenuManager.setNextMessage("Invalid password.");
-        else
+        else {
+            ServiceManager.setCurrent(location);
             MenuManager.showMenu(Key.SERVICE_MANAGER_MENU, "Successfully logged in as " + location.getName() + " Service Manager.");
+        }
 
     }
 

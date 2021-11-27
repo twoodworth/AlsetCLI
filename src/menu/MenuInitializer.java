@@ -259,9 +259,26 @@ public class MenuInitializer {
     private static void initializeMyVehiclesMenu() {
         MenuManager.createMenu(
                 Key.CUSTOMER_VEHICLES_MENU,
+                MenuInitializer::reloadMyVehilesMenu,
                 "My Vehicles",
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.CUSTOMER_MENU, ""))
         );
+    }
+
+    private static void reloadMyVehilesMenu() {
+        int size = MenuManager.getSize(Key.CUSTOMER_VEHICLES_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.CUSTOMER_VEHICLES_MENU, i);
+        User current = UserManager.getCurrent();
+
+        // Load in the user's vehicles to the vehicle manager menu.
+        HashSet<Vehicle> vehicles = current.getVehicles();
+        for (Vehicle v : vehicles) {
+            String num = v.getSerialNum();
+            String s = v.getYear() + " Model " + v.getModelName() + " (SN: " + num + ")";
+
+            // Add menu option to access the vehicle's menu
+            MenuManager.addOption(Key.CUSTOMER_VEHICLES_MENU, new MenuOption(s, () -> Sequences.vehicleOverviewSequence(v)));
+        }
     }
 
     private static void initializeServiceManagerMenu() {

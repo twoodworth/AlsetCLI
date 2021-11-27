@@ -199,6 +199,7 @@ public class MenuManager {
     public static void showMenuOnce(Menu menu, String message) {
         current = menu;
         nextMessage = message;
+        menu.reload();
         IOManager.clear(nextMessage);
         nextMessage = "";
         IOManager.println(menu.toString());
