@@ -415,7 +415,7 @@ public class Sequences {
         }
         Double time = null;
         while (time == null) {
-            time = IOManager.getDoubleInput("Enter Expected Service Time (as a decimal, in hours):", 0.0, Double.MAX_VALUE);
+            time = IOManager.getDoubleInput("Enter Expected Service Duration (as a decimal, in hours):", 0.0, Double.MAX_VALUE);
             if (time == null) {
                 IOManager.clear("Invalid value, please try again.");
             }
@@ -903,10 +903,6 @@ public class Sequences {
                                     }
                                 }
 
-
-                                IOManager.println("Please return the console to the employee.");
-                                IOManager.getStringInput("Enter any value to continue:");
-
                                 // employee confirmation
                                 IOManager.clear("Please confirm the following information:");
                                 while (true) {
@@ -951,23 +947,24 @@ public class Sequences {
                                     return;
                                 } else {
                                     IOManager.println("Card Selected: " + card.getNumCensored());
+                                    IOManager.getStringInput("Enter any value to complete transaction: ");
                                 }
 
                                 // complete repair transaction
                                 boolean success = DBManager.removeGarageVehicle(gd, card);
                                 if (success) {
-                                    IOManager.clear("Transaction has been completed.");
-                                    IOManager.println("The customer may claim their vehicle.");
+                                    IOManager.clear("Transaction has been completed. You may now claim your vehicle.");
+                                    IOManager.println("Return console to employee.");
                                     IOManager.getStringInput("Enter any value to continue:");
                                 } else {
                                     MenuManager.setNextMessage("Failed to update database, please try again.");
                                 }
-
+                                MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "");
                             }
                     )
             );
         }
-
+        MenuManager.showMenu(Key.REMOVE_GARAGE_VEHICLE_MENU, "");
     }
 
     private static Card getCardSequence(String email) {
@@ -1015,8 +1012,8 @@ public class Sequences {
         String zip = null;
         while (zip == null) {
             zip = IOManager.getStringInput("Enter card Zip/postal code:");
-            if (!cvv.matches("\\d{5,10}")) {
-                cvv = null;
+            if (!zip.matches("\\d{5,10}")) {
+                zip = null;
                 IOManager.clear("Code must be a 5-to-10-digit sequence, please try again.");
             }
         }
@@ -1040,5 +1037,8 @@ public class Sequences {
         }
         CardManager.setSelected(card);
         return true;
+    }
+
+    public static void browseServiceLocations() {
     }
 }

@@ -41,10 +41,11 @@ public class MenuInitializer {
                 Key.ALSET_LOGIN_MENU,
                 "Alset Login Menu",
                 new MenuOption("Login as Customer", Sequences::alsetLoginSequence),
+                new MenuOption("Forgot Customer Password", Sequences::forgotPwdSequence),
+                new MenuOption("Create New Customer Account //todo add functionality", Sequences::createAcctSequence),//todo add functionality
+                new MenuOption("Browse Service Locations", Sequences::browseServiceLocations), //todo add functionality
                 new MenuOption("Login as Service Manager", Sequences::serviceManagerSequence),
                 new MenuOption("Login as Product Manager \t//todo add functionality", Sequences::productManagerSequence),//todo add functionality
-                new MenuOption("Forgot password", Sequences::forgotPwdSequence),
-                new MenuOption("Create New Account //todo add functionality", Sequences::createAcctSequence),//todo add functionality
                 new MenuOption("Close connection", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
@@ -72,9 +73,7 @@ public class MenuInitializer {
                 new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.CUSTOMER_VEHICLES_MENU, "")),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
-                new MenuOption("Manage Account //todo add functionality", () -> {
-                }),
-                new MenuOption("View Transactions //todo add functionality", () -> {
+                new MenuOption("View Purchase History //todo add functionality", () -> {
                 }),
                 new MenuOption("Log Out", Sequences::alsetLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
@@ -91,7 +90,9 @@ public class MenuInitializer {
                 new MenuOption("View Vehicles", Sequences::viewGarageSequence),
                 new MenuOption("Add Vehicle", Sequences::addGarageVehicleSequence),
                 new MenuOption("Finish Vehicle", Sequences::finishGarageVehicleSequence),
-                new MenuOption("Remove Vehicle", Sequences::removeGarageVehicleSequence),//todo add
+                new MenuOption("Remove Vehicle", Sequences::removeGarageVehicleSequence),
+                new MenuOption("Add Repairable Model", () -> {}),//todo add
+                new MenuOption("Remove Repairable Model", () -> {}),//todo add
                 new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious(""))
         );
     }
@@ -118,7 +119,7 @@ public class MenuInitializer {
             MenuManager.addOption(
                     Key.SELECT_CARD_MENU,
                     new MenuOption(
-                            "XXXXXXXXXXXX" + card.getNumCensored(),
+                            card.getNumCensored(),
                             () -> CardManager.setSelected(card)
                     )
             );
