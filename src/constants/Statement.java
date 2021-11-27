@@ -87,6 +87,14 @@ public class Statement {
                     "WHERE serial_num=?";
 
     /**
+     * Used for fetching all service locations
+     */
+    public static String GET_SERVICE_LOCATIONS =
+            "SELECT * " +
+                    "FROM service_location " +
+                    "NATURAL JOIN service_address";
+
+    /**
      * Used for determining if a given vehicle is currently being held at a service location for maintenance.
      */
     public static String GET_PICKUP_ROW =

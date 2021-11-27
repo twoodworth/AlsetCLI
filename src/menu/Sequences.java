@@ -399,14 +399,22 @@ public class Sequences {
     static void locationOverviewSequence() {
         // get location
         ServiceLocation location = ServiceManager.getCurrent();
+
+        // show info
+        viewLocationOverview(location);
+    }
+
+    public static void viewLocationOverview(ServiceLocation location) {
         if (location == null) {
-            MenuManager.setNextMessage("Unable to load info.");
+            IOManager.clear("Unable to load info.");
+            IOManager.getStringInput("Enter any value to continue:");
             return;
         }
 
         HashSet<Model> models = DBManager.getRepairableModels(location);
         if (models == null) {
-            MenuManager.setNextMessage("Unable to load info.");
+            IOManager.clear("Unable to load info.");
+            IOManager.getStringInput("Enter any value to continue:");
             return;
         }
 
@@ -640,8 +648,5 @@ public class Sequences {
         }
         CardManager.setSelected(card);
         return true;
-    }
-
-    public static void browseServiceLocations() {
     }
 }

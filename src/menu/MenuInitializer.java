@@ -13,7 +13,10 @@ import user.UserManager;
 import vehicle.Condition;
 import vehicle.Vehicle;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Initializes all of the menus in the program.
@@ -41,6 +44,7 @@ public class MenuInitializer {
             initializeServiceManagerMenu();
             initializeViewGarageMenu();
             initializeRemoveGarageVehicleMenu();
+            initializeBrowseLocationsMenu();
             initialized = true;
         }
     }
@@ -55,7 +59,7 @@ public class MenuInitializer {
                 new MenuOption("Login as Customer", Sequences::alsetLoginSequence),
                 new MenuOption("Forgot Customer Password", Sequences::forgotPwdSequence),
                 new MenuOption("Create New Customer Account //todo add functionality", Sequences::createAcctSequence),//todo add functionality
-                new MenuOption("Browse Service Locations", Sequences::browseServiceLocations), //todo add functionality
+                new MenuOption("Browse Service Locations",  () -> MenuManager.showMenu(Key.BROWSE_LOCATIONS_MENU)),
                 new MenuOption("Login as Service Manager", Sequences::serviceManagerSequence),
                 new MenuOption("Login as Product Manager \t//todo add functionality", Sequences::productManagerSequence),//todo add functionality
                 new MenuOption("Close connection", Sequences::endConnectionSequence),
@@ -85,8 +89,8 @@ public class MenuInitializer {
                 new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.CUSTOMER_VEHICLES_MENU)),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
-                new MenuOption("View Purchase History //todo add functionality", () -> {
-                }),
+                new MenuOption("View Purchase History //todo add functionality", () -> { }),
+                new MenuOption("Browse Service Locations", () -> MenuManager.showMenu(Key.BROWSE_LOCATIONS_MENU)),
                 new MenuOption("Log Out", Sequences::alsetLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
@@ -369,6 +373,29 @@ public class MenuInitializer {
                                 IOManager.getStringInput("Enter any value to continue:");
                             }
                     )
+            );
+        }
+    }
+
+    private static void initializeBrowseLocationsMenu() {
+        MenuManager.createMenu(
+                Key.BROWSE_LOCATIONS_MENU,
+                MenuInitializer::reloadBrowseLocationsMenu,
+                "Browse Service Locations",
+                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void reloadBrowseLocationsMenu() {
+        int size = MenuManager.getSize(Key.BROWSE_LOCATIONS_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.BROWSE_LOCATIONS_MENU, i);
+        HashSet<ServiceLocation> locations = DBManager.getServiceLocations();
+        if (locations == null) return;
+        List<ServiceLocation> sorted = locations.stream().sorted(Comparator.comparing(ServiceLocation::getName)).collect(Collectors.toList());
+        for (ServiceLocation s : sorted) {
+            MenuManager.addOption(
+                    Key.BROWSE_LOCATIONS_MENU,
+                    new MenuOption(s.getName(), () -> Sequences.viewLocationOverview(s))
             );
         }
     }

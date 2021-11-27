@@ -884,4 +884,38 @@ public class DBManager {
             return false;
         }
     }
+
+    public static HashSet<ServiceLocation> getServiceLocations() {
+        try {
+
+            // remove vehicle from pickup
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statement.GET_SERVICE_LOCATIONS);
+            ResultSet rs = s.executeQuery();
+            HashSet<ServiceLocation> locations = new HashSet<>();
+            while (rs.next()) {
+                locations.add(
+                        new ServiceLocation(
+                                rs.getString("location_id"),
+                                rs.getString("location_name"),
+                                new Address(
+                                        rs.getString("planet"),
+                                        rs.getString("country"),
+                                        rs.getString("state"),
+                                        rs.getString("city"),
+                                        rs.getString("street"),
+                                        rs.getString("zip"),
+                                        null
+                                )
+                                )
+                );
+            }
+            s.close();
+            return locations;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
 }
