@@ -89,7 +89,7 @@ public class MenuInitializer {
                 new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.CUSTOMER_VEHICLES_MENU)),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
-                new MenuOption("View Purchase History //todo add functionality", () -> { }),
+                new MenuOption("View Purchase History", Sequences::purchaseHistorySequence),
                 new MenuOption("Browse Service Locations", () -> MenuManager.showMenu(Key.BROWSE_LOCATIONS_MENU)),
                 new MenuOption("Log Out", Sequences::alsetLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)

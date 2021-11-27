@@ -18,8 +18,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Manages interactions with the Alset database
@@ -285,6 +285,39 @@ public class DBManager {
             return null;
         }
 
+    }
+
+    public static List<String> getTransactionList(String email) {
+        try {
+            PreparedStatement s = ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statement.GET_TRANSACTION_HISTORY);
+            s.setString(1, email);
+            ResultSet rs = s.executeQuery();
+            HashMap<Long, String> transactions = new HashMap<>();
+            while (rs.next()) {
+                long timestamp = rs.getLong("timestamp") * 1000L;
+                int year = rs.getInt("year");
+                String name = rs.getString("name");
+                String sn = rs.getString("serial_num");
+                long price = rs.getLong("sales_price");
+                String cardNum = rs.getString("card_num");
+                String transaction =
+                        "[" + new Date(timestamp).toString() + "] "
+                                + year + " Model " + name + " (SN: " + sn + ") purchased for $"
+                                + price + " (Card: XXXXXXXXXXXX" + cardNum.substring(12, 16) + ")";
+                transactions.put(timestamp, transaction);
+            }
+            s.close();
+            ArrayList<String> strings = new ArrayList<>();
+            for (Long l : transactions.keySet().stream().sorted(Long::compareTo).collect(Collectors.toList())) {
+                strings.add(transactions.get(l));
+            }
+            return strings;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
     }
 
     /**

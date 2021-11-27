@@ -17,10 +17,7 @@ import vehicle.Model;
 import vehicle.Vehicle;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Contains all the sequence functions in the program.
@@ -648,5 +645,24 @@ public class Sequences {
         }
         CardManager.setSelected(card);
         return true;
+    }
+
+    public static void purchaseHistorySequence() {
+        User current = UserManager.getCurrent();
+        List<String> purchases = DBManager.getTransactionList(current.getEmail());
+        if (purchases == null) {
+            MenuManager.setNextMessage("Unable to load data, please try again.");
+            return;
+        }
+        if (purchases.size() == 0) {
+            MenuManager.setNextMessage("You have made not made any purchases.");
+            return;
+        }
+        IOManager.clear("Vehicle Purchase History:");
+        for (String purchase : purchases) {
+            IOManager.println(purchase);
+        }
+        IOManager.println();
+        IOManager.getStringInput("Enter any value to continue:");
     }
 }
