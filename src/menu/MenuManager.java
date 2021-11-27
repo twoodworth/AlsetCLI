@@ -69,7 +69,7 @@ public class MenuManager {
         if (menus.containsKey(key)) {
             throw new IllegalArgumentException("A menu with key " + key + "already exists.");
         } else {
-            Menu menu = new Menu(title, options);
+            Menu menu = new Menu(title, reloadFunction, options);
             menus.put(key, menu);
         }
     }
@@ -105,9 +105,10 @@ public class MenuManager {
     }
 
     /**
-     * Shows the user the menu with the given ID
+     * Shows the user the menu with the given ID, and prints a message.
      *
-     * @param key Key of menu to show
+     * @param key     Key of menu to show
+     * @param message Message to print
      * @throws NoSuchElementException if no menu exists with the given ID
      */
     public static void showMenu(Key key, String message) throws NoSuchElementException {
@@ -118,9 +119,20 @@ public class MenuManager {
     }
 
     /**
-     * Shows the user the menu with the given ID once
+     * Shows the user the menu with the given ID
      *
      * @param key Key of menu to show
+     * @throws NoSuchElementException if no menu exists with the given ID
+     */
+    public static void showMenu(Key key) throws NoSuchElementException {
+        showMenu(key, "");
+    }
+
+    /**
+     * Shows the user the menu with the given ID once, and prints a message.
+     *
+     * @param key     Key of menu to show
+     * @param message Message to print
      * @throws NoSuchElementException if no menu exists with the given ID
      */
     public static void showMenuOnce(Key key, String message) throws NoSuchElementException {
@@ -128,6 +140,17 @@ public class MenuManager {
         if (menu == null) throw new NoSuchElementException("No menu with key of " + key.toString() + " exists.");
         history.push(current);
         showMenuOnce(menu, message);
+    }
+
+
+    /**
+     * Shows the user the menu with the given ID once
+     *
+     * @param key Key of menu to show
+     * @throws NoSuchElementException if no menu exists with the given ID
+     */
+    public static void showMenuOnce(Key key) throws NoSuchElementException {
+        showMenuOnce(key, "");
     }
 
     /**
@@ -173,9 +196,9 @@ public class MenuManager {
      * @param menu: Menu to display to the user
      */
     private static void showMenu(Menu menu, String message) {
+        menu.reload();
         current = menu;
         nextMessage = message;
-        menu.reload();
         while (current == menu) {
             IOManager.clear(nextMessage);
             nextMessage = "";
@@ -183,7 +206,7 @@ public class MenuManager {
             int l = menu.options.length;
             Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
             if (input == null) {
-                IOManager.println("Input is invalid.");
+                MenuManager.setNextMessage("Input is invalid.");
             } else {
                 menu.options[input].runAction();
             }
@@ -197,16 +220,16 @@ public class MenuManager {
      * @param message: message to display
      */
     public static void showMenuOnce(Menu menu, String message) {
+        menu.reload();
         current = menu;
         nextMessage = message;
-        menu.reload();
         IOManager.clear(nextMessage);
         nextMessage = "";
         IOManager.println(menu.toString());
         int l = menu.options.length;
         Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
         if (input == null) {
-            IOManager.println("Input is invalid.");
+            MenuManager.setNextMessage("Input is invalid.");
         } else {
             menu.options[input].runAction();
         }
@@ -226,7 +249,7 @@ public class MenuManager {
             int l = menu.options.length;
             Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
             if (input == null) {
-                IOManager.println("Input is invalid.");
+                MenuManager.setNextMessage("Input is invalid.");
             } else {
                 menu.options[input].runAction();
             }

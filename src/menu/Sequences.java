@@ -42,7 +42,7 @@ public class Sequences {
      */
     static void alsetLoginSequence() {
         // clear console
-        IOManager.clear("");
+        IOManager.clear();
 
         // get credentials
         String email = IOManager.getStringInput("Enter your Alset email:");
@@ -51,6 +51,7 @@ public class Sequences {
 
         if (success) {
             User current = UserManager.getCurrent();
+            System.out.println(current.getVehicles().size());//todo remove
 
             // create welcome message
             StringBuilder sb = new StringBuilder("Welcome back, ");
@@ -71,7 +72,7 @@ public class Sequences {
      */
     static void edgar1LoginSequence() {
         // clear console
-        IOManager.clear("");
+        IOManager.clear();
 
         // Get credentials
         String id = IOManager.getStringInput("Enter your Oracle id for edgar1:");
@@ -102,7 +103,7 @@ public class Sequences {
      * Exits the program.
      */
     static void exitSequence() {
-        IOManager.clear("");
+        IOManager.clear();
         Connection current = ConnectionManager.getCurrentConnection();
         if (current != null) {
             IOManager.println("Closing connection...");
@@ -128,7 +129,7 @@ public class Sequences {
      */
     static void forgotPwdSequence() {
         //clear console
-        IOManager.clear("");
+        IOManager.clear();
 
         String email = IOManager.getStringInput("Enter your Alset email:");
         boolean exists = DBManager.emailExists(email);
@@ -186,13 +187,14 @@ public class Sequences {
             return;
         }
 
-        MenuManager.showMenu(Key.FINISH_GARAGE_VEHICLE_MENU, "");
+        MenuManager.showMenu(Key.FINISH_GARAGE_VEHICLE_MENU);
     }
 
     static boolean confirmVehicleInfo(GarageData data, Vehicle v) {
         String sn = data.getSerialNum();
         HashSet<String> options = DBManager.getOptions(sn);
 
+        IOManager.clear();
         StringBuilder infoBuilder = new StringBuilder();
         infoBuilder.append("\t").append("Serial Number: ").append(sn).append("\n");
         infoBuilder.append("\t").append("Model: ").append(v.getModelName()).append("\n");
@@ -213,7 +215,7 @@ public class Sequences {
         ServiceLocation loc = ServiceManager.getCurrent();
 
         // clear console
-        IOManager.clear("");
+        IOManager.clear();
 
         // Get vehicle/repair info
         String sn = IOManager.getStringInput("Enter 9-digit vehicle serial number:");
@@ -377,7 +379,7 @@ public class Sequences {
      */
     static void serviceManagerSequence() {
         // clear console
-        IOManager.clear("");
+        IOManager.clear();
 
         String password = IOManager.getPasswordInput("Enter password:");
         ServiceLocation location = DBManager.getServiceLocation(password);
@@ -428,7 +430,7 @@ public class Sequences {
         Address address = location.getAddress();
 
         //clear console
-        IOManager.clear("");
+        IOManager.clear();
 
         // print basic info
         IOManager.println("\nLocation Overview:");
@@ -493,7 +495,7 @@ public class Sequences {
         ServiceLocation location = DBManager.getServiceLocation(v);
 
         //clear console
-        IOManager.clear("");
+        IOManager.clear();
 
         // Print service status
         IOManager.println("\nVehicle Overview:");
@@ -536,7 +538,7 @@ public class Sequences {
     static Card getCardSequence(String email) {
         CardManager.setSelected(null);
         ServiceManager.setCurrentEmail(email);
-        MenuManager.showMenuOnce(Key.SELECT_CARD_MENU, "");
+        MenuManager.showMenuOnce(Key.SELECT_CARD_MENU);
         return CardManager.getSelected();
 
     }

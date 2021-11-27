@@ -159,6 +159,18 @@ public class IOManager {
     }
 
     /**
+     * Clears the console without printing a message.
+     */
+    public static void clear() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        IOManager.println(Strings.ALSET_LOGO);
+        IOManager.println();
+        IOManager.println();
+        IOManager.println();
+    }
+
+    /**
      * Fetches a boolean input from the user. This function is generally used
      * by asking the user a question, to which they must reply with either 'y'
      * or 'n'. If they fail to respond with one of these answers, the question

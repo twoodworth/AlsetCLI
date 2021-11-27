@@ -82,7 +82,7 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Key.CUSTOMER_MENU,
                 "Alset Main Menu",
-                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.CUSTOMER_VEHICLES_MENU, "")),
+                new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.CUSTOMER_VEHICLES_MENU)),
                 new MenuOption("Purchase Vehicles //todo add functionality", () -> {
                 }),
                 new MenuOption("View Purchase History //todo add functionality", () -> {
@@ -99,15 +99,15 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Key.MANAGE_GARAGE_MENU,
                 "Manage Garage",
-                new MenuOption("View Vehicles", () -> MenuManager.showMenu(Key.VIEW_GARAGE_MENU, "")),
+                new MenuOption("View Vehicles", () -> MenuManager.showMenu(Key.VIEW_GARAGE_MENU)),
                 new MenuOption("Add Vehicle", Sequences::addGarageVehicleSequence),
                 new MenuOption("Finish Vehicle", Sequences::finishGarageVehicleSequence),
-                new MenuOption("Remove Vehicle", () -> MenuManager.showMenu(Key.REMOVE_GARAGE_VEHICLE_MENU, "")),
+                new MenuOption("Remove Vehicle", () -> MenuManager.showMenu(Key.REMOVE_GARAGE_VEHICLE_MENU)),
                 new MenuOption("Add Repairable Model", () -> {
                 }),//todo add
                 new MenuOption("Remove Repairable Model", () -> {
                 }),//todo add
-                new MenuOption("Return to Previous Menu", () -> MenuManager.showPrevious(""))
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
         );
     }
 
@@ -233,7 +233,7 @@ public class MenuInitializer {
                                 } else {
                                     MenuManager.setNextMessage("Failed to update database, please try again.");
                                 }
-                                MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "");
+                                MenuManager.showMenu(Key.MANAGE_GARAGE_MENU);
                             }
                     )
             );
@@ -261,17 +261,19 @@ public class MenuInitializer {
                 Key.CUSTOMER_VEHICLES_MENU,
                 MenuInitializer::reloadMyVehilesMenu,
                 "My Vehicles",
-                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.CUSTOMER_MENU, ""))
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.CUSTOMER_MENU))
         );
     }
 
     private static void reloadMyVehilesMenu() {
         int size = MenuManager.getSize(Key.CUSTOMER_VEHICLES_MENU);
+        System.out.println(size);//todo remove
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.CUSTOMER_VEHICLES_MENU, i);
         User current = UserManager.getCurrent();
 
         // Load in the user's vehicles to the vehicle manager menu.
         HashSet<Vehicle> vehicles = current.getVehicles();
+        System.out.println(vehicles.size());//todo remove
         for (Vehicle v : vehicles) {
             String num = v.getSerialNum();
             String s = v.getYear() + " Model " + v.getModelName() + " (SN: " + num + ")";
@@ -294,7 +296,7 @@ public class MenuInitializer {
                 }),//todo add
                 new MenuOption("Manage Listings\t//todo add", () -> {
                 }),//todo add
-                new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "")),
+                new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU)),
                 new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
@@ -329,7 +331,7 @@ public class MenuInitializer {
                             v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
                             () -> {
                                 // clear console
-                                IOManager.clear("");
+                                IOManager.clear();
                                 // print basic info
                                 IOManager.println("\nVehicle Overview:");
                                 IOManager.println("\tSerial Number: " + sn);
@@ -420,7 +422,7 @@ public class MenuInitializer {
                             v.getYear() + " " + v.getModelName() + " - " + gd.getReason() + " (SN: " + sn + ")",
                             () -> {
                                 // clear console
-                                IOManager.clear("");
+                                IOManager.clear();
 
                                 // ask question
                                 String question;
@@ -457,15 +459,16 @@ public class MenuInitializer {
                                 // send email
                                 String email = DBManager.getEmail(v);
                                 if (email != null) {
-                                    UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + "");
+                                    UserManager.sendEmail(email, "Your vehicle is ready for pickup at " + loc.getName() + ".");
                                     IOManager.clear("Vehicle pickup notification has been sent to " + email);
                                 } else {
-                                    IOManager.clear("");
+                                    IOManager.clear();
                                 }
 
                                 // print confirmation
                                 IOManager.println("Vehicle is now ready for pickup.");
                                 IOManager.getStringInput("Enter any value to continue:");
+                                MenuManager.showMenu(Key.MANAGE_GARAGE_MENU);
                             }
                     )
             );
