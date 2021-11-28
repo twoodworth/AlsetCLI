@@ -87,11 +87,26 @@ public class Statement {
                     "WHERE email=?";
 
 
-    public static final String GET_TRANSACTION_HISTORY =
+    /**
+     * Used for getting a list of vehicle purchases that a given customer has made
+     */
+    public static final String GET_PURCHASE_HISTORY =
             "SELECT timestamp, year, name, serial_num, sales_price, card_num " +
                     "FROM purchases " +
                     "NATURAL JOIN vehicle " +
                     "NATURAL JOIN vehicle_model " +
+                    "WHERE email=?";
+
+
+
+    /**
+     * Used for getting a list of repair transactions that a given customer has made
+     */
+    public static final String GET_REPAIR_HISTORY =
+            "SELECT start_time, year, name, serial_num, price, repair_type, card_num " +
+                    "FROM repairs " +
+                        "NATURAL JOIN vehicle " +
+                        "NATURAL JOIN vehicle_model " +
                     "WHERE email=?";
 
 

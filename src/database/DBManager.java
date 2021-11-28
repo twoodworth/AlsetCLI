@@ -333,10 +333,11 @@ public class DBManager {
 
     public static List<String> getTransactionList(String email) {
         try {
+            // add vehicle purchases
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
-                            .prepareStatement(Statement.GET_TRANSACTION_HISTORY);
+                            .prepareStatement(Statement.GET_PURCHASE_HISTORY);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             HashMap<Long, String> transactions = new HashMap<>();
@@ -354,6 +355,29 @@ public class DBManager {
                 transactions.put(timestamp, transaction);
             }
             s.close();
+
+            // add repairs
+            s =
+                    ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statement.GET_REPAIR_HISTORY);
+            s.setString(1, email);
+            rs = s.executeQuery();
+            while (rs.next()) {
+                long timestamp = rs.getLong("start_time") * 1000L;
+                int year = rs.getInt("year");
+                String name = rs.getString("name");
+                String sn = rs.getString("serial_num");
+                long price = rs.getLong("price");
+                String type = rs.getString("repair_type");
+                String cardNum = rs.getString("card_num");
+                String transaction =
+                        "[" + new Date(timestamp).toString() + "] "
+                                + type + " of "
+                                + year + " Model " + name + " (SN: " + sn + ") for $"
+                                + price + " (Card: XXXXXXXXXXXX" + cardNum.substring(12, 16) + ")";
+                transactions.put(timestamp, transaction);
+            }
             ArrayList<String> strings = new ArrayList<>();
             for (Long l : transactions.keySet().stream().sorted(Long::compareTo).collect(Collectors.toList())) {
                 strings.add(transactions.get(l));
@@ -1084,12 +1108,10 @@ public class DBManager {
                 long l = Long.parseLong(sn.toString()) + 1;
                 sn = new StringBuilder(String.valueOf(l));
                 while (sn.length() < 9) sn.insert(0, "0");
-                IOManager.println("New SN: " + sn.toString());//todo remove
                 return sn.toString();
             }
             return null;
         } catch (SQLException e) {
-            e.printStackTrace();//todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
@@ -1169,7 +1191,6 @@ public class DBManager {
             current.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace(); //todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

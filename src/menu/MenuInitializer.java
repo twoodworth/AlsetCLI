@@ -406,8 +406,6 @@ public class MenuInitializer {
                 new MenuOption("Manage Listings\t//todo add", () -> {
                 }),//todo add
                 new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU)),
-                new MenuOption("View Repair History\t//todo add", () -> {
-                }),//todo add
                 new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
