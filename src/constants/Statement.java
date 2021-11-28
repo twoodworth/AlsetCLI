@@ -65,7 +65,7 @@ public class Statement {
      * Used for obtaining the current max serial number
      */
     public static final String GET_MAX_SN =
-            "SELECT MAX(serial_num) AS sn" +
+            "SELECT MAX(serial_num) AS sn " +
                     "FROM vehicle";
 
     /**
@@ -188,7 +188,7 @@ public class Statement {
      * along with relevant service/repair information.
      */
     public static final String GET_GARAGE_VEHICLES =
-            "SELECT repairs.email, repairs.serial_num, start_time, end_time, repair_type, price, ready " +
+            "SELECT pickup.email, pickup.serial_num, start_time, end_time, repair_type, price, ready " +
                     "FROM repairs " +
                         "FULL OUTER JOIN pickup " +
                         "ON repairs.serial_num = pickup.serial_num " +
@@ -197,7 +197,8 @@ public class Statement {
                         "AND (start_time = (" +
                             "SELECT MAX(start_time) " +
                             "FROM repairs " +
-                            "WHERE serial_num = pickup.serial_num))";
+                            "WHERE serial_num = pickup.serial_num)" +
+                            "OR start_time IS NULL)";
 
 
     /**
@@ -313,10 +314,17 @@ public class Statement {
                     "VALUES (?, ?)";
 
     /**
+     * Used for adding a new row into owner
+     */
+    public static final String ADD_OWNER =
+            "INSERT INTO owner (email, serial_num) " +
+                    "VALUES (?, ?)";
+
+    /**
      * Used for adding a new row into vehicle_options
      */
     public static final String ADD_VEHICLE_OPTION =
-            "INSERT INTO vehicle_option (option_name, serial_num) " +
+            "INSERT INTO vehicle_options (option_name, serial_num) " +
                     "VALUES (?, ?)";
 
     /**
@@ -337,7 +345,9 @@ public class Statement {
      * Used for adding a new row into purchases
      */
     public static final String ADD_PURCHASE =
-            "INSERT INTO purchases (email, serial_num, timestamp, sales_price, card_num) VALUES (?, ?, ?, ?, ?)";
+            "INSERT INTO purchases (email, serial_num, timestamp, sales_price, card_num) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
 
     /**
      * Used for adding a new row into repairs.

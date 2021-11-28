@@ -492,11 +492,18 @@ public class Sequences {
         HashSet<String> options = DBManager.getOptions(sn);
 
         // get condition
-        Condition condition = v.getCondition();
-        if (condition == null) {
-            MenuManager.setNextMessage("Error loading vehicle overview.");
-            return;
+        Condition condition;
+
+        if (v.isManufactured()) {
+            condition = v.getCondition();
+            if (condition == null) {
+                MenuManager.setNextMessage("Error loading vehicle overview.");
+                return;
+            }
+        } else {
+            condition = null;
         }
+
 
         ServiceLocation location = DBManager.getServiceLocation(v);
 
@@ -505,7 +512,9 @@ public class Sequences {
 
         // Print service status
         IOManager.println("\nVehicle Overview:");
-        if (location != null) {
+        if (condition == null) {
+            IOManager.println("VEHICLE IS CURRENTLY BEING MANUFACTURED.");
+        } else if (location != null) {
             if (DBManager.isReadyForPickup(v)) {
                 IOManager.println("\tVEHICLE IS READY FOR PICKUP AT " + location.getName().toUpperCase());
             } else {
@@ -519,9 +528,11 @@ public class Sequences {
         IOManager.println("\tYear: " + v.getYear());
 
         // print condition
-        IOManager.println("\tMileage: " + condition.getMileage() + " miles");
-        IOManager.println("\tLast Inspection: " + condition.getLastInspectionFormatted());
-        IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
+        if (condition != null) {
+            IOManager.println("\tMileage: " + condition.getMileage() + " miles");
+            IOManager.println("\tLast Inspection: " + condition.getLastInspectionFormatted());
+            IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
+        }
 
         // print additional options
         if (options == null || options.isEmpty()) {
@@ -680,8 +691,9 @@ public class Sequences {
             MenuManager.setNextMessage("Unable to load info, please try again.");
             return;
         }
-        StringBuilder sb = new StringBuilder(model.getYear() + " Model " + model.getName() + "Price:\n");
-        sb.append("Base Price\t\t$").append(cost).append("\n");
+        StringBuilder sb = new StringBuilder(model.getYear() + " Model " + model.getName() + " Price:\n");
+        String format = "%12s";
+        sb.append("Base Price\t").append(String.format(format, "$" + cost)).append("\n");
         HashSet<String> options = VehicleSelections.getOptions();
         for (String option : options) {
             Long optionCost = DBManager.getOptionCost(option);
@@ -690,8 +702,9 @@ public class Sequences {
                 return;
             }
             cost += optionCost;
-            sb.append(option).append("\t\t$").append(optionCost).append("\n");
+            sb.append(option).append("\t").append(String.format(format, "$" + optionCost)).append("\n");
         }
+        sb.append("\n").append("Total Cost:\t").append(String.format(format, "$" + cost));
 
 
         CardManager.setSelected(null);
@@ -699,7 +712,7 @@ public class Sequences {
 
         Card card = CardManager.getSelected();
         if (card == null) return;
-        IOManager.println("Card Selected: " + card.getNumCensored());
+        IOManager.clear("Card Selected: " + card.getNumCensored());
         IOManager.getStringInput("Enter any value to complete transaction: ");
 
         // complete transaction

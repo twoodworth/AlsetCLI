@@ -483,17 +483,32 @@ public class DBManager {
             ResultSet rs = s.executeQuery();
             HashSet<GarageData> data = new HashSet<>();
             while (rs.next()) {
-                data.add(
-                        new GarageData(
-                                rs.getString("email"),
-                                rs.getString("serial_num"),
-                                rs.getLong("start_time"),
-                                rs.getLong("end_time"),
-                                rs.getString("repair_type"),
-                                rs.getLong("price"),
-                                rs.getBoolean("ready")
-                        )
-                );
+                String email = rs.getString("email");
+                if (email == null) {
+                    data.add(
+                            new GarageData(
+                                    null,
+                                    rs.getString("serial_num"),
+                                    null,
+                                    null,
+                                    rs.getString("repair_type"),
+                                    null,
+                                    rs.getBoolean("ready")
+                            )
+                    );
+                } else {
+                    data.add(
+                            new GarageData(
+                                    email,
+                                    rs.getString("serial_num"),
+                                    rs.getLong("start_time"),
+                                    rs.getLong("end_time"),
+                                    rs.getString("repair_type"),
+                                    rs.getLong("price"),
+                                    rs.getBoolean("ready")
+                            )
+                    );
+                }
             }
             return data;
         } catch (SQLException e) {
@@ -1069,10 +1084,12 @@ public class DBManager {
                 long l = Long.parseLong(sn.toString()) + 1;
                 sn = new StringBuilder(String.valueOf(l));
                 while (sn.length() < 9) sn.insert(0, "0");
+                IOManager.println("New SN: " + sn.toString());//todo remove
                 return sn.toString();
             }
             return null;
         } catch (SQLException e) {
+            e.printStackTrace();//todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
@@ -1104,7 +1121,7 @@ public class DBManager {
             s.setInt(2, model.getYear());
             s.setString(3, model.getName());
             s.execute();
-            s.close();;
+            s.close();
 
             // add custom option relations to database (sn, option_name)
             for (String option : options) {
@@ -1114,6 +1131,13 @@ public class DBManager {
                 s.execute();
                 s.close();
             }
+
+            // add owner relation (email, sn)
+            s = current.prepareStatement(Statement.ADD_OWNER);
+            s.setString(1, user.getEmail());
+            s.setString(2, sn);
+            s.execute();
+            s.close();
 
             // add transaction to database (timestamp, price)
             s = current.prepareStatement(Statement.ADD_TRANSACTION);
@@ -1132,10 +1156,20 @@ public class DBManager {
             s.execute();
             s.close();
 
+            // add vehicle to pickup
+            s = current.prepareStatement(Statement.ADD_GARAGE_VEHICLE);
+            s.setString(1, location.getId());
+            s.setString(2, user.getEmail());
+            s.setString(3, sn);
+            s.setString(4, "False");
+            s.execute();
+            s.close();
+
             // commit & return
             current.commit();
             return true;
         } catch (SQLException e) {
+            e.printStackTrace(); //todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

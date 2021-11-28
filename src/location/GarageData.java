@@ -20,12 +20,12 @@ public class GarageData {
     /**
      * Repair start time
      */
-    private final long startTime;
+    private final Long startTime;
 
     /**
      * Repair end time
      */
-    private final long endTime;
+    private final Long endTime;
 
     /**
      * Reason for vehicle being at garage
@@ -35,7 +35,7 @@ public class GarageData {
     /**
      * Price of repair
      */
-    private final long repairPrice;
+    private final Long repairPrice;
 
     /**
      * If the vehicle is ready for pickup
@@ -53,7 +53,7 @@ public class GarageData {
      * @param repairPrice: Repair type
      * @param isReady:     Ready for pickup
      */
-    public GarageData(String owner, String serialNum, long startTime, long endTime, String reason, long repairPrice, boolean isReady) {
+    public GarageData(String owner, String serialNum, Long startTime, Long endTime, String reason, Long repairPrice, boolean isReady) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.reason = reason;
@@ -86,7 +86,7 @@ public class GarageData {
      *
      * @return start time
      */
-    public long getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
@@ -104,7 +104,7 @@ public class GarageData {
      * Gets the end time
      * @return end time
      */
-    public long getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 

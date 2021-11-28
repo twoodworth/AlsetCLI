@@ -238,15 +238,19 @@ public class MenuManager {
         menu.reload();
         current = menu;
         nextMessage = message;
-        IOManager.clear(nextMessage);
-        nextMessage = "";
-        IOManager.println(menu.toString());
-        int l = menu.options.length;
-        Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
-        if (input == null) {
-            MenuManager.setNextMessage("Input is invalid.");
-        } else {
-            menu.options[input].runAction();
+
+        while (true) {
+            IOManager.clear(nextMessage);
+            nextMessage = "";
+            IOManager.println(menu.toString());
+            int l = menu.options.length;
+            Integer input = IOManager.getIntInput("Select an option:", 0, l - 1);
+            if (input == null) {
+                MenuManager.setNextMessage("Input is invalid.");
+            } else {
+                menu.options[input].runAction();
+                break;
+            }
         }
     }
 

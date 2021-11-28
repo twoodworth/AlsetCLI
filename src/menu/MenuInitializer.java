@@ -118,7 +118,7 @@ public class MenuInitializer {
         for (String s : buyable) {
             MenuManager.addOption(
                     Key.SELECT_MODEL_MENU,
-                    new MenuOption(s, () -> VehicleSelections.setModel(s))
+                    new MenuOption("Model " + s, () -> VehicleSelections.setModel(s))
             );
         }
     }
@@ -155,7 +155,7 @@ public class MenuInitializer {
 
     private static void initializeSelectOptionsMenu() {
         MenuManager.createMenu(
-                Key.SELECT_MODEL_MENU,
+                Key.SELECT_OPTIONS_MENU,
                 MenuInitializer::reloadSelectOptionsMenu,
                 "Choose Additional Features",
                 new MenuOption("Finish Selecting Features", () -> {})
@@ -172,7 +172,7 @@ public class MenuInitializer {
         buyable.removeAll(VehicleSelections.getOptions());
         for (String s : buyable) {
             MenuManager.addOption(
-                    Key.SELECT_MODEL_MENU,
+                    Key.SELECT_OPTIONS_MENU,
                     new MenuOption(s, () -> {
                         VehicleSelections.addCustomOption(s);
                         MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU, s + " has been added.");
@@ -452,9 +452,11 @@ public class MenuInitializer {
 
                                 // print condition
                                 Condition condition = v.getCondition();
-                                IOManager.println("\tMileage: " + condition.getMileage() + " miles");
-                                IOManager.println("\tLast Inspection: " + condition.getLastInspectionFormatted());
-                                IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
+                                if (condition != null) {
+                                    IOManager.println("\tMileage: " + condition.getMileage() + " miles");
+                                    IOManager.println("\tLast Inspection: " + condition.getLastInspectionFormatted());
+                                    IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
+                                }
 
                                 HashSet<String> options = DBManager.getOptions(sn);
                                 // print additional options
