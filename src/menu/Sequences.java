@@ -15,6 +15,7 @@ import user.UserManager;
 import vehicle.Condition;
 import vehicle.Model;
 import vehicle.Vehicle;
+import vehicle.VehicleSelections;
 
 import java.sql.Connection;
 import java.util.*;
@@ -664,5 +665,54 @@ public class Sequences {
         }
         IOManager.println();
         IOManager.getStringInput("Enter any value to continue:");
+    }
+
+    public static void purchaseVehicleSequence() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_LOCATION_MENU);
+
+        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModel());
+        Long cost = DBManager.getModelCost(model);
+        if (cost == null) {
+            MenuManager.setNextMessage("Unable to load info, please try again.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(model.getYear() + " Model " + model.getName() + "Price:\n");
+        sb.append("Base Price\t\t$").append(cost).append("\n");
+        HashSet<String> options = VehicleSelections.getOptions();
+        for (String option : options) {
+            Long optionCost = DBManager.getOptionCost(option);
+            if (optionCost == null) {
+                MenuManager.setNextMessage("Unable to load info, please try again.");
+                return;
+            }
+            cost += optionCost;
+            sb.append(option).append("\t\t$").append(optionCost).append("\n");
+        }
+
+
+        CardManager.setSelected(null);
+        MenuManager.showMenuOnce(Key.COMPLETE_ORDER_MENU, sb.toString());
+
+        Card card = CardManager.getSelected();
+        if (card == null) return;
+        IOManager.println("Card Selected: " + card.getNumCensored());
+        IOManager.getStringInput("Enter any value to complete transaction: ");
+
+        // complete transaction
+        ServiceLocation location = VehicleSelections.getLocation();
+        boolean success = DBManager.purchaseVehicle(model, options, location, card, cost, UserManager.getCurrent());
+        if (success) {
+            IOManager.clear("Purchase completed. You will receive an email when your vehicle is ready for pickup.");
+            IOManager.getStringInput("Enter any value to continue:");
+        } else {
+            MenuManager.setNextMessage("Failed to update database, please try again.");
+        }
+        MenuManager.showMenu(Key.CUSTOMER_MENU);
+
+
     }
 }

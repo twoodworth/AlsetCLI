@@ -101,6 +101,22 @@ class Menu {
     }
 
     /**
+     * Removes the given option from options.
+     *
+     * @param option: MenuOption to remove
+     */
+    void removeOption(MenuOption option) {
+        MenuOption[] temp = new MenuOption[options.length - 1];
+        int i = 0;
+        for (MenuOption menuOption : options) {
+            if (menuOption.equals(option)) continue;
+            temp[i] = menuOption;
+            i++;
+        }
+        options = temp;
+    }
+
+    /**
      * Returns the number of options belonging to the menu.
      *
      * @return size of menu

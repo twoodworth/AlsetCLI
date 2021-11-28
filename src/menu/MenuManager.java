@@ -105,6 +105,21 @@ public class MenuManager {
     }
 
     /**
+     * Removes a menu option from a menu
+     *
+     * @param key:    key of menu
+     * @param option: Option to remove
+     * @throws NoSuchElementException if no menus exist with the given ID
+     */
+    public static void removeOption(Key key, MenuOption option) throws NoSuchElementException {
+        Menu menu = menus.get(key);
+        if (menu == null) throw new NoSuchElementException("No menu exists with key " + key.toString());
+        else {
+            menu.removeOption(option);
+        }
+    }
+
+    /**
      * Shows the user the menu with the given ID, and prints a message.
      *
      * @param key     Key of menu to show
@@ -219,7 +234,7 @@ public class MenuManager {
      * @param menu:    menu to display
      * @param message: message to display
      */
-    public static void showMenuOnce(Menu menu, String message) {
+    private static void showMenuOnce(Menu menu, String message) {
         menu.reload();
         current = menu;
         nextMessage = message;

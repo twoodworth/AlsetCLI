@@ -10,6 +10,7 @@ import location.Address;
 import location.GarageData;
 import location.ServiceLocation;
 import menu.MenuManager;
+import user.User;
 import vehicle.Condition;
 import vehicle.Model;
 import vehicle.Vehicle;
@@ -42,9 +43,10 @@ public class DBManager {
     public static boolean validLoginData(String email, String pwd) {
         try {
             boolean valid;
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.VALID_LOGIN_DATA);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.VALID_LOGIN_DATA);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next() && rs.getString("password").equals(pwd);
@@ -65,9 +67,10 @@ public class DBManager {
      */
     public static ServiceLocation getServiceLocation(String pwd) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.SERVICE_LOCATION_LOGIN);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.SERVICE_LOCATION_LOGIN);
             s.setString(1, pwd);
             ResultSet rs = s.executeQuery();
 
@@ -104,9 +107,10 @@ public class DBManager {
     public static boolean emailExists(String email) {
         try {
             boolean valid;
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.EMAIL_EXISTS);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.EMAIL_EXISTS);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next();
@@ -127,9 +131,10 @@ public class DBManager {
      */
     public static boolean updatePassword(String email, String pass) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.UPDATE_PASSWORD);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.UPDATE_PASSWORD);
             s.setString(1, pass);
             s.setString(2, email);
             s.execute();
@@ -150,9 +155,10 @@ public class DBManager {
      */
     public static String[] getName(String email) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_CUSTOMER_NAME);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_CUSTOMER_NAME);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -178,9 +184,10 @@ public class DBManager {
      */
     public static Condition getCondition(String serialNum) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_VEHICLE_CONDITION);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_VEHICLE_CONDITION);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -205,9 +212,10 @@ public class DBManager {
      */
     public static HashSet<Vehicle> getVehicles(String email) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_USER_VEHICLES);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_USER_VEHICLES);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             HashSet<Vehicle> vehicles = new HashSet<>();
@@ -238,9 +246,10 @@ public class DBManager {
      */
     public static Vehicle getVehicle(String serialNum) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_VEHICLE);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_VEHICLE);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
 
@@ -270,9 +279,10 @@ public class DBManager {
      */
     public static HashSet<Model> getRepairableModels(ServiceLocation location) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_REPAIRABLE_MODELS);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_REPAIRABLE_MODELS);
             s.setString(1, location.getId());
             ResultSet rs = s.executeQuery();
             HashSet<Model> models = new HashSet<>();
@@ -287,11 +297,46 @@ public class DBManager {
 
     }
 
+    public static Set<String> getBuyableModels() {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_BUYABLE_MODELS);
+            ResultSet rs = s.executeQuery();
+            HashSet<String> models = new HashSet<>();
+            while (rs.next()) models.add(rs.getString("name"));
+            return models;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
+
+    public static Set<Integer> getBuyableYears(String model) {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_BUYABLE_YEARS);
+            s.setString(1, model);
+            ResultSet rs = s.executeQuery();
+            HashSet<Integer> years = new HashSet<>();
+            while (rs.next()) years.add(rs.getInt("year"));
+            return years;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
     public static List<String> getTransactionList(String email) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_TRANSACTION_HISTORY);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_TRANSACTION_HISTORY);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             HashMap<Long, String> transactions = new HashMap<>();
@@ -329,9 +374,10 @@ public class DBManager {
      */
     public static HashSet<ServiceLocation> getRepairableLocations(Vehicle vehicle) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_REPAIRABLE_LOCATIONS);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_REPAIRABLE_LOCATIONS);
             s.setInt(1, vehicle.getYear());
             s.setString(2, vehicle.getModelName());
             ResultSet rs = s.executeQuery();
@@ -366,9 +412,10 @@ public class DBManager {
      */
     public static HashSet<String> getOptions(String serialNum) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_OPTIONS);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_OPTIONS);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
             HashSet<String> options = new HashSet<>();
@@ -428,9 +475,10 @@ public class DBManager {
      */
     public static HashSet<GarageData> getGarageData(ServiceLocation location) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_GARAGE_VEHICLES);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_GARAGE_VEHICLES);
             s.setString(1, location.getId());
             ResultSet rs = s.executeQuery();
             HashSet<GarageData> data = new HashSet<>();
@@ -464,9 +512,10 @@ public class DBManager {
      */
     public static boolean isReadyForPickup(Vehicle vehicle) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_PICKUP_ROW);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_PICKUP_ROW);
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -489,9 +538,10 @@ public class DBManager {
      */
     public static ServiceLocation getServiceLocation(Vehicle vehicle) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_SERVICE_LOCATION_OF_VEHICLE);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_SERVICE_LOCATION_OF_VEHICLE);
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -527,9 +577,10 @@ public class DBManager {
      */
     public static boolean isAtGarage(Vehicle vehicle) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_VEHICLE_GARAGE);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_VEHICLE_GARAGE);
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -610,9 +661,10 @@ public class DBManager {
      */
     public static String getEmail(Vehicle vehicle) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_VEHICLE_OWNER_EMAIL);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_VEHICLE_OWNER_EMAIL);
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
@@ -637,9 +689,10 @@ public class DBManager {
      */
     public static HashSet<Card> getCards(String email) {
         try {
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_CARDS);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_CARDS);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             HashSet<Card> cards = new HashSet<>();
@@ -922,9 +975,10 @@ public class DBManager {
         try {
 
             // remove vehicle from pickup
-            PreparedStatement s = ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_SERVICE_LOCATIONS);
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_SERVICE_LOCATIONS);
             ResultSet rs = s.executeQuery();
             HashSet<ServiceLocation> locations = new HashSet<>();
             while (rs.next()) {
@@ -941,14 +995,149 @@ public class DBManager {
                                         rs.getString("zip"),
                                         null
                                 )
-                                )
+                        )
                 );
             }
             s.close();
             return locations;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
+    public static Set<String> getBuyableOptions(Model model) {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_BUYABLE_OPTIONS);
+            s.setString(1, model.getName());
+            s.setInt(2, model.getYear());
+            ResultSet rs = s.executeQuery();
+            HashSet<String> options = new HashSet<>();
+            while (rs.next()) options.add(rs.getString("option_name"));
+            return options;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
+    public static Long getModelCost(Model model) {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_MODEL_COST);
+            s.setInt(1, model.getYear());
+            s.setString(2, model.getName());
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) return rs.getLong("model_price");
             return null;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
+
+    public static Long getOptionCost(String option) {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_OPTION_COST);
+            s.setString(1, option);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) return rs.getLong("option_price");
+            return null;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
+
+    public static String getNewSN() {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_MAX_SN);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                StringBuilder sn = new StringBuilder(rs.getString("sn"));
+                long l = Long.parseLong(sn.toString()) + 1;
+                sn = new StringBuilder(String.valueOf(l));
+                while (sn.length() < 9) sn.insert(0, "0");
+                return sn.toString();
+            }
+            return null;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
+
+    public static boolean purchaseVehicle(Model model, HashSet<String> options, ServiceLocation location, Card card, Long price, User user) {
+        try {
+
+            // generate new serial number
+            String sn = getNewSN();
+            if (sn == null) return false;
+
+            // get timestamp
+            long timestamp = new Date().getTime() / 1000L;
+
+            // get connection
+            Connection current = ConnectionManager.getCurrentConnection();
+
+            // insert vehicle into database
+            PreparedStatement s = current.prepareStatement(Statement.ADD_VEHICLE);
+            s.setString(1, sn);
+            s.setString(2, "False");
+            s.execute();
+            s.close();
+
+            // add vehicle model relation to database
+            s = current.prepareStatement(Statement.ADD_VEHICLE_MODEL);
+            s.setString(1, sn);
+            s.setInt(2, model.getYear());
+            s.setString(3, model.getName());
+            s.execute();
+            s.close();;
+
+            // add custom option relations to database (sn, option_name)
+            for (String option : options) {
+                s = current.prepareStatement(Statement.ADD_VEHICLE_OPTION);
+                s.setString(1, option);
+                s.setString(2, sn);
+                s.execute();
+                s.close();
+            }
+
+            // add transaction to database (timestamp, price)
+            s = current.prepareStatement(Statement.ADD_TRANSACTION);
+            s.setLong(1, timestamp);
+            s.setLong(2, price);
+            s.execute();
+            s.close();
+
+            // add purchase to database (email, sn, timestamp, price, card)
+            s = current.prepareStatement(Statement.ADD_PURCHASE);
+            s.setString(1, user.getEmail());
+            s.setString(2, sn);
+            s.setLong(3, timestamp);
+            s.setLong(4, price);
+            s.setString(5, card.getNum());
+            s.execute();
+            s.close();
+
+            // commit & return
+            current.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
         }
     }
 }

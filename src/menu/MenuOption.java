@@ -1,5 +1,7 @@
 package menu;
 
+import java.util.Objects;
+
 /**
  * A selectable option whose description gets displayed by a menu. When a menu option
  * gets selected by the user via a menu, the Runnable action gets called to
@@ -41,5 +43,19 @@ public class MenuOption {
      */
     void runAction() {
         action.run();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MenuOption that = (MenuOption) o;
+        return Objects.equals(description, that.description) &&
+                Objects.equals(action, that.action);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, action);
     }
 }

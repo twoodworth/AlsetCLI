@@ -25,6 +25,60 @@ public class Statement {
                     "WHERE password=?";
 
     /**
+     * Used for obtaining a set of all models currently being sold new.
+     */
+    public static final String GET_BUYABLE_MODELS =
+            "SELECT distinct name " +
+                    "FROM model " +
+                    "WHERE model_price IS NOT NULL";
+
+    /**
+     * Used for obtaining a set of all options currently being sold for
+     * a given model.
+     */
+    public static final String GET_BUYABLE_OPTIONS =
+            "SELECT distinct option_name " +
+                    "FROM model_options " +
+                        "NATURAL JOIN custom_option " +
+                    "WHERE option_price IS NOT NULL " +
+                        "AND name=? " +
+                        "AND year=?";
+
+    /**
+     * Used for obtaining the cost of a specific model.
+     */
+    public static final String GET_MODEL_COST =
+            "SELECT model_price " +
+                    "FROM model " +
+                    "WHERE year=? " +
+                        "AND name=?";
+
+    /**
+     * Used for obtaining the cost of a specific option.
+     */
+    public static final String GET_OPTION_COST =
+            "SELECT option_price " +
+                    "FROM custom_option " +
+                    "WHERE option_name=?";
+
+    /**
+     * Used for obtaining the current max serial number
+     */
+    public static final String GET_MAX_SN =
+            "SELECT MAX(serial_num) AS sn" +
+                    "FROM vehicle";
+
+    /**
+     * Used for obtaining a set of all years currently being sold new for
+     * a given model.
+     */
+    public static final String GET_BUYABLE_YEARS =
+            "SELECT distinct year " +
+                    "FROM model " +
+                    "WHERE model_price IS NOT NULL " +
+                    "AND name=?";
+
+    /**
      * Used for checking if a given email address exists within the database.
      */
     public static final String EMAIL_EXISTS =
@@ -250,6 +304,40 @@ public class Statement {
     public static final String START_REPAIR =
             "INSERT INTO repair (start_time, end_time, repair_type, price) " +
                     "VALUES (?, ?, ?, ?)";
+
+    /**
+     * Used for adding a new row into vehicle
+     */
+    public static final String ADD_VEHICLE =
+            "INSERT INTO vehicle (serial_num, is_manufactured) " +
+                    "VALUES (?, ?)";
+
+    /**
+     * Used for adding a new row into vehicle_options
+     */
+    public static final String ADD_VEHICLE_OPTION =
+            "INSERT INTO vehicle_option (option_name, serial_num) " +
+                    "VALUES (?, ?)";
+
+    /**
+     * Used for adding a new row into transaction
+     */
+    public static final String ADD_TRANSACTION =
+            "INSERT INTO transaction (timestamp, sales_price) " +
+                    "VALUES (?, ?)";
+
+    /**
+     * Used for adding a new row into transaction
+     */
+    public static final String ADD_VEHICLE_MODEL =
+            "INSERT INTO vehicle_model (serial_num, year, name) " +
+                    "VALUES (?, ?, ?)";
+
+    /**
+     * Used for adding a new row into purchases
+     */
+    public static final String ADD_PURCHASE =
+            "INSERT INTO purchases (email, serial_num, timestamp, sales_price, card_num) VALUES (?, ?, ?, ?, ?)";
 
     /**
      * Used for adding a new row into repairs.

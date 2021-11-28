@@ -11,11 +11,14 @@ import location.ServiceManager;
 import user.User;
 import user.UserManager;
 import vehicle.Condition;
+import vehicle.Model;
 import vehicle.Vehicle;
+import vehicle.VehicleSelections;
 
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +48,11 @@ public class MenuInitializer {
             initializeViewGarageMenu();
             initializeRemoveGarageVehicleMenu();
             initializeBrowseLocationsMenu();
+            initializeSelectModelMenu();
+            initializeSelectYearMenu();
+            initializeSelectOptionsMenu();
+            initializeCompleteOrderMenu();
+            initializeSelectLocationMenu();
             initialized = true;
         }
     }
@@ -87,13 +95,110 @@ public class MenuInitializer {
                 Key.CUSTOMER_MENU,
                 "Alset Main Menu",
                 new MenuOption("My Vehicles", () -> MenuManager.showMenu(Key.CUSTOMER_VEHICLES_MENU)),
-                new MenuOption("Purchase Vehicles //todo add functionality", () -> {
-                }),
+                new MenuOption("Purchase Vehicle", Sequences::purchaseVehicleSequence),
                 new MenuOption("View Purchase History", Sequences::purchaseHistorySequence),
                 new MenuOption("Browse Service Locations", () -> MenuManager.showMenu(Key.BROWSE_LOCATIONS_MENU)),
                 new MenuOption("Log Out", Sequences::alsetLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
+    }
+
+    private static void initializeSelectModelMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_MODEL_MENU,
+                MenuInitializer::reloadSelectModelMenu,
+                "Select Model"
+        );
+    }
+
+    private static void reloadSelectModelMenu() {
+        int size = MenuManager.getSize(Key.SELECT_MODEL_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_MODEL_MENU, i);
+        Set<String> buyable = DBManager.getBuyableModels();
+        for (String s : buyable) {
+            MenuManager.addOption(
+                    Key.SELECT_MODEL_MENU,
+                    new MenuOption(s, () -> VehicleSelections.setModel(s))
+            );
+        }
+    }
+
+    private static void initializeSelectLocationMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_LOCATION_MENU,
+                MenuInitializer::reloadSelectLocationMenu,
+                "Select Pickup Location"
+        );
+    }
+
+    private static void reloadSelectLocationMenu() {
+        int size = MenuManager.getSize(Key.SELECT_LOCATION_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_LOCATION_MENU, i);
+        Set<ServiceLocation> locations = DBManager.getServiceLocations();
+        List<ServiceLocation> sorted = locations.stream().sorted(Comparator.comparing(ServiceLocation::getName)).collect(Collectors.toList());
+        for (ServiceLocation s : sorted) {
+            MenuManager.addOption(
+                    Key.SELECT_LOCATION_MENU,
+                    new MenuOption(s.getName(), () -> VehicleSelections.setLocation(s))
+            );
+        }
+    }
+
+    private static void initializeCompleteOrderMenu() {
+        MenuManager.createMenu(
+                Key.COMPLETE_ORDER_MENU,
+                "Select an Option",
+                new MenuOption("Cancel Order", () -> MenuManager.showMenu(Key.CUSTOMER_MENU, "Order Cancelled.")),
+                new MenuOption("Proceed to Checkout", () -> Sequences.getCardSequence(UserManager.getCurrent().getEmail()))
+        );
+    }
+
+    private static void initializeSelectOptionsMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_MODEL_MENU,
+                MenuInitializer::reloadSelectOptionsMenu,
+                "Choose Additional Features",
+                new MenuOption("Finish Selecting Features", () -> {})
+        );
+    }
+
+    private static void reloadSelectOptionsMenu() {
+        int size = MenuManager.getSize(Key.SELECT_OPTIONS_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELECT_OPTIONS_MENU, i);
+        String name = VehicleSelections.getModel();
+        int year = VehicleSelections.getYear();
+        Model model = new Model(year, name);
+        Set<String> buyable = DBManager.getBuyableOptions(model);
+        buyable.removeAll(VehicleSelections.getOptions());
+        for (String s : buyable) {
+            MenuManager.addOption(
+                    Key.SELECT_MODEL_MENU,
+                    new MenuOption(s, () -> {
+                        VehicleSelections.addCustomOption(s);
+                        MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU, s + " has been added.");
+                    })
+            );
+        }
+    }
+
+    private static void initializeSelectYearMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_YEAR_MENU,
+                MenuInitializer::reloadSelectYearMenu,
+                "Select Year"
+        );
+    }
+
+    private static void reloadSelectYearMenu() {
+        int size = MenuManager.getSize(Key.SELECT_YEAR_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_YEAR_MENU, i);
+        Set<Integer> buyable = DBManager.getBuyableYears(VehicleSelections.getModel());
+        for (int i : buyable) {
+            MenuManager.addOption(
+                    Key.SELECT_YEAR_MENU,
+                    new MenuOption(String.valueOf(i), () -> VehicleSelections.setYear(i))
+            );
+        }
     }
 
     /**
@@ -301,6 +406,8 @@ public class MenuInitializer {
                 new MenuOption("Manage Listings\t//todo add", () -> {
                 }),//todo add
                 new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU)),
+                new MenuOption("View Repair History\t//todo add", () -> {
+                }),//todo add
                 new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
