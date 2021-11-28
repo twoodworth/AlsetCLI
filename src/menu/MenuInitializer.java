@@ -53,6 +53,7 @@ public class MenuInitializer {
             initializeSelectOptionsMenu();
             initializeCompleteOrderMenu();
             initializeSelectLocationMenu();
+            initializeManageShowroomMenu();
             initialized = true;
         }
     }
@@ -217,6 +218,17 @@ public class MenuInitializer {
                 new MenuOption("Remove Repairable Model", () -> {
                 }),//todo add
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
+        );
+    }
+
+    private static void initializeManageShowroomMenu() {
+        MenuManager.createMenu(
+                Key.MANAGE_SHOWROOM_MENU,
+                "Manage Showroom",
+                new MenuOption("View Vehicles\t//todo add", () -> {}),//todo add
+                new MenuOption("Add Vehicle\t//todo add", () -> {}),//todo add
+                new MenuOption("Retire Vehicle\t//todo add", () -> {}),//todo add
+                new MenuOption("Return to Main Menu\t//todo add", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))//todo add
         );
     }
 
@@ -401,8 +413,7 @@ public class MenuInitializer {
                 },
                 "Name",
                 new MenuOption("Location Overview", Sequences::locationOverviewSequence),
-                new MenuOption("Manage Showroom \t//todo add", () -> {
-                }),//todo add
+                new MenuOption("Manage Showroom", () -> MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU)),
                 new MenuOption("Manage Listings\t//todo add", () -> {
                 }),//todo add
                 new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU)),
