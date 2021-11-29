@@ -57,6 +57,7 @@ public class MenuInitializer {
             initializeManageListingsMenu();
             initializeViewListingsMenu();
             initializeUpdateListingsMenu();
+            initializeSellListingMenu();
             initialized = true;
         }
     }
@@ -185,6 +186,7 @@ public class MenuInitializer {
         }
     }
 
+
     private static void initializeSelectYearMenu() {
         MenuManager.createMenu(
                 Key.SELECT_YEAR_MENU,
@@ -231,7 +233,7 @@ public class MenuInitializer {
                 new MenuOption("View Vehicles", () -> MenuManager.showMenu(Key.VIEW_SHOWROOM_MENU)),
                 new MenuOption("Order Vehicle", Sequences::orderShowroomVehicleSequence),
                 new MenuOption("Add Vehicle", () -> MenuManager.showMenu(Key.ADD_SHOWROOM_VEHICLE_MENU, "Only add a vehicle if it has finished being delivered to your service location.")),
-                new MenuOption("Retire Vehicle", () -> MenuManager.showMenu(Key.RETIRE_SHOWROOM_VEHICLE_MENU, "All retired vehicles get listed for sale.")),
+                new MenuOption("Retire/Sell Vehicle", () -> MenuManager.showMenu(Key.RETIRE_SHOWROOM_VEHICLE_MENU, "All retired vehicles get listed for sale.")),
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
         );
     }
@@ -486,7 +488,7 @@ public class MenuInitializer {
                 "Name",
                 new MenuOption("Location Overview", Sequences::locationOverviewSequence),
                 new MenuOption("Manage Showroom", () -> MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU)),
-                new MenuOption("Manage Listings", () -> MenuManager.showMenu(Key.MANAGE_LISTINGS_MENU)),//todo add
+                new MenuOption("Manage Listings", () -> MenuManager.showMenu(Key.MANAGE_LISTINGS_MENU)),
                 new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU)),
                 new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
@@ -499,9 +501,36 @@ public class MenuInitializer {
                 "Manage Listings",
                 new MenuOption("View Listings", () -> MenuManager.showMenu(Key.VIEW_LISTINGS_MENU)),
                 new MenuOption("Update Listings", () -> MenuManager.showMenu(Key.UPDATE_LISTINGS_MENU)),
-                new MenuOption("Sell Vehicle", () -> {}),
+                new MenuOption("Sell Vehicle", () -> {
+                }),
                 new MenuOption("Return to Main Menu", MenuManager::showPrevious)
         );
+    }
+
+    private static void initializeSellListingMenu() {
+        MenuManager.createMenu(
+                Key.SELL_LISTING_MENU,
+                MenuInitializer::reloadSellListingMenu,
+                "Sell Listed Vehicles",
+                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void reloadSellListingMenu() {
+        int size = MenuManager.getSize(Key.SELL_LISTING_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELL_LISTING_MENU, i);
+        Map<Vehicle, Long> list = DBManager.getVehicleListings();
+
+        for (Vehicle v : list.keySet()) {
+            String sn = v.getSerialNum();
+            MenuManager.addOption(
+                    Key.SELL_LISTING_MENU,
+                    new MenuOption(
+                            v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
+                            () -> Sequences.sellListedVehicleSequence(v, list.get(v))
+                    )
+            );
+        }
     }
 
     private static void initializeUpdateListingsMenu() {
@@ -514,8 +543,8 @@ public class MenuInitializer {
     }
 
     private static void reloadUpdateListingsMenu() {
-        int size = MenuManager.getSize(Key.VIEW_LISTINGS_MENU);
-        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_LISTINGS_MENU, i);
+        int size = MenuManager.getSize(Key.UPDATE_LISTINGS_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.UPDATE_LISTINGS_MENU, i);
         Map<Vehicle, Long> list = DBManager.getVehicleListings();
 
         for (Vehicle v : list.keySet()) {

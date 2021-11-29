@@ -698,6 +698,130 @@ public class Sequences {
 
     }
 
+    public static void sellListedVehicleSequence(Vehicle v, long price) {
+        VehicleSelections.reset();
+        IOManager.clear("Please hand the console over to the customer.");
+        IOManager.getStringInput("Enter any value to continue:");
+        IOManager.clear("Welcome to " + ServiceManager.getCurrent().getName() + "!");
+        int i = 0;
+        String email;
+        while (true) {
+            email = IOManager.getStringInput("Enter your Alset email:");
+            String password = IOManager.getPasswordInput("Enter your Alset password:");
+            boolean valid = DBManager.validLoginData(email, password);
+            if (valid) {
+                break;
+            } else if (i == 4) {
+                IOManager.clear("Failed too many times. Please return console to employee.");
+                IOManager.getStringInput("Enter any value to continue:");
+                return;
+            } else {
+                IOManager.clear("Invalid Username/Password. Please try again.");
+                i++;
+            }
+        }
+
+        Card card = getCardSequence(email);
+        String[] name = DBManager.getName(email);
+        HashSet<String> options = DBManager.getOptions(v.getSerialNum());
+        if (name == null || card == null || options == null) {
+            MenuManager.setNextMessage("Unable to load data.");
+            return;
+        }
+
+        IOManager.clear("Please confirm the following information:");
+
+        // customer confirmation
+        while (true) {
+            // customer info
+            IOManager.println("Customer Info: ");
+            IOManager.println("\tName: " + name[0] + " " + name[1] + " " + name[2]);
+            IOManager.println("\tEmail: " + email);
+
+            // Vehicle Info
+            IOManager.println("\nVehicle Info: ");
+            IOManager.println("\tSerial Number: " + v.getSerialNum());
+            IOManager.println("\tModel Name: " + v.getModelName());
+            IOManager.println("\tModel Year: " + v.getYear());
+            if (options.isEmpty()) IOManager.println("\tAdditional Options: None");
+            else {
+                IOManager.println("\tAdditional Options:");
+                for (String s : options) {
+                    IOManager.println("\t\t- " + s);
+                }
+            }
+
+            // Transaction info
+            IOManager.println("\nTransaction Info: ");
+            IOManager.println("Vehicle Cost: $" + price);
+            IOManager.println("Card: " + card.getNumCensored() + "\n");
+
+            // get confirmation
+            String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
+            if (confirm.equals("y")) {
+                IOManager.clear("Information has been confirmed as correct. Return console to employee.");
+                IOManager.getStringInput("Enter any value to continue:");
+                break;
+            } else if (confirm.equals("n")) {
+                IOManager.clear("Information is incorrect. Return console to employee.");
+                IOManager.getStringInput("Enter any value to continue:");
+                return;
+            } else {
+                IOManager.clear("Invalid response, please try again.");
+            }
+        }
+
+        // employee confirmation
+        IOManager.clear("Please confirm the following information:");
+        while (true) {
+
+            // customer info
+            IOManager.println("Customer Info: ");
+            IOManager.println("\tName: " + name[0] + " " + name[1] + " " + name[2]);
+            IOManager.println("\tEmail: " + email);
+
+            // Vehicle Info
+            IOManager.println("\nVehicle Info: ");
+            IOManager.println("\tSerial Number: " + v.getSerialNum());
+            IOManager.println("\tModel Name: " + v.getModelName());
+            IOManager.println("\tModel Year: " + v.getYear());
+            if (options.isEmpty()) IOManager.println("\tAdditional Options: None");
+            else {
+                IOManager.println("\tAdditional Options:");
+                for (String s : options) {
+                    IOManager.println("\t\t- " + s);
+                }
+            }
+
+            // Transaction info
+            IOManager.println("\nTransaction Info: ");
+            IOManager.println("Vehicle Cost: $" + price);
+            IOManager.println("Card: " + card.getNumCensored() + "\n");
+
+
+            String confirm = IOManager.getStringInput("Is this information correct? (y/n):");
+            if (confirm.equals("y")) {
+                break;
+            } else if (confirm.equals("n")) {
+                IOManager.clear("Information is incorrect.");
+                IOManager.getStringInput("Enter any value to continue:");
+                return;
+            } else {
+                IOManager.clear("Invalid response, please try again.");
+            }
+        }
+
+        boolean success = DBManager.sellListedVehicle(email, price, v, card);
+
+        if (success) {
+            IOManager.clear("Vehicle has been sold.");
+            IOManager.println("Customer may now claim it as their own.");
+        } else {
+            IOManager.clear("Error while processing service request, Please try again.");
+        }
+        IOManager.getStringInput("Enter any value to continue:");
+    }
+
     public static void purchaseVehicleSequence() {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
@@ -745,7 +869,5 @@ public class Sequences {
             MenuManager.setNextMessage("Failed to update database, please try again.");
         }
         MenuManager.showMenu(Key.CUSTOMER_MENU);
-
-
     }
 }

@@ -1444,4 +1444,50 @@ public class DBManager {
             return false;
         }
     }
+
+    public static boolean sellListedVehicle(String email, long price, Vehicle v, Card card) {
+        try {
+            String sn = v.getSerialNum();
+
+            // insert transaction
+            Connection current = ConnectionManager.getCurrentConnection();
+            long timestamp = new Date().getTime() / 1000L;
+            PreparedStatement s = current.prepareStatement(Statement.ADD_TRANSACTION);
+            s.setLong(1, timestamp);
+            s.setLong(2, price);
+            s.execute();
+            s.close();
+
+            // insert owner
+            s = current.prepareStatement(Statement.ADD_OWNER);
+            s.setString(1, email);
+            s.setString(1, sn);
+            s.execute();
+            s.close();
+
+            // delete vehicle listing
+            s = current.prepareStatement(Statement.DELETE_LISTING);
+            s.setString(1, sn);
+            s.execute();
+            s.close();
+
+            // insert purchase
+            s = current.prepareStatement(Statement.ADD_PURCHASE);
+            s.setString(1, email);
+            s.setString(2, sn);
+            s.setLong(3, timestamp);
+            s.setLong(4, price);
+            s.setString(5, card.getNum());
+            s.execute();
+            s.close();
+
+            // commit & return
+            current.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
 }
