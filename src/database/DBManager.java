@@ -16,6 +16,7 @@ import vehicle.Condition;
 import vehicle.Model;
 import vehicle.Vehicle;
 
+import javax.xml.ws.Service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1306,6 +1307,12 @@ public class DBManager {
         }
     }
 
+    public static HashSet<Vehicle> getManufacturedShowroomVehicles(ServiceLocation loc) {
+        HashSet<Vehicle> vehicles = getShowroomVehicles(loc);
+        vehicles.removeIf(v -> !v.isManufactured());
+        return vehicles;
+    }
+
     public static HashSet<Vehicle> getOrderedVehicles() {
         try {
 
@@ -1366,5 +1373,35 @@ public class DBManager {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
+    }
+
+    public static boolean removeShowroomVehicle(Vehicle v, Long price) {
+        // remove from showroom
+        // add to listing
+        try {
+            // remove from showroom
+            Connection current = ConnectionManager.getCurrentConnection();
+            PreparedStatement s = current.prepareStatement(Statement.DELETE_SHOWROOM_VEHICLE);
+            s.setString(1, v.getSerialNum());
+            s.execute();
+            s.close();
+
+            // add price listing
+            s = current.prepareStatement(Statement.ADD_LISTING);
+            s.setString(1, v.getSerialNum());
+            s.setString(2, ServiceManager.getCurrent().getId());
+            s.setLong(3, price);
+            s.execute();
+            s.close();
+
+            // commit & return
+            current.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+
     }
 }

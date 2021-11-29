@@ -56,6 +56,7 @@ public class MenuInitializer {
             initializeManageShowroomMenu();
             initializeViewShowroomMenu();
             initializeAddShowroomVehicleMenu();
+            initializeRetireVehicleMenu();
             initialized = true;
         }
     }
@@ -230,25 +231,49 @@ public class MenuInitializer {
                 new MenuOption("View Vehicles", () -> MenuManager.showMenu(Key.VIEW_SHOWROOM_MENU)),
                 new MenuOption("Order Vehicle", Sequences::orderShowroomVehicleSequence),
                 new MenuOption("Add Vehicle", () -> MenuManager.showMenu(Key.ADD_SHOWROOM_VEHICLE_MENU, "Only add a vehicle if it has finished being delivered to your service location.")),
-                new MenuOption("Retire Vehicle\t//todo add", () -> {
-                }),//todo add
+                new MenuOption("Retire Vehicle", () -> MenuManager.showMenu(Key.RETIRE_SHOWROOM_VEHICLE_MENU)),
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
         );
     }
 
-//    private static void initializeRetireVehicleMenu() {todo add
-//        MenuManager.createMenu(
-//                Key.RETIRE_SHOWROOM_VEHICLE_MENU,
-//                MenuInitializer::reloadRetireVehicleMenu,
-//                "Retire Vehicle From Showroom",
-//                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
-//        );
-//    }
-//
-//    private static void reloadRetireVehicleMenu() {
-//
-//    }
-//
+    private static void initializeRetireVehicleMenu() {
+        MenuManager.createMenu(
+                Key.RETIRE_SHOWROOM_VEHICLE_MENU,
+                MenuInitializer::reloadRetireVehicleMenu,
+                "Retire Vehicle From Showroom",
+                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void reloadRetireVehicleMenu() {
+        int size = MenuManager.getSize(Key.RETIRE_SHOWROOM_VEHICLE_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.RETIRE_SHOWROOM_VEHICLE_MENU, i);
+        HashSet<Vehicle> vehicles = DBManager.getManufacturedShowroomVehicles(ServiceManager.getCurrent());
+        for (Vehicle v : vehicles) {
+            MenuManager.addOption(
+                    Key.RETIRE_SHOWROOM_VEHICLE_MENU,
+                    new MenuOption(v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ")",
+                            () -> {
+                                IOManager.clear();
+                                Long price = IOManager.getLongInput("Enter price to list this vehicle for:", 0L, Long.MAX_VALUE);
+                                if (price == null) {
+                                    MenuManager.setNextMessage("Invalid Price.");
+                                    return;
+                                }
+
+                                boolean success = DBManager.removeShowroomVehicle(v, price);
+                                if (success) {
+                                    MenuManager.setNextMessage(v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ") was successfully removed\n" +
+                                            "from the showroom, and is now listed for $" + price);
+                                } else {
+                                    MenuManager.setNextMessage("Unable to update database. Please try again.");
+                                }
+                                MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU);
+                            })
+            );
+        }
+    }
+
 
     private static void initializeAddShowroomVehicleMenu() {
         MenuManager.createMenu(

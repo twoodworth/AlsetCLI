@@ -336,6 +336,12 @@ public class Statement {
                     "VALUES (?, ?, ?, ?)";
 
     /**
+     * Used fro adding a vehicle into listings
+     */
+    public static final String ADD_LISTING =
+            "INSERT INTO vehicle_listing (serial_num, location_id, price) " +
+                    "VALUES (?, ?, ?)";
+    /**
      * Used for adding a new row into vehicle
      */
     public static final String ADD_VEHICLE =
@@ -443,6 +449,13 @@ public class Statement {
             "DELETE FROM condition " +
                     "WHERE mileage=? " +
                     "AND last_inspection=?";
+
+    /**
+     * Used for deleting a row from showroom, given the vehicle's serial number.
+     */
+    public static final String DELETE_SHOWROOM_VEHICLE =
+            "DELETE FROM showroom " +
+                    "WHERE serial_num=?";
 
     /**
      * Used for deleting a row from condition, given the vehicle's mileage, last inspection timestamp, and has_damage value
