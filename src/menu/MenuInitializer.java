@@ -231,7 +231,7 @@ public class MenuInitializer {
                 new MenuOption("View Vehicles", () -> MenuManager.showMenu(Key.VIEW_SHOWROOM_MENU)),
                 new MenuOption("Order Vehicle", Sequences::orderShowroomVehicleSequence),
                 new MenuOption("Add Vehicle", () -> MenuManager.showMenu(Key.ADD_SHOWROOM_VEHICLE_MENU, "Only add a vehicle if it has finished being delivered to your service location.")),
-                new MenuOption("Retire Vehicle", () -> MenuManager.showMenu(Key.RETIRE_SHOWROOM_VEHICLE_MENU)),
+                new MenuOption("Retire Vehicle", () -> MenuManager.showMenu(Key.RETIRE_SHOWROOM_VEHICLE_MENU, "All retired vehicles get listed for sale.")),
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
         );
     }
@@ -263,12 +263,11 @@ public class MenuInitializer {
 
                                 boolean success = DBManager.removeShowroomVehicle(v, price);
                                 if (success) {
-                                    MenuManager.setNextMessage(v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ") was successfully removed\n" +
+                                    MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU, v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ") was successfully removed\n" +
                                             "from the showroom, and is now listed for $" + price);
                                 } else {
-                                    MenuManager.setNextMessage("Unable to update database. Please try again.");
+                                    MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU, "Unable to update database. Please try again.");
                                 }
-                                MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU);
                             })
             );
         }

@@ -16,7 +16,6 @@ import vehicle.Condition;
 import vehicle.Model;
 import vehicle.Vehicle;
 
-import javax.xml.ws.Service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
