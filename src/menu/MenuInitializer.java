@@ -15,10 +15,7 @@ import vehicle.Model;
 import vehicle.Vehicle;
 import vehicle.VehicleSelections;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -57,6 +54,9 @@ public class MenuInitializer {
             initializeViewShowroomMenu();
             initializeAddShowroomVehicleMenu();
             initializeRetireVehicleMenu();
+            initializeManageListingsMenu();
+            initializeViewListingsMenu();
+            initializeUpdateListingsMenu();
             initialized = true;
         }
     }
@@ -486,12 +486,114 @@ public class MenuInitializer {
                 "Name",
                 new MenuOption("Location Overview", Sequences::locationOverviewSequence),
                 new MenuOption("Manage Showroom", () -> MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU)),
-                new MenuOption("Manage Listings\t//todo add", () -> {
-                }),//todo add
+                new MenuOption("Manage Listings", () -> MenuManager.showMenu(Key.MANAGE_LISTINGS_MENU)),//todo add
                 new MenuOption("Manage Garage", () -> MenuManager.showMenu(Key.MANAGE_GARAGE_MENU)),
                 new MenuOption("Log Out", Sequences::serviceManagerLogoutSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
         );
+    }
+
+    private static void initializeManageListingsMenu() {
+        MenuManager.createMenu(
+                Key.MANAGE_LISTINGS_MENU,
+                "Manage Listings",
+                new MenuOption("View Listings", () -> MenuManager.showMenu(Key.VIEW_LISTINGS_MENU)),
+                new MenuOption("Update Listings", () -> MenuManager.showMenu(Key.UPDATE_LISTINGS_MENU)),
+                new MenuOption("Sell Vehicle", () -> {}),
+                new MenuOption("Return to Main Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void initializeUpdateListingsMenu() {
+        MenuManager.createMenu(
+                Key.UPDATE_LISTINGS_MENU,
+                MenuInitializer::reloadUpdateListingsMenu,
+                "Update Listings",
+                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void reloadUpdateListingsMenu() {
+        int size = MenuManager.getSize(Key.VIEW_LISTINGS_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_LISTINGS_MENU, i);
+        Map<Vehicle, Long> list = DBManager.getVehicleListings();
+
+        for (Vehicle v : list.keySet()) {
+            String sn = v.getSerialNum();
+            MenuManager.addOption(
+                    Key.UPDATE_LISTINGS_MENU,
+                    new MenuOption(
+                            v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
+                            () -> {
+                                // clear console
+                                IOManager.clear("Current Price: $" + list.get(v));
+                                Long price = IOManager.getLongInput("Enter new price:", 0, Long.MAX_VALUE);
+                                if (price == null) {
+                                    MenuManager.setNextMessage("Invalid Price.");
+                                    return;
+                                }
+                                boolean success = DBManager.updatePriceListing(v, price);
+                                if (success) {
+                                    MenuManager.setNextMessage(v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ") is now listed for $" + price);
+                                } else {
+                                    MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU, "Unable to update database. Please try again.");
+                                }
+
+                            }
+                    )
+            );
+        }
+    }
+
+    private static void initializeViewListingsMenu() {
+        MenuManager.createMenu(
+                Key.VIEW_LISTINGS_MENU,
+                MenuInitializer::reloadViewListingsMenu,
+                "View Listings",
+                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void reloadViewListingsMenu() {
+        int size = MenuManager.getSize(Key.VIEW_LISTINGS_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_LISTINGS_MENU, i);
+        Map<Vehicle, Long> list = DBManager.getVehicleListings();
+
+
+        for (Vehicle v : list.keySet()) {
+            String sn = v.getSerialNum();
+            MenuManager.addOption(
+                    Key.VIEW_LISTINGS_MENU,
+                    new MenuOption(
+                            v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
+                            () -> {
+                                // clear console
+                                IOManager.clear();
+
+                                // print basic info
+                                IOManager.println("\nVehicle Overview:");
+                                IOManager.println("\tSerial Number: " + sn);
+                                IOManager.println("\tModel: " + v.getModelName());
+                                IOManager.println("\tYear: " + v.getYear());
+
+                                HashSet<String> options = DBManager.getOptions(sn);
+                                // print additional options
+                                if (options == null || options.isEmpty()) {
+                                    IOManager.println("\tAdditional Features: None");
+                                } else {
+                                    IOManager.println("\tAdditional Features:");
+                                    for (String option : options) {
+                                        IOManager.println("\t\t- " + option);
+                                    }
+                                }
+
+                                // pause until user enters value
+                                IOManager.println("\n\tPrice: $" + list.get(v) + "\n");
+                                IOManager.getStringInput("Enter any value to continue:");
+                            }
+                    )
+            );
+        }
     }
 
     private static void initializeViewGarageMenu() {

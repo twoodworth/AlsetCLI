@@ -1403,4 +1403,45 @@ public class DBManager {
         }
 
     }
+
+    public static Map<Vehicle, Long> getVehicleListings() {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_LISTINGS);
+            s.setString(1, ServiceManager.getCurrent().getId());
+            ResultSet rs = s.executeQuery();
+            Map<Vehicle, Long> listings = new HashMap<>();
+            while (rs.next()) {
+                String sn = rs.getString("serial_num");
+                Vehicle v = getVehicle(sn);
+                Long price = rs.getLong("price");
+                listings.put(v, price);
+            }
+            return listings;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashMap<>();
+        }
+    }
+
+    public static boolean updatePriceListing(Vehicle v, Long price) {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.UPDATE_LISTING);
+            s.setLong(1, price);
+            s.setString(2, v.getSerialNum());
+            s.execute();
+            s.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
 }

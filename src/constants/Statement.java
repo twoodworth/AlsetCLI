@@ -255,6 +255,15 @@ public class Statement {
                     "WHERE serial_num=?";
 
     /**
+     * Used for getting all vehicle listings of a given service location
+     */
+    public static final String GET_LISTINGS =
+            "SELECT serial_num, price " +
+                    "FROM vehicle_listing " +
+                    "WHERE location_id=?";
+
+
+    /**
      * Used for getting all the cards registered to a given vehicle owner.
      */
     public static final String GET_CARDS =
@@ -291,6 +300,14 @@ public class Statement {
             "UPDATE customer " +
                     "SET password=? " +
                     "WHERE email=?";
+
+    /**
+     * Used for updating a given vehicle's listing price
+     */
+    public static final String UPDATE_LISTING =
+            "UPDATE vehicle_listing " +
+                    "SET price=? " +
+                    "WHERE serial_num=?";
 
     /**
      * Used for updating the pickup status of a given vehicle that is being
@@ -336,7 +353,7 @@ public class Statement {
                     "VALUES (?, ?, ?, ?)";
 
     /**
-     * Used fro adding a vehicle into listings
+     * Used for adding a vehicle into listings
      */
     public static final String ADD_LISTING =
             "INSERT INTO vehicle_listing (serial_num, location_id, price) " +
