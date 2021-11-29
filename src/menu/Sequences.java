@@ -820,6 +820,7 @@ public class Sequences {
             IOManager.clear("Error while processing service request, Please try again.");
         }
         IOManager.getStringInput("Enter any value to continue:");
+        MenuManager.showMenu(Key.MANAGE_LISTINGS_MENU);
     }
 
     public static void purchaseVehicleSequence() {

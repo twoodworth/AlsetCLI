@@ -501,9 +501,8 @@ public class MenuInitializer {
                 "Manage Listings",
                 new MenuOption("View Listings", () -> MenuManager.showMenu(Key.VIEW_LISTINGS_MENU)),
                 new MenuOption("Update Listings", () -> MenuManager.showMenu(Key.UPDATE_LISTINGS_MENU)),
-                new MenuOption("Sell Vehicle", () -> {
-                }),
-                new MenuOption("Return to Main Menu", MenuManager::showPrevious)
+                new MenuOption("Sell Vehicle", () -> MenuManager.showMenu(Key.SELL_LISTING_MENU)),
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
         );
     }
 

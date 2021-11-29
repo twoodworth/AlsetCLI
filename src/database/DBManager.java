@@ -1028,7 +1028,7 @@ public class DBManager {
             s.setString(1, gd.getSerialNum());
             s.execute();
             s.close();
-            current.commit();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1225,7 +1225,7 @@ public class DBManager {
             s.close();
 
             // commit & return
-            current.commit();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1275,7 +1275,7 @@ public class DBManager {
             s.close();
 
             // commit & return
-            current.commit();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1365,7 +1365,7 @@ public class DBManager {
             s4.close();
 
             // commit and return
-            current.commit();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1394,7 +1394,7 @@ public class DBManager {
             s.close();
 
             // commit & return
-            current.commit();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1437,6 +1437,7 @@ public class DBManager {
             s.setString(2, v.getSerialNum());
             s.execute();
             s.close();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1461,7 +1462,7 @@ public class DBManager {
             // insert owner
             s = current.prepareStatement(Statement.ADD_OWNER);
             s.setString(1, email);
-            s.setString(1, sn);
+            s.setString(2, sn);
             s.execute();
             s.close();
 
@@ -1482,7 +1483,7 @@ public class DBManager {
             s.close();
 
             // commit & return
-            current.commit();
+            ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
