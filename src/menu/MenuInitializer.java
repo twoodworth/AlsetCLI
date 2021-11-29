@@ -54,6 +54,8 @@ public class MenuInitializer {
             initializeCompleteOrderMenu();
             initializeSelectLocationMenu();
             initializeManageShowroomMenu();
+            initializeViewShowroomMenu();
+            initializeAddShowroomVehicleMenu();
             initialized = true;
         }
     }
@@ -225,11 +227,43 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Key.MANAGE_SHOWROOM_MENU,
                 "Manage Showroom",
-                new MenuOption("View Vehicles\t//todo add", () -> {}),//todo add
-                new MenuOption("Add Vehicle\t//todo add", () -> {}),//todo add
-                new MenuOption("Retire Vehicle\t//todo add", () -> {}),//todo add
-                new MenuOption("Return to Main Menu\t//todo add", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))//todo add
+                new MenuOption("View Vehicles", () -> MenuManager.showMenu(Key.VIEW_SHOWROOM_MENU)),
+                new MenuOption("Order Vehicle", Sequences::orderShowroomVehicleSequence),
+                new MenuOption("Add Vehicle", () -> MenuManager.showMenu(Key.ADD_SHOWROOM_VEHICLE_MENU, "Only add a vehicle if it has finished being delivered to your service location.")),
+                new MenuOption("Retire Vehicle\t//todo add", () -> {
+                }),//todo add
+                new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
         );
+    }
+
+    private static void initializeAddShowroomVehicleMenu() {
+        MenuManager.createMenu(
+                Key.ADD_SHOWROOM_VEHICLE_MENU,
+                MenuInitializer::reloadAddShowroomVehicleMenu,
+                "Add Vehicle to Showroom",
+                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void reloadAddShowroomVehicleMenu() {
+        int size = MenuManager.getSize(Key.ADD_SHOWROOM_VEHICLE_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.ADD_SHOWROOM_VEHICLE_MENU, i);
+        HashSet<Vehicle> ordered = DBManager.getOrderedVehicles();
+        for (Vehicle v : ordered) {
+            MenuManager.addOption(
+                    Key.ADD_SHOWROOM_VEHICLE_MENU,
+                    new MenuOption(v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ")",
+                            () -> {
+                                boolean success = DBManager.addShowroomVehicle(v);
+                                if (success) {
+                                    MenuManager.setNextMessage(v.getYear() + " " + v.getModelName() + " (SN: " + v.getSerialNum() + ") successfully added to showroom");
+                                } else {
+                                    MenuManager.setNextMessage("Unable to update database. Please try again.");
+                                }
+                                MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU);
+                            })
+            );
+        }
     }
 
     private static void initializeRemoveGarageVehicleMenu() {
@@ -486,6 +520,59 @@ public class MenuInitializer {
                                 if (gd.getReason().equals("Vehicle Purchase"))
                                     IOManager.println("\tService Provided: Manufacturing & Delivering Vehicle");
                                 else IOManager.println("\tService Provided: " + gd.getReason());
+                                // pause until user enters value
+                                IOManager.println();
+                                IOManager.getStringInput("Enter any value to continue:");
+                            }
+                    )
+            );
+        }
+    }
+
+    private static void initializeViewShowroomMenu() {
+        MenuManager.createMenu(
+                Key.VIEW_SHOWROOM_MENU,
+                MenuInitializer::reloadViewShowroomMenu,
+                "Showroom Vehicles",
+                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+        );
+    }
+
+    private static void reloadViewShowroomMenu() {
+        int size = MenuManager.getSize(Key.VIEW_SHOWROOM_MENU);
+        for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_SHOWROOM_MENU, i);
+        ServiceLocation loc = ServiceManager.getCurrent();
+        HashSet<Vehicle> vehicles = DBManager.getShowroomVehicles(loc);
+
+        for (Vehicle v : vehicles) {
+            String sn = v.getSerialNum();
+            MenuManager.addOption(
+                    Key.VIEW_SHOWROOM_MENU,
+                    new MenuOption(
+                            v.getYear() + " " + v.getModelName() + " (SN: " + sn + ")",
+                            () -> {
+                                // clear console
+                                IOManager.clear();
+
+                                // print basic info
+                                if (!v.isManufactured())
+                                    IOManager.println("THIS VEHICLE IS CURRENTLY BEING MANUFACTURED/DELIVERED.");
+                                IOManager.println("\nVehicle Overview:");
+                                IOManager.println("\tSerial Number: " + sn);
+                                IOManager.println("\tModel: " + v.getModelName());
+                                IOManager.println("\tYear: " + v.getYear());
+
+                                // print additional options
+                                HashSet<String> options = DBManager.getOptions(sn);
+                                if (options == null || options.isEmpty()) {
+                                    IOManager.println("\tAdditional Features: None");
+                                } else {
+                                    IOManager.println("\tAdditional Features:");
+                                    for (String option : options) {
+                                        IOManager.println("\t\t- " + option);
+                                    }
+                                }
+
                                 // pause until user enters value
                                 IOManager.println();
                                 IOManager.getStringInput("Enter any value to continue:");

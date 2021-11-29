@@ -9,6 +9,7 @@ import io.IOManager;
 import location.Address;
 import location.GarageData;
 import location.ServiceLocation;
+import location.ServiceManager;
 import menu.MenuManager;
 import user.User;
 import vehicle.Condition;
@@ -1191,6 +1192,141 @@ public class DBManager {
             current.commit();
             return true;
         } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean orderShowroomVehicle(Model model, HashSet<String> options, ServiceLocation location) {
+        try {
+
+            // generate new serial number
+            String sn = getNewSN();
+            if (sn == null) return false;
+
+            // get connection
+            Connection current = ConnectionManager.getCurrentConnection();
+
+            // insert vehicle into database
+            PreparedStatement s = current.prepareStatement(Statement.ADD_VEHICLE);
+            s.setString(1, sn);
+            s.setString(2, "False");
+            s.execute();
+            s.close();
+
+            // add vehicle model relation to database
+            s = current.prepareStatement(Statement.ADD_VEHICLE_MODEL);
+            s.setString(1, sn);
+            s.setInt(2, model.getYear());
+            s.setString(3, model.getName());
+            s.execute();
+            s.close();
+
+            // add custom option relations to database (sn, option_name)
+            for (String option : options) {
+                s = current.prepareStatement(Statement.ADD_VEHICLE_OPTION);
+                s.setString(1, option);
+                s.setString(2, sn);
+                s.execute();
+                s.close();
+            }
+
+            // add vehicle to showroom
+            s = current.prepareStatement(Statement.ADD_SHOWROOM_VEHICLE);
+            s.setString(1, location.getId());
+            s.setString(2, sn);
+            s.execute();
+            s.close();
+
+            // commit & return
+            current.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static HashSet<Vehicle> getShowroomVehicles(ServiceLocation loc) {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_SHOWROOM_VEHICLES);
+            s.setString(1, loc.getId());
+            ResultSet rs = s.executeQuery();
+            HashSet<Vehicle> vehicles = new HashSet<>();
+            while (rs.next()) {
+                String sn = rs.getString("serial_num");
+                Vehicle v = DBManager.getVehicle(sn);
+                if (v != null) vehicles.add(v);
+            }
+            s.close();
+            return vehicles;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
+    public static HashSet<Vehicle> getOrderedVehicles() {
+        try {
+
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_SHOWROOM_VEHICLES);
+            s.setString(1, ServiceManager.getCurrent().getId());
+            ResultSet rs = s.executeQuery();
+            HashSet<Vehicle> vehicles = new HashSet<>();
+            while (rs.next()) {
+                String sn = rs.getString("serial_num");
+                Vehicle v = DBManager.getVehicle(sn);
+                if (v != null && !v.isManufactured()) vehicles.add(v);
+            }
+            s.close();
+            return vehicles;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
+    public static boolean addShowroomVehicle(Vehicle v) {
+        try {
+            Connection current = ConnectionManager.getCurrentConnection();
+            // update isManufactured
+            PreparedStatement s2 = current.prepareStatement(Statement.UPDATE_IS_MANUFACTURED);
+            s2.setString(1, "True");
+            s2.setString(2, v.getSerialNum());
+            s2.execute();
+            s2.close();
+
+            // insert condition
+            long time = new Date().getTime() / 1000L;
+            PreparedStatement s3 = current.prepareStatement(Statement.INSERT_CONDITION);
+            s3.setLong(1, 0);
+            s3.setLong(2, time);
+            s3.setString(3, "False");
+            s3.execute();
+            s3.close();
+
+            // insert vehicle condition
+            PreparedStatement s4 = current.prepareStatement(Statement.INSERT_VEHICLE_CONDITION);
+            s4.setString(1, v.getSerialNum());
+            s4.setLong(2, 0);
+            s4.setLong(3, time);
+            s4.setString(4, "False");
+            s4.execute();
+            s4.close();
+
+            // commit and return
+            current.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

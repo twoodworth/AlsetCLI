@@ -678,6 +678,26 @@ public class Sequences {
         IOManager.getStringInput("Enter any value to continue:");
     }
 
+    public static void orderShowroomVehicleSequence() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU);
+        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModel());
+
+
+        boolean success = DBManager.orderShowroomVehicle(model, VehicleSelections.getOptions(), ServiceManager.getCurrent());
+
+        if (success) {
+            IOManager.clear("Order completed. Expect vehicle to arrive within the next 1-2 months.");
+            IOManager.getStringInput("Enter any value to continue:");
+            MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU);
+        } else {
+            MenuManager.setNextMessage("Failed to update database, please try again.");
+        }
+
+    }
+
     public static void purchaseVehicleSequence() {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);

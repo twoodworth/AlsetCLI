@@ -97,8 +97,6 @@ public class Statement {
                     "NATURAL JOIN vehicle_model " +
                     "WHERE email=?";
 
-
-
     /**
      * Used for getting a list of repair transactions that a given customer has made
      */
@@ -108,6 +106,22 @@ public class Statement {
                         "NATURAL JOIN vehicle " +
                         "NATURAL JOIN vehicle_model " +
                     "WHERE email=?";
+
+    /**
+     * Used for getting a list of vehicles in a given location's showroom.
+     */
+    public static final String GET_SHOWROOM_VEHICLES =
+            "SELECT serial_num " +
+                    "FROM showroom " +
+                    "WHERE location_id=?";
+
+    /**
+     * Get
+     */
+    public static final String GET_ORDERED_SHOWROOM_VEHICLES =
+            "SELECT serial_num " +
+                    "FROM showroom " +
+                    "WHERE location_id=?";
 
 
     /**
@@ -333,6 +347,13 @@ public class Statement {
      */
     public static final String ADD_OWNER =
             "INSERT INTO owner (email, serial_num) " +
+                    "VALUES (?, ?)";
+
+    /**
+     * Used for adding a new row into showroom.
+     */
+    public static final String ADD_SHOWROOM_VEHICLE =
+            "INSERT INTO showroom (location_id, serial_num) " +
                     "VALUES (?, ?)";
 
     /**
