@@ -236,6 +236,20 @@ public class MenuInitializer {
         );
     }
 
+//    private static void initializeRetireVehicleMenu() {todo add
+//        MenuManager.createMenu(
+//                Key.RETIRE_SHOWROOM_VEHICLE_MENU,
+//                MenuInitializer::reloadRetireVehicleMenu,
+//                "Retire Vehicle From Showroom",
+//                new MenuOption("Return to Previous Menu", MenuManager::showPrevious)
+//        );
+//    }
+//
+//    private static void reloadRetireVehicleMenu() {
+//
+//    }
+//
+
     private static void initializeAddShowroomVehicleMenu() {
         MenuManager.createMenu(
                 Key.ADD_SHOWROOM_VEHICLE_MENU,

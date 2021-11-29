@@ -51,7 +51,7 @@ public class DBManager {
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next() && rs.getString("password").equals(pwd);
-            rs.close();
+            s.close();
             return valid;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -76,7 +76,7 @@ public class DBManager {
             ResultSet rs = s.executeQuery();
 
             if (rs.next()) {
-                return new ServiceLocation(
+                ServiceLocation location = new ServiceLocation(
                         rs.getString("location_id"),
                         rs.getString("location_name"),
                         new Address(
@@ -88,9 +88,11 @@ public class DBManager {
                                 rs.getString("zip"),
                                 null
                         )
-
                 );
+                s.close();
+                return location;
             } else {
+                s.close();
                 return null;
             }
         } catch (SQLException e) {
@@ -115,7 +117,7 @@ public class DBManager {
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
             valid = rs.next();
-            rs.close();
+            s.close();
             return valid;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -167,8 +169,10 @@ public class DBManager {
                 name[0] = rs.getString("first");
                 name[1] = rs.getString("middle");
                 name[2] = rs.getString("last");
+                s.close();
                 return name;
             } else {
+                s.close();
                 return null;
             }
         } catch (SQLException e) {
@@ -192,12 +196,15 @@ public class DBManager {
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
-                return new Condition(
+                Condition c = new Condition(
                         rs.getLong("mileage"),
                         rs.getLong("last_inspection"),
                         Boolean.parseBoolean(rs.getString("has_damage"))
                 );
+                s.close();
+                return c;
             }
+            s.close();
             return null;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -232,6 +239,7 @@ public class DBManager {
                 );
                 vehicles.add(vehicle);
             }
+            s.close();
             return vehicles;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -255,14 +263,17 @@ public class DBManager {
             ResultSet rs = s.executeQuery();
 
             if (rs.next()) {
-                return new Vehicle(
+                Vehicle v = new Vehicle(
                         serialNum,
                         rs.getInt("year"),
                         rs.getString("name"),
                         Boolean.parseBoolean(rs.getString("is_manufactured")),
                         getCondition(serialNum)
                 );
+                s.close();
+                return v;
             } else {
+                s.close();
                 MenuManager.setNextMessage(Strings.DB_ERROR);
                 return null;
             }
@@ -290,6 +301,7 @@ public class DBManager {
             while (rs.next()) {
                 models.add(new Model(rs.getInt("year"), rs.getString("name")));
             }
+            s.close();
             return models;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -307,6 +319,7 @@ public class DBManager {
             ResultSet rs = s.executeQuery();
             HashSet<String> models = new HashSet<>();
             while (rs.next()) models.add(rs.getString("name"));
+            s.close();
             return models;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -325,6 +338,7 @@ public class DBManager {
             ResultSet rs = s.executeQuery();
             HashSet<Integer> years = new HashSet<>();
             while (rs.next()) years.add(rs.getInt("year"));
+            s.close();
             return years;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -383,6 +397,7 @@ public class DBManager {
             for (Long l : transactions.keySet().stream().sorted(Long::compareTo).collect(Collectors.toList())) {
                 strings.add(transactions.get(l));
             }
+            s.close();
             return strings;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -422,6 +437,7 @@ public class DBManager {
                 );
                 locations.add(new ServiceLocation(id, name, address));
             }
+            s.close();
             return locations;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -448,6 +464,7 @@ public class DBManager {
             while (rs.next()) {
                 options.add(rs.getString("option_name"));
             }
+            s.close();
             return options;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -535,6 +552,7 @@ public class DBManager {
                     );
                 }
             }
+            s.close();
             return data;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -559,8 +577,11 @@ public class DBManager {
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
-                return Boolean.parseBoolean(rs.getString("ready"));
+                boolean ready = Boolean.parseBoolean(rs.getString("ready"));
+                s.close();
+                return ready;
             } else {
+                s.close();
                 throw new IllegalArgumentException("Vehicle is not at a service location.");
             }
         } catch (SQLException e) {
@@ -585,7 +606,7 @@ public class DBManager {
             s.setString(1, vehicle.getSerialNum());
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
-                return new ServiceLocation(
+                ServiceLocation location = new ServiceLocation(
                         rs.getString("location_id"),
                         rs.getString("location_name"),
                         new Address(
@@ -599,6 +620,8 @@ public class DBManager {
                         )
 
                 );
+                s.close();
+                return location;
             } else {
                 return null;
             }
@@ -919,6 +942,7 @@ public class DBManager {
             s5.setLong(1, mileage);
             s5.setLong(2, oldTime);
             s5.execute();
+            s5.close();
 
             ConnectionManager.commit();
             return true;
@@ -974,6 +998,7 @@ public class DBManager {
                 s4.setLong(2, condition.getLastInspection());
                 s4.setString(3, "True");
                 s4.execute();
+                s4.close();
             }
 
             ConnectionManager.commit();
@@ -1057,6 +1082,7 @@ public class DBManager {
             ResultSet rs = s.executeQuery();
             HashSet<String> options = new HashSet<>();
             while (rs.next()) options.add(rs.getString("option_name"));
+            s.close();
             return options;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1073,7 +1099,12 @@ public class DBManager {
             s.setInt(1, model.getYear());
             s.setString(2, model.getName());
             ResultSet rs = s.executeQuery();
-            if (rs.next()) return rs.getLong("model_price");
+            if (rs.next()) {
+                long l = rs.getLong("model_price");
+                s.close();
+                return l;
+            }
+            s.close();
             return null;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1089,7 +1120,11 @@ public class DBManager {
                             .prepareStatement(Statement.GET_OPTION_COST);
             s.setString(1, option);
             ResultSet rs = s.executeQuery();
-            if (rs.next()) return rs.getLong("option_price");
+            if (rs.next()) {
+                long l = rs.getLong("option_price");
+                s.close();
+                return l;
+            }
             return null;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1109,6 +1144,7 @@ public class DBManager {
                 long l = Long.parseLong(sn.toString()) + 1;
                 sn = new StringBuilder(String.valueOf(l));
                 while (sn.length() < 9) sn.insert(0, "0");
+                s.close();
                 return sn.toString();
             }
             return null;
