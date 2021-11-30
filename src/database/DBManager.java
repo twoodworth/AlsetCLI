@@ -218,7 +218,7 @@ public class DBManager {
      * @param email: email of user
      * @return cars owned by the user
      */
-    public static HashSet<Vehicle> getVehicles(String email) {
+    public static Set<Vehicle> getVehicles(String email) {
         try {
             PreparedStatement s =
                     ConnectionManager
@@ -283,13 +283,42 @@ public class DBManager {
         }
     }
 
+    public static Set<Model> getUnrepairableModels(ServiceLocation location) {
+        Set<Model> repairable = getRepairableModels(location);
+        Set<Model> all = getAllModels();
+        all.removeAll(repairable);
+        return all;
+    }
+
+    public static Set<Model> getAllModels() {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statement.GET_ALL_MODELS);
+            ResultSet rs = s.executeQuery();
+
+            HashSet<Model> models = new HashSet<>();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int year = rs.getInt("year");
+                Model model = new Model(year, name);
+                models.add(model);
+            }
+            return models;
+        }  catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
     /**
      * Gets a set of models that a given service location is capable of repairing.
      *
      * @param location: Service location
      * @return hash set of repairable models
      */
-    public static HashSet<Model> getRepairableModels(ServiceLocation location) {
+    public static Set<Model> getRepairableModels(ServiceLocation location) {
         try {
             PreparedStatement s =
                     ConnectionManager
@@ -305,7 +334,7 @@ public class DBManager {
             return models;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
-            return null;
+            return new HashSet<>();
         }
 
     }
@@ -412,7 +441,7 @@ public class DBManager {
      * @param vehicle: vehicle to repair
      * @return set of locations
      */
-    public static HashSet<ServiceLocation> getRepairableLocations(Vehicle vehicle) {
+    public static Set<ServiceLocation> getRepairableLocations(Vehicle vehicle) {
         try {
             PreparedStatement s =
                     ConnectionManager
@@ -451,7 +480,7 @@ public class DBManager {
      * @param serialNum: Serial number of vehicle
      * @return set of names of additional options
      */
-    public static HashSet<String> getOptions(String serialNum) {
+    public static Set<String> getOptions(String serialNum) {
         try {
             PreparedStatement s =
                     ConnectionManager
@@ -478,9 +507,9 @@ public class DBManager {
      * @param location: Service location to collect data from
      * @return data of unfinished vehicles at location
      */
-    public static HashSet<GarageData> getUnfinishedVehicleGarageData(ServiceLocation location) {
+    public static Set<GarageData> getUnfinishedVehicleGarageData(ServiceLocation location) {
         // get garage data
-        HashSet<GarageData> data = getGarageData(location);
+        Set<GarageData> data = getGarageData(location);
         if (data == null) return null;
 
         // remove finished vehicle data
@@ -496,9 +525,9 @@ public class DBManager {
      * @param location: Service location to collect data from
      * @return data of finished vehicles at location
      */
-    public static HashSet<GarageData> getFinishedVehicleGarageData(ServiceLocation location) {
+    public static Set<GarageData> getFinishedVehicleGarageData(ServiceLocation location) {
         // get garage data
-        HashSet<GarageData> data = getGarageData(location);
+        Set<GarageData> data = getGarageData(location);
         if (data == null) return null;
 
         // remove unfinished vehicles from set
@@ -515,7 +544,7 @@ public class DBManager {
      * @param location: Service location
      * @return hash set of garage data
      */
-    public static HashSet<GarageData> getGarageData(ServiceLocation location) {
+    public static Set<GarageData> getGarageData(ServiceLocation location) {
         try {
             PreparedStatement s =
                     ConnectionManager
@@ -555,7 +584,6 @@ public class DBManager {
             s.close();
             return data;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return null;
         }
@@ -710,7 +738,6 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
@@ -750,7 +777,7 @@ public class DBManager {
      * @param email: Email of customer
      * @return set of cards
      */
-    public static HashSet<Card> getCards(String email) {
+    public static Set<Card> getCards(String email) {
         try {
             PreparedStatement s =
                     ConnectionManager
@@ -1036,7 +1063,7 @@ public class DBManager {
         }
     }
 
-    public static HashSet<ServiceLocation> getServiceLocations() {
+    public static Set<ServiceLocation> getServiceLocations() {
         try {
 
             // remove vehicle from pickup
@@ -1283,7 +1310,7 @@ public class DBManager {
         }
     }
 
-    public static HashSet<Vehicle> getShowroomVehicles(ServiceLocation loc) {
+    public static Set<Vehicle> getShowroomVehicles(ServiceLocation loc) {
         try {
             PreparedStatement s =
                     ConnectionManager
@@ -1300,19 +1327,18 @@ public class DBManager {
             s.close();
             return vehicles;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return new HashSet<>();
         }
     }
 
-    public static HashSet<Vehicle> getManufacturedShowroomVehicles(ServiceLocation loc) {
-        HashSet<Vehicle> vehicles = getShowroomVehicles(loc);
+    public static Set<Vehicle> getManufacturedShowroomVehicles(ServiceLocation loc) {
+        Set<Vehicle> vehicles = getShowroomVehicles(loc);
         vehicles.removeIf(v -> !v.isManufactured());
         return vehicles;
     }
 
-    public static HashSet<Vehicle> getOrderedVehicles() {
+    public static Set<Vehicle> getOrderedVehicles() {
         try {
 
             PreparedStatement s =
@@ -1330,7 +1356,6 @@ public class DBManager {
             s.close();
             return vehicles;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return new HashSet<>();
         }
@@ -1368,7 +1393,6 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
@@ -1397,7 +1421,6 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
@@ -1421,7 +1444,6 @@ public class DBManager {
             }
             return listings;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return new HashMap<>();
         }
@@ -1440,7 +1462,6 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
@@ -1486,7 +1507,28 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean addRepairableModel(Model model) {
+        try {
+            // create statement
+            PreparedStatement s =
+                    ConnectionManager
+                    .getCurrentConnection()
+                    .prepareStatement(Statement.ADD_REPAIRABLE_MODEL);
+            s.setString(1, ServiceManager.getCurrent().getId());
+            s.setInt(2, model.getYear());
+            s.setString(3, model.getName());
+
+            // execute & commit & return
+            s.execute();
+            s.close();
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

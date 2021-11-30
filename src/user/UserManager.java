@@ -4,6 +4,7 @@ import database.DBManager;
 import vehicle.Vehicle;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Manages data related to the program user
@@ -46,7 +47,7 @@ public class UserManager {
     public static boolean login(String email, String password) {
         if (DBManager.validLoginData(email, password)) {
             String[] name = DBManager.getName(email);
-            HashSet<Vehicle> vehicles = DBManager.getVehicles(email);
+            Set<Vehicle> vehicles = DBManager.getVehicles(email);
             if (name == null || vehicles == null) {
                 return false;
             } else {

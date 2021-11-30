@@ -173,7 +173,7 @@ public class Sequences {
         ServiceLocation loc = ServiceManager.getCurrent();
 
         // Get unfinished vehicles in garage
-        HashSet<GarageData> data = DBManager.getUnfinishedVehicleGarageData(loc);
+        Set<GarageData> data = DBManager.getUnfinishedVehicleGarageData(loc);
         if (data == null) {
             MenuManager.setNextMessage("Unable to load info.");
             return;
@@ -190,7 +190,7 @@ public class Sequences {
 
     static boolean confirmVehicleInfo(GarageData data, Vehicle v) {
         String sn = data.getSerialNum();
-        HashSet<String> options = DBManager.getOptions(sn);
+        Set<String> options = DBManager.getOptions(sn);
 
         IOManager.clear();
         StringBuilder infoBuilder = new StringBuilder();
@@ -226,11 +226,8 @@ public class Sequences {
             MenuManager.setNextMessage("Vehicle is already being serviced. If you think this is an error, please try again.");
             return;
         }
-        HashSet<Model> repairable = DBManager.getRepairableModels(loc);
-        if (repairable == null) {
-            MenuManager.setNextMessage("Error: Unable to load data. Please try again.");
-            return;
-        }
+        Set<Model> repairable = DBManager.getRepairableModels(loc);
+
         Model m = v.getModel();
         if (!repairable.contains(m)) {
             MenuManager.setNextMessage(loc.getName() + " cannot repair a " + m.getYear() + " Model " + m.getName());
@@ -262,7 +259,7 @@ public class Sequences {
             String password = IOManager.getPasswordInput("Enter your Alset password:");
             boolean valid = DBManager.validLoginData(email, password);
             if (valid) {
-                HashSet<Vehicle> customerVehicles = DBManager.getVehicles(email);
+                Set<Vehicle> customerVehicles = DBManager.getVehicles(email);
                 if (customerVehicles == null) {
                     MenuManager.setNextMessage("Unable to load data. Please try again.");
                     return;
@@ -409,12 +406,7 @@ public class Sequences {
             return;
         }
 
-        HashSet<Model> models = DBManager.getRepairableModels(location);
-        if (models == null) {
-            IOManager.clear("Unable to load info.");
-            IOManager.getStringInput("Enter any value to continue:");
-            return;
-        }
+        Set<Model> models = DBManager.getRepairableModels(location);
 
         HashMap<String, ArrayList<Integer>> modelMap = new HashMap<>();
 
@@ -489,7 +481,7 @@ public class Sequences {
         String sn = v.getSerialNum();
 
         // get options
-        HashSet<String> options = DBManager.getOptions(sn);
+        Set<String> options = DBManager.getOptions(sn);
 
         // get condition
         Condition condition;
@@ -568,7 +560,7 @@ public class Sequences {
             String password = IOManager.getPasswordInput("Enter your Alset password:");
             boolean valid = DBManager.validLoginData(email, password);
             if (valid) {
-                HashSet<Vehicle> customerVehicles = DBManager.getVehicles(email);
+                Set<Vehicle> customerVehicles = DBManager.getVehicles(email);
                 if (customerVehicles == null) {
                     return null;
                 } else if (!customerVehicles.contains(v)) {
@@ -723,7 +715,7 @@ public class Sequences {
 
         Card card = getCardSequence(email);
         String[] name = DBManager.getName(email);
-        HashSet<String> options = DBManager.getOptions(v.getSerialNum());
+        Set<String> options = DBManager.getOptions(v.getSerialNum());
         if (name == null || card == null || options == null) {
             MenuManager.setNextMessage("Unable to load data.");
             return;
@@ -870,5 +862,22 @@ public class Sequences {
             MenuManager.setNextMessage("Failed to update database, please try again.");
         }
         MenuManager.showMenu(Key.CUSTOMER_MENU);
+    }
+
+    public static void addRepairableModelSequence() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_UNREPAIRABLE_MODEL_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
+        String name = VehicleSelections.getModel();
+        int year = VehicleSelections.getYear();
+        Model model = new Model(year, name);
+        boolean success = DBManager.addRepairableModel(model);
+        if (success) {
+            MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, year + " Model " + name + " is now repairable.");
+        } else {
+            MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "Failed to add model, please try again");
+        }
+
+
     }
 }

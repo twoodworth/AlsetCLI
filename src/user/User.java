@@ -4,6 +4,7 @@ import constants.Strings;
 import vehicle.Vehicle;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a user, and stores data related to the user.
@@ -33,7 +34,7 @@ public class User {
     /**
      * Set of vehicles owned by the user
      */
-    private final HashSet<Vehicle> vehicles;
+    private final Set<Vehicle> vehicles;
 
     /**
      * Constructs a new user using their first name, middle name, last name, email, password, and owned vehicles
@@ -45,7 +46,7 @@ public class User {
      * @param password: Password of user
      * @param vehicles: Vehicles owned by user
      */
-    public User(String first, String middle, String last, String email, String password, HashSet<Vehicle> vehicles) {
+    public User(String first, String middle, String last, String email, String password, Set<Vehicle> vehicles) {
         this.first = first;
         this.middle = middle;
         this.last = last;
@@ -140,7 +141,7 @@ public class User {
      *
      * @return HashSet of vehicles
      */
-    public HashSet<Vehicle> getVehicles() {
+    public Set<Vehicle> getVehicles() {
         return vehicles;
     }
 

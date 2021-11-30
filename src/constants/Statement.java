@@ -25,6 +25,13 @@ public class Statement {
                     "WHERE password=?";
 
     /**
+     * Used for obtaining data belonging to the service location with the given password.
+     */
+    public static final String GET_ALL_MODELS =
+            "SELECT year, name " +
+                    "FROM model";
+
+    /**
      * Used for obtaining a set of all models currently being sold new.
      */
     public static final String GET_BUYABLE_MODELS =
@@ -351,6 +358,10 @@ public class Statement {
     public static final String START_REPAIR =
             "INSERT INTO repair (start_time, end_time, repair_type, price) " +
                     "VALUES (?, ?, ?, ?)";
+
+    public static final String ADD_REPAIRABLE_MODEL =
+            "INSERT INTO repairable (location_id, year, name) " +
+                    "VALUES (?, ?, ?)";
 
     /**
      * Used for adding a vehicle into listings

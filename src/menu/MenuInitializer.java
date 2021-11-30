@@ -58,6 +58,8 @@ public class MenuInitializer {
             initializeViewListingsMenu();
             initializeUpdateListingsMenu();
             initializeSellListingMenu();
+            initializeSelectUnrepairableModelMenu();
+            initializeSelectUnrepairableYearMenu();
             initialized = true;
         }
     }
@@ -124,6 +126,46 @@ public class MenuInitializer {
             MenuManager.addOption(
                     Key.SELECT_MODEL_MENU,
                     new MenuOption("Model " + s, () -> VehicleSelections.setModel(s))
+            );
+        }
+    }
+
+    private static void initializeSelectUnrepairableModelMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_UNREPAIRABLE_MODEL_MENU,
+                MenuInitializer::reloadSelectUnrepairableModelMenu,
+                "Select a Model"
+        );
+    }
+
+    private static void reloadSelectUnrepairableModelMenu() {
+        int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_MODEL_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_MODEL_MENU, i);
+        Set<Model> unrepairable = DBManager.getUnrepairableModels(ServiceManager.getCurrent());
+        for (Model m : unrepairable) {
+            MenuManager.addOption(
+                    Key.SELECT_UNREPAIRABLE_MODEL_MENU,
+                    new MenuOption("Model " + m.getName(), () -> VehicleSelections.setModel(m.getName()))
+            );
+        }
+    }
+
+    private static void initializeSelectUnrepairableYearMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_UNREPAIRABLE_YEAR_MENU,
+                MenuInitializer::reloadSelectUnrepairableYearMenu,
+                "Select a Year"
+        );
+    }
+
+    private static void reloadSelectUnrepairableYearMenu() {
+        int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_YEAR_MENU, i);
+        Set<Model> unrepairable = DBManager.getUnrepairableModels(ServiceManager.getCurrent());
+        for (Model m : unrepairable) {
+            MenuManager.addOption(
+                    Key.SELECT_UNREPAIRABLE_YEAR_MENU,
+                    new MenuOption(String.valueOf(m.getYear()), () -> VehicleSelections.setYear(m.getYear()))
             );
         }
     }
@@ -218,8 +260,7 @@ public class MenuInitializer {
                 new MenuOption("Add Vehicle", Sequences::addGarageVehicleSequence),
                 new MenuOption("Finish Vehicle", Sequences::finishGarageVehicleSequence),
                 new MenuOption("Remove Vehicle", () -> MenuManager.showMenu(Key.REMOVE_GARAGE_VEHICLE_MENU)),
-                new MenuOption("Add Repairable Model", () -> {
-                }),//todo add
+                new MenuOption("Add Repairable Model", Sequences::addRepairableModelSequence),//todo add
                 new MenuOption("Remove Repairable Model", () -> {
                 }),//todo add
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
@@ -250,7 +291,7 @@ public class MenuInitializer {
     private static void reloadRetireVehicleMenu() {
         int size = MenuManager.getSize(Key.RETIRE_SHOWROOM_VEHICLE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.RETIRE_SHOWROOM_VEHICLE_MENU, i);
-        HashSet<Vehicle> vehicles = DBManager.getManufacturedShowroomVehicles(ServiceManager.getCurrent());
+        Set<Vehicle> vehicles = DBManager.getManufacturedShowroomVehicles(ServiceManager.getCurrent());
         for (Vehicle v : vehicles) {
             MenuManager.addOption(
                     Key.RETIRE_SHOWROOM_VEHICLE_MENU,
@@ -288,7 +329,7 @@ public class MenuInitializer {
     private static void reloadAddShowroomVehicleMenu() {
         int size = MenuManager.getSize(Key.ADD_SHOWROOM_VEHICLE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.ADD_SHOWROOM_VEHICLE_MENU, i);
-        HashSet<Vehicle> ordered = DBManager.getOrderedVehicles();
+        Set<Vehicle> ordered = DBManager.getOrderedVehicles();
         for (Vehicle v : ordered) {
             MenuManager.addOption(
                     Key.ADD_SHOWROOM_VEHICLE_MENU,
@@ -318,7 +359,7 @@ public class MenuInitializer {
         int size = MenuManager.getSize(Key.REMOVE_GARAGE_VEHICLE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.REMOVE_GARAGE_VEHICLE_MENU, i);
         ServiceLocation loc = ServiceManager.getCurrent();
-        HashSet<GarageData> data = DBManager.getFinishedVehicleGarageData(loc);
+        Set<GarageData> data = DBManager.getFinishedVehicleGarageData(loc);
         if (data == null) return;
         for (GarageData gd : data) {
             String sn = gd.getSerialNum();
@@ -467,8 +508,7 @@ public class MenuInitializer {
         User current = UserManager.getCurrent();
 
         // Load in the user's vehicles to the vehicle manager menu.
-        HashSet<Vehicle> vehicles = current.getVehicles();
-        System.out.println(vehicles.size());//todo remove
+        Set<Vehicle> vehicles = current.getVehicles();
         for (Vehicle v : vehicles) {
             String num = v.getSerialNum();
             String s = v.getYear() + " Model " + v.getModelName() + " (SN: " + num + ")";
@@ -604,7 +644,7 @@ public class MenuInitializer {
                                 IOManager.println("\tModel: " + v.getModelName());
                                 IOManager.println("\tYear: " + v.getYear());
 
-                                HashSet<String> options = DBManager.getOptions(sn);
+                                Set<String> options = DBManager.getOptions(sn);
                                 // print additional options
                                 if (options == null || options.isEmpty()) {
                                     IOManager.println("\tAdditional Features: None");
@@ -637,7 +677,7 @@ public class MenuInitializer {
         int size = MenuManager.getSize(Key.VIEW_GARAGE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_GARAGE_MENU, i);
         ServiceLocation loc = ServiceManager.getCurrent();
-        HashSet<GarageData> data = DBManager.getGarageData(loc);
+        Set<GarageData> data = DBManager.getGarageData(loc);
         if (data == null) return;
 
         for (GarageData gd : data) {
@@ -669,7 +709,7 @@ public class MenuInitializer {
                                     IOManager.println("\tHas Detected Damage: " + condition.hasDamage());
                                 }
 
-                                HashSet<String> options = DBManager.getOptions(sn);
+                                Set<String> options = DBManager.getOptions(sn);
                                 // print additional options
                                 if (options == null || options.isEmpty()) {
                                     IOManager.println("\tAdditional Features: None");
@@ -710,7 +750,7 @@ public class MenuInitializer {
         int size = MenuManager.getSize(Key.VIEW_SHOWROOM_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_SHOWROOM_MENU, i);
         ServiceLocation loc = ServiceManager.getCurrent();
-        HashSet<Vehicle> vehicles = DBManager.getShowroomVehicles(loc);
+        Set<Vehicle> vehicles = DBManager.getShowroomVehicles(loc);
 
         for (Vehicle v : vehicles) {
             String sn = v.getSerialNum();
@@ -731,7 +771,7 @@ public class MenuInitializer {
                                 IOManager.println("\tYear: " + v.getYear());
 
                                 // print additional options
-                                HashSet<String> options = DBManager.getOptions(sn);
+                                Set<String> options = DBManager.getOptions(sn);
                                 if (options == null || options.isEmpty()) {
                                     IOManager.println("\tAdditional Features: None");
                                 } else {
@@ -762,7 +802,7 @@ public class MenuInitializer {
     private static void reloadBrowseLocationsMenu() {
         int size = MenuManager.getSize(Key.BROWSE_LOCATIONS_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.BROWSE_LOCATIONS_MENU, i);
-        HashSet<ServiceLocation> locations = DBManager.getServiceLocations();
+        Set<ServiceLocation> locations = DBManager.getServiceLocations();
         if (locations == null) return;
         List<ServiceLocation> sorted = locations.stream().sorted(Comparator.comparing(ServiceLocation::getName)).collect(Collectors.toList());
         for (ServiceLocation s : sorted) {
@@ -786,7 +826,7 @@ public class MenuInitializer {
         int size = MenuManager.getSize(Key.SELECT_CARD_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELECT_CARD_MENU, i);
         String email = ServiceManager.getCurrentEmail();
-        HashSet<Card> cards = DBManager.getCards(email);
+        Set<Card> cards = DBManager.getCards(email);
         if (cards == null) return;
         for (Card card : cards) {
             MenuManager.addOption(
@@ -807,7 +847,7 @@ public class MenuInitializer {
         ServiceLocation loc = ServiceManager.getCurrent();
         if (loc == null) return;
 
-        HashSet<GarageData> data = DBManager.getUnfinishedVehicleGarageData(loc);
+        Set<GarageData> data = DBManager.getUnfinishedVehicleGarageData(loc);
         if (data == null) return;
 
         for (GarageData gd : data) {
