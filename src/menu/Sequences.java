@@ -877,7 +877,19 @@ public class Sequences {
         } else {
             MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "Failed to add model, please try again");
         }
-
-
+    }
+    public static void removeRepairableModelSequence() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_REPAIRABLE_MODEL_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_REPAIRABLE_YEAR_MENU);
+        String name = VehicleSelections.getModel();
+        int year = VehicleSelections.getYear();
+        Model model = new Model(year, name);
+        boolean success = DBManager.removeRepairableModel(model);
+        if (success) {
+            MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, year + " Model " + name + " is no longer repairable.");
+        } else {
+            MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "Failed to remove model, please try again.");
+        }
     }
 }

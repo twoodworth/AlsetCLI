@@ -1533,4 +1533,26 @@ public class DBManager {
             return false;
         }
     }
+
+    public static boolean removeRepairableModel(Model model) {
+        try {
+        // create statement
+        PreparedStatement s =
+                ConnectionManager
+                        .getCurrentConnection()
+                        .prepareStatement(Statement.REMOVE_REPAIRABLE_MODEL);
+        s.setString(1, ServiceManager.getCurrent().getId());
+        s.setInt(2, model.getYear());
+        s.setString(3, model.getName());
+
+        // execute & commit & return
+        s.execute();
+        s.close();
+        ConnectionManager.commit();
+        return true;
+    } catch (SQLException e) {
+        MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+        return false;
+    }
+    }
 }

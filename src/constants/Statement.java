@@ -478,9 +478,22 @@ public class Statement {
                     "WHERE mileage=? " +
                     "AND last_inspection=?";
 
+    /**
+     * Used for deleting a row from vehicle_listing
+     */
     public static final String DELETE_LISTING =
             "DELETE FROM vehicle_listing " +
                     "WHERE serial_num=?";
+
+
+    /**
+     * Used for deleting a row from repairable
+     */
+    public static final String REMOVE_REPAIRABLE_MODEL =
+            "DELETE FROM repairable " +
+                    "WHERE location_id=? " +
+                    "AND year=? " +
+                    "AND name=?";
 
     /**
      * Used for deleting a row from showroom, given the vehicle's serial number.

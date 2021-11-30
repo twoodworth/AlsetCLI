@@ -15,7 +15,10 @@ import vehicle.Model;
 import vehicle.Vehicle;
 import vehicle.VehicleSelections;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -60,6 +63,8 @@ public class MenuInitializer {
             initializeSellListingMenu();
             initializeSelectUnrepairableModelMenu();
             initializeSelectUnrepairableYearMenu();
+            initializeSelectRepairableModelMenu();
+            initializeSelectRepairableYearMenu();
             initialized = true;
         }
     }
@@ -150,6 +155,49 @@ public class MenuInitializer {
         }
     }
 
+    private static void initializeSelectRepairableModelMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_REPAIRABLE_MODEL_MENU,
+                MenuInitializer::reloadSelectRepairableModelMenu,
+                "Select a Model"
+        );
+    }
+
+    private static void reloadSelectRepairableModelMenu() {
+        int size = MenuManager.getSize(Key.SELECT_REPAIRABLE_MODEL_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_REPAIRABLE_MODEL_MENU, i);
+        Set<Model> repairable = DBManager.getRepairableModels(ServiceManager.getCurrent());
+        for (Model m : repairable) {
+            MenuManager.addOption(
+                    Key.SELECT_REPAIRABLE_MODEL_MENU,
+                    new MenuOption("Model " + m.getName(), () -> VehicleSelections.setModel(m.getName()))
+            );
+        }
+    }
+
+    private static void initializeSelectRepairableYearMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_REPAIRABLE_YEAR_MENU,
+                MenuInitializer::reloadSelectRepairableYearMenu,
+                "Select a Model"
+        );
+    }
+
+    private static void reloadSelectRepairableYearMenu() {
+        int size = MenuManager.getSize(Key.SELECT_REPAIRABLE_YEAR_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_REPAIRABLE_YEAR_MENU, i);
+        Set<Model> repairable = DBManager.getRepairableModels(ServiceManager.getCurrent());
+        String name = VehicleSelections.getModel();
+        for (Model m : repairable) {
+            if (m.getName().equals(name)) {
+                MenuManager.addOption(
+                        Key.SELECT_REPAIRABLE_MODEL_MENU,
+                        new MenuOption("Model " + m.getName(), () -> VehicleSelections.setModel(m.getName()))
+                );
+            }
+        }
+    }
+
     private static void initializeSelectUnrepairableYearMenu() {
         MenuManager.createMenu(
                 Key.SELECT_UNREPAIRABLE_YEAR_MENU,
@@ -162,11 +210,14 @@ public class MenuInitializer {
         int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_YEAR_MENU, i);
         Set<Model> unrepairable = DBManager.getUnrepairableModels(ServiceManager.getCurrent());
+        String name = VehicleSelections.getModel();
         for (Model m : unrepairable) {
-            MenuManager.addOption(
-                    Key.SELECT_UNREPAIRABLE_YEAR_MENU,
-                    new MenuOption(String.valueOf(m.getYear()), () -> VehicleSelections.setYear(m.getYear()))
-            );
+            if (m.getName().equals(name)) {
+                MenuManager.addOption(
+                        Key.SELECT_UNREPAIRABLE_YEAR_MENU,
+                        new MenuOption(String.valueOf(m.getYear()), () -> VehicleSelections.setYear(m.getYear()))
+                );
+            }
         }
     }
 
@@ -260,9 +311,8 @@ public class MenuInitializer {
                 new MenuOption("Add Vehicle", Sequences::addGarageVehicleSequence),
                 new MenuOption("Finish Vehicle", Sequences::finishGarageVehicleSequence),
                 new MenuOption("Remove Vehicle", () -> MenuManager.showMenu(Key.REMOVE_GARAGE_VEHICLE_MENU)),
-                new MenuOption("Add Repairable Model", Sequences::addRepairableModelSequence),//todo add
-                new MenuOption("Remove Repairable Model", () -> {
-                }),//todo add
+                new MenuOption("Add Repairable Model", Sequences::addRepairableModelSequence),
+                new MenuOption("Remove Repairable Model", Sequences::removeRepairableModelSequence),
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.SERVICE_MANAGER_MENU))
         );
     }
@@ -503,7 +553,6 @@ public class MenuInitializer {
 
     private static void reloadMyVehilesMenu() {
         int size = MenuManager.getSize(Key.CUSTOMER_VEHICLES_MENU);
-        System.out.println(size);//todo remove
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.CUSTOMER_VEHICLES_MENU, i);
         User current = UserManager.getCurrent();
 
