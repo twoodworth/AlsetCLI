@@ -146,11 +146,16 @@ public class MenuInitializer {
     private static void reloadSelectUnrepairableModelMenu() {
         int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_MODEL_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_MODEL_MENU, i);
-        Set<Model> unrepairable = DBManager.getUnrepairableModels(ServiceManager.getCurrent());
-        for (Model m : unrepairable) {
+        Set<String> unrepairable =
+                DBManager
+                        .getUnrepairableModels(ServiceManager.getCurrent())
+                        .stream()
+                        .map(Model::getName)
+                        .collect(Collectors.toSet());
+        for (String s : unrepairable) {
             MenuManager.addOption(
                     Key.SELECT_UNREPAIRABLE_MODEL_MENU,
-                    new MenuOption("Model " + m.getName(), () -> VehicleSelections.setModel(m.getName()))
+                    new MenuOption("Model " + s, () -> VehicleSelections.setModel(s))
             );
         }
     }
@@ -166,11 +171,16 @@ public class MenuInitializer {
     private static void reloadSelectRepairableModelMenu() {
         int size = MenuManager.getSize(Key.SELECT_REPAIRABLE_MODEL_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_REPAIRABLE_MODEL_MENU, i);
-        Set<Model> repairable = DBManager.getRepairableModels(ServiceManager.getCurrent());
-        for (Model m : repairable) {
+        Set<String> repairable =
+                DBManager
+                        .getRepairableModels(ServiceManager.getCurrent())
+                        .stream()
+                        .map(Model::getName)
+                        .collect(Collectors.toSet());
+        for (String s : repairable) {
             MenuManager.addOption(
                     Key.SELECT_REPAIRABLE_MODEL_MENU,
-                    new MenuOption("Model " + m.getName(), () -> VehicleSelections.setModel(m.getName()))
+                    new MenuOption("Model " + s, () -> VehicleSelections.setModel(s))
             );
         }
     }
@@ -179,22 +189,27 @@ public class MenuInitializer {
         MenuManager.createMenu(
                 Key.SELECT_REPAIRABLE_YEAR_MENU,
                 MenuInitializer::reloadSelectRepairableYearMenu,
-                "Select a Model"
+                "Select a Year"
         );
     }
 
     private static void reloadSelectRepairableYearMenu() {
         int size = MenuManager.getSize(Key.SELECT_REPAIRABLE_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_REPAIRABLE_YEAR_MENU, i);
-        Set<Model> repairable = DBManager.getRepairableModels(ServiceManager.getCurrent());
+
         String name = VehicleSelections.getModel();
-        for (Model m : repairable) {
-            if (m.getName().equals(name)) {
-                MenuManager.addOption(
-                        Key.SELECT_REPAIRABLE_MODEL_MENU,
-                        new MenuOption("Model " + m.getName(), () -> VehicleSelections.setModel(m.getName()))
-                );
-            }
+        Set<Integer> repairable =
+                DBManager
+                        .getRepairableModels(ServiceManager.getCurrent())
+                        .stream()
+                        .filter(m -> name.equals(m.getName()))
+                        .map(Model::getYear)
+                        .collect(Collectors.toSet());
+        for (Integer i : repairable) {
+            MenuManager.addOption(
+                    Key.SELECT_REPAIRABLE_YEAR_MENU,
+                    new MenuOption(i.toString(), () -> VehicleSelections.setYear(i))
+            );
         }
     }
 
@@ -209,15 +224,19 @@ public class MenuInitializer {
     private static void reloadSelectUnrepairableYearMenu() {
         int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_YEAR_MENU, i);
-        Set<Model> unrepairable = DBManager.getUnrepairableModels(ServiceManager.getCurrent());
         String name = VehicleSelections.getModel();
-        for (Model m : unrepairable) {
-            if (m.getName().equals(name)) {
-                MenuManager.addOption(
-                        Key.SELECT_UNREPAIRABLE_YEAR_MENU,
-                        new MenuOption(String.valueOf(m.getYear()), () -> VehicleSelections.setYear(m.getYear()))
-                );
-            }
+        Set<Integer> unrepairable =
+                DBManager
+                        .getUnrepairableModels(ServiceManager.getCurrent())
+                        .stream()
+                        .filter(m -> name.equals(m.getName()))
+                        .map(Model::getYear)
+                        .collect(Collectors.toSet());
+        for (Integer i : unrepairable) {
+            MenuManager.addOption(
+                    Key.SELECT_UNREPAIRABLE_YEAR_MENU,
+                    new MenuOption(i.toString(), () -> VehicleSelections.setYear(i))
+            );
         }
     }
 
