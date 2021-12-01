@@ -4,6 +4,9 @@ import location.ServiceLocation;
 
 import java.util.HashSet;
 
+/**
+ * A class which is used for storing vehicle related selections for future reference.
+ */
 public class VehicleSelections {
     /**
      * Model currently selected

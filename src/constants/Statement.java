@@ -431,6 +431,30 @@ public class Statement {
                     "VALUES (?, ?, ?, ?, ?, ?)";
 
     /**
+     * Used for inserting a new row into customer
+     */
+    public static final String INSERT_CUSTOMER =
+            "INSERT INTO customer (email, password) " +
+                    "VALUES (?, ?)";
+
+
+    /**
+     * Used for inserting a new row into customer_name
+     */
+    public static final String INSERT_CUSTOMER_NAME =
+            "INSERT INTO customer (email, first, middle, last) " +
+                    "VALUES (?, ?, ?, ?)";
+
+    public static final String INSERT_ADDRESS =
+            "INSERT INTO address (planet, country, state, city, street, zip, apartment) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+
+    public static final String INSERT_CUSTOMER_ADDRESS =
+            "INSERT INTO address (email, planet, country, state, city, street, zip, apartment) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    /**
      * Used for adding a new vehicle into a service location's garage.
      */
     public static final String ADD_GARAGE_VEHICLE =

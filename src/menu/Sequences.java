@@ -19,6 +19,8 @@ import vehicle.VehicleSelections;
 
 import java.sql.Connection;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Contains all the sequence functions in the program.
@@ -941,6 +943,93 @@ public class Sequences {
             MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, year + " Model " + name + " is no longer repairable.");
         } else {
             MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "Failed to remove model, please try again.");
+        }
+    }
+
+    public static void createNewAccountSequence() {
+        IOManager.clear("Creating a new account.");
+        String email;
+
+        // get email, check if already used or invalid
+        while (true) {
+            email = IOManager.getStringInput("Enter your email address:");
+            Pattern p = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = p.matcher(email);
+            if (DBManager.emailExists(email)) {
+                IOManager.clear("Email already exists.");
+                boolean again = IOManager.getBooleanInput("Do you want to try again?");
+                if (!again) {
+                    MenuManager.showPrevious();
+                    return;
+                }
+            } else if (matcher.find()) {
+                IOManager.clear("Email is invalid.");
+                boolean again = IOManager.getBooleanInput("Do you want to try again?");
+                if (!again) {
+                    MenuManager.showPrevious();
+                    return;
+                }
+            } else {
+                break;
+            }
+        }
+
+        String key = User.getRandomPassword();
+        while (true) {
+            IOManager.clear("Email sent to " + email + ": Your validation key is " + key);
+            IOManager.println("A validation key has been sent to " + email);
+            String inputKey = IOManager.getStringInput("Enter the key:");
+            if (inputKey.equals(key)) {
+                IOManager.clear("Key is correct.");
+                break;
+            } else {
+                IOManager.clear("Key is not valid.");
+                boolean again = IOManager.getBooleanInput("Do you want to try again?");
+                if (!again) {
+                    MenuManager.showPrevious();
+                    return;
+                }
+            }
+        }
+
+        // get name
+        String first = IOManager.getStringInput("Enter your legal first name:");
+        String middle = IOManager.getStringInput("Enter your legal middle name (or N/A) if none:");
+        String last = IOManager.getStringInput("Enter your legal last name:");
+
+        //enter address
+        IOManager.clear(("What is your address? Enter 'N/A where not applicable."));
+        String planet = IOManager.getStringInput("Enter your Planet:");
+        String country = IOManager.getStringInput("Enter your Country:");
+        String state = IOManager.getStringInput("Enter your State:");
+        String city = IOManager.getStringInput("Enter your City:");
+        String street = IOManager.getStringInput("Enter your Street Number:");
+        String zip = IOManager.getStringInput("Enter your ZIP Code:");
+        String apartment = IOManager.getStringInput("Enter your apartment room:");
+
+        Address address = new Address(planet, country, state, city, street, zip, apartment);
+
+        while (true) {
+            String password = IOManager.getPasswordInput("Enter password:");
+            String confirmation = IOManager.getPasswordInput("Confirm password: ");
+            if (password.equals(confirmation)) {
+                boolean success = DBManager.createAccount(email, first, middle, last, address, password);
+                if (success) {
+                    IOManager.clear("Account has been created. You may now use it to log in.");
+                    IOManager.getStringInput("Enter any value to continue:");
+                    MenuManager.showPrevious();
+                } else {
+                    MenuManager.showPrevious("Error while creating account, please try again.");
+                }
+                break;
+            } else {
+                IOManager.clear("Password does not match confirmation.");
+                boolean again = IOManager.getBooleanInput("Do you want to try again?");
+                if (!again) {
+                    MenuManager.showPrevious();
+                    return;
+                }
+            }
         }
     }
 }

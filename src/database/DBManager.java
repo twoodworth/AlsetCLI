@@ -1754,8 +1754,70 @@ public class DBManager {
         ConnectionManager.commit();
         return true;
     } catch (SQLException e) {
-        MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
-        return false;
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
     }
+
+    public static boolean createAccount(String email, String first, String middle, String last, Address address, String password) {
+        try {
+            Connection current = ConnectionManager.getCurrentConnection();
+
+            // insert customer
+            PreparedStatement s = current.prepareStatement(Statement.INSERT_CUSTOMER);
+            s.setString(1, email);
+            s.setString(2, password);
+            s.execute();
+            s.close();
+
+            // insert name
+            s = current.prepareStatement(Statement.INSERT_NAME);
+            s.setString(1, first);
+            s.setString(2, middle);
+            s.setString(3, last);
+            s.execute();
+            s.close();
+
+            // insert customer_name
+            s = current.prepareStatement(Statement.INSERT_CUSTOMER_NAME);
+            s.setString(1, email);
+            s.setString(2, first);
+            s.setString(3, middle);
+            s.setString(4, last);
+            s.execute();
+            s.close();
+
+            // insert address
+            s = current.prepareStatement(Statement.INSERT_ADDRESS);
+            s.setString(1, address.getPlanet());
+            s.setString(2, address.getCountry());
+            s.setString(3, address.getState());
+            s.setString(4, address.getCity());
+            s.setString(5, address.getStreet());
+            s.setString(6, address.getApartment());
+            s.setString(7, address.getZip());
+            s.execute();
+            s.close();
+
+            // insert customer_address
+            s = current.prepareStatement(Statement.INSERT_CUSTOMER_ADDRESS);
+            s.setString(1, email);
+            s.setString(2, address.getPlanet());
+            s.setString(3, address.getCountry());
+            s.setString(4, address.getState());
+            s.setString(5, address.getCity());
+            s.setString(6, address.getStreet());
+            s.setString(7, address.getApartment());
+            s.setString(8, address.getZip());
+            s.execute();
+            s.close();
+
+            // commit & return
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
     }
 }
