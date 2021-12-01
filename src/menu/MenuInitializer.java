@@ -78,7 +78,7 @@ public class MenuInitializer {
                 "Alset Login Menu",
                 new MenuOption("Login as Customer", Sequences::alsetLoginSequence),
                 new MenuOption("Forgot Customer Password", Sequences::forgotPwdSequence),
-                new MenuOption("Create New Customer Account //todo add functionality", Sequences::createAcctSequence),//todo add functionality
+                new MenuOption("Create New Customer Account", Sequences::createNewAccountSequence),
                 new MenuOption("Browse Service Locations",  () -> MenuManager.showMenu(Key.BROWSE_LOCATIONS_MENU)),
                 new MenuOption("Login as Service Manager", Sequences::serviceManagerSequence),
                 new MenuOption("Login as Product Manager \t//todo add functionality", Sequences::productManagerSequence),//todo add functionality
@@ -519,13 +519,19 @@ public class MenuInitializer {
                                 IOManager.getStringInput("Enter any value to continue:");
                                 IOManager.clear("Welcome to " + loc.getName() + "!");
                                 User user = Sequences.getPickupUserSequence(v);
+                                if (user == null) {
+                                    MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "Failed to load data. Please try again.");
+                                    return;
+                                }
                                 IOManager.clear("Please confirm the following information:");
 
                                 // customer confirmation
                                 while (true) {
                                     // customer info
                                     IOManager.println("Customer Info: ");
-                                    IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
+                                    String middle = " ";
+                                    if (user.getMiddle() != null) middle = " " + user.getMiddle() + " ";
+                                    IOManager.println("\tName: " + user.getFirst() + middle + user.getLast());
                                     IOManager.println("\tEmail: " + user.getEmail());
 
                                     // Vehicle Info
@@ -560,7 +566,9 @@ public class MenuInitializer {
                                 while (true) {
                                     // customer info
                                     IOManager.println("Customer Info: ");
-                                    IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
+                                    String middle = " ";
+                                    if (user.getMiddle() != null) middle = " " + user.getMiddle() + " ";
+                                    IOManager.println("\tName: " + user.getFirst() + middle + user.getLast());
                                     IOManager.println("\tEmail: " + user.getEmail());
 
                                     // Vehicle Info

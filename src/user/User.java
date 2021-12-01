@@ -151,7 +151,7 @@ public class User {
      * @param vehicle: Vehicle to remove
      * @return true if successful, otherwise false
      */
-    boolean removeVehicle(Vehicle vehicle) {
+    public boolean removeVehicle(Vehicle vehicle) {
         return vehicles.remove(vehicle);
     }
 
@@ -161,7 +161,7 @@ public class User {
      * @param vehicle: Vehicle to add
      * @return true if successful, otherwise false
      */
-    boolean addVehicle(Vehicle vehicle) {
+    public boolean addVehicle(Vehicle vehicle) {
         return vehicles.add(vehicle);
     }
 

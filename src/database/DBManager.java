@@ -12,6 +12,7 @@ import location.ServiceLocation;
 import location.ServiceManager;
 import menu.MenuManager;
 import user.User;
+import user.UserManager;
 import vehicle.Condition;
 import vehicle.Model;
 import vehicle.Vehicle;
@@ -191,6 +192,7 @@ public class DBManager {
                 String[] name = new String[3];
                 name[0] = rs.getString("first");
                 name[1] = rs.getString("middle");
+                if (name[1].equals("N/A")) name[1] = null;
                 name[2] = rs.getString("last");
                 s.close();
                 return name;
@@ -952,6 +954,7 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
+            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
@@ -1316,7 +1319,6 @@ public class DBManager {
      */
     public static boolean purchaseVehicle(Model model, HashSet<String> options, ServiceLocation location, Card card, Long price, User user) {
         try {
-
             // generate new serial number
             String sn = getNewSN();
             if (sn == null) return false;
@@ -1384,8 +1386,13 @@ public class DBManager {
             s.execute();
             s.close();
 
-            // commit & return
+            // commit
             ConnectionManager.commit();
+
+            // add to current
+            Vehicle v = new Vehicle(sn, model.getYear(), model.getName(), false, null);
+            User currentUser = UserManager.getCurrent();
+            currentUser.addVehicle(v);
             return true;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1816,6 +1823,7 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
+            e.printStackTrace(); //todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }

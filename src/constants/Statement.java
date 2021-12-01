@@ -437,12 +437,11 @@ public class Statement {
             "INSERT INTO customer (email, password) " +
                     "VALUES (?, ?)";
 
-
     /**
      * Used for inserting a new row into customer_name
      */
     public static final String INSERT_CUSTOMER_NAME =
-            "INSERT INTO customer (email, first, middle, last) " +
+            "INSERT INTO customer_name (email, first, middle, last) " +
                     "VALUES (?, ?, ?, ?)";
 
     public static final String INSERT_ADDRESS =
@@ -451,7 +450,7 @@ public class Statement {
 
 
     public static final String INSERT_CUSTOMER_ADDRESS =
-            "INSERT INTO address (email, planet, country, state, city, street, zip, apartment) " +
+            "INSERT INTO customer_address (email, planet, country, state, city, street, zip, apartment) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**

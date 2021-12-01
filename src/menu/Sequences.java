@@ -164,9 +164,6 @@ public class Sequences {
         }
     }
 
-    static void createAcctSequence() {//todo add code
-    }
-
     /**
      * Allows a service manager to formally complete servicing
      * a vehicle in their service location's garage
@@ -299,7 +296,9 @@ public class Sequences {
         while (true) {
             // customer info
             IOManager.println("Customer Info: ");
-            IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
+            String middle = " ";
+            if (user.getMiddle() != null) middle = " " + user.getMiddle() + " ";
+            IOManager.println("\tName: " + user.getFirst() + middle + user.getLast());
             IOManager.println("\tEmail: " + user.getEmail());
 
             // Vehicle Info
@@ -335,7 +334,9 @@ public class Sequences {
         while (true) {
             // customer info
             IOManager.println("Customer Info: ");
-            IOManager.println("\tName: " + user.getFirst() + " " + user.getMiddle() + " " + user.getLast());
+            String middle = " ";
+            if (user.getMiddle() != null) middle = " " + user.getMiddle() + " ";
+            IOManager.println("\tName: " + user.getFirst() + middle + user.getLast());
             IOManager.println("\tEmail: " + user.getEmail());
 
             // Vehicle Info
@@ -671,7 +672,7 @@ public class Sequences {
         if (type.equals("d")) type = "Debit";
         else type = "Credit";
 
-        Card card = new Card(num, cvv, expMonth, expYear, zip, type, first, middle, last);
+        Card card = new Card(num, cvv, expMonth, expYear + 2000, zip, type, first, middle, last);
 
         boolean success = DBManager.addNewCard(card);
         if (!success) {
@@ -769,8 +770,10 @@ public class Sequences {
         // customer confirmation
         while (true) {
             // customer info
+            String middle = " ";
+            if (name[1] != null) middle = " " + name[1] + " ";
             IOManager.println("Customer Info: ");
-            IOManager.println("\tName: " + name[0] + " " + name[1] + " " + name[2]);
+            IOManager.println("\tName: " + name[0] + middle + name[2]);
             IOManager.println("\tEmail: " + email);
 
             // Vehicle Info
@@ -959,14 +962,12 @@ public class Sequences {
                 IOManager.clear("Email already exists.");
                 boolean again = IOManager.getBooleanInput("Do you want to try again?");
                 if (!again) {
-                    MenuManager.showPrevious();
                     return;
                 }
-            } else if (matcher.find()) {
+            } else if (!matcher.find()) {
                 IOManager.clear("Email is invalid.");
                 boolean again = IOManager.getBooleanInput("Do you want to try again?");
                 if (!again) {
-                    MenuManager.showPrevious();
                     return;
                 }
             } else {
@@ -986,7 +987,6 @@ public class Sequences {
                 IOManager.clear("Key is not valid.");
                 boolean again = IOManager.getBooleanInput("Do you want to try again?");
                 if (!again) {
-                    MenuManager.showPrevious();
                     return;
                 }
             }
@@ -998,7 +998,7 @@ public class Sequences {
         String last = IOManager.getStringInput("Enter your legal last name:");
 
         //enter address
-        IOManager.clear(("What is your address? Enter 'N/A where not applicable."));
+        IOManager.clear(("What is your address? Enter 'N/A' where not applicable."));
         String planet = IOManager.getStringInput("Enter your Planet:");
         String country = IOManager.getStringInput("Enter your Country:");
         String state = IOManager.getStringInput("Enter your State:");
@@ -1017,16 +1017,14 @@ public class Sequences {
                 if (success) {
                     IOManager.clear("Account has been created. You may now use it to log in.");
                     IOManager.getStringInput("Enter any value to continue:");
-                    MenuManager.showPrevious();
                 } else {
-                    MenuManager.showPrevious("Error while creating account, please try again.");
+                    MenuManager.setNextMessage("Error while creating account, please try again.");
                 }
                 break;
             } else {
                 IOManager.clear("Password does not match confirmation.");
                 boolean again = IOManager.getBooleanInput("Do you want to try again?");
                 if (!again) {
-                    MenuManager.showPrevious();
                     return;
                 }
             }
