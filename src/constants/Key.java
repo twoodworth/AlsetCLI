@@ -2,6 +2,8 @@ package constants;
 
 /**
  * Stores a list of enum values used as keys by MenuManager.
+ * <p>
+ * Each key corresponds to an individual menu.
  */
 public enum Key {
     ALSET_LOGIN_MENU,

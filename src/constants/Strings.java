@@ -12,7 +12,6 @@ public class Strings {
      */
     public static final String DB_ERROR = "Error: Lost connection to database. Please log back into Edgar1";
 
-
     /**
      * String containing all possible characters that
      * can appear in a random password.

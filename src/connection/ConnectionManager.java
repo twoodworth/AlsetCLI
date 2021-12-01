@@ -58,6 +58,11 @@ public class ConnectionManager {
         }
     }
 
+    /**
+     * Commits all pending changes to the Database.
+     *
+     * @throws SQLException if a database access error occurs
+     */
     public static void commit() throws SQLException {
         if (current != null) {
             current.commit();

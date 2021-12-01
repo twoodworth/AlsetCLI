@@ -123,12 +123,14 @@ public class Statement {
                     "WHERE location_id=?";
 
     /**
-     * Get
+     * Used for getting a list of ordered showroom vehicles
      */
     public static final String GET_ORDERED_SHOWROOM_VEHICLES =
             "SELECT serial_num " +
                     "FROM showroom " +
-                    "WHERE location_id=?";
+                    "NATURAL JOIN vehicle " +
+                    "WHERE is_manufactured='False' " +
+                    "AND location_id=?";
 
 
     /**
@@ -359,6 +361,9 @@ public class Statement {
             "INSERT INTO repair (start_time, end_time, repair_type, price) " +
                     "VALUES (?, ?, ?, ?)";
 
+    /**
+     * Used for adding a new row into repairable
+     */
     public static final String ADD_REPAIRABLE_MODEL =
             "INSERT INTO repairable (location_id, year, name) " +
                     "VALUES (?, ?, ?)";
@@ -417,7 +422,6 @@ public class Statement {
     public static final String ADD_PURCHASE =
             "INSERT INTO purchases (email, serial_num, timestamp, sales_price, card_num) " +
                     "VALUES (?, ?, ?, ?, ?)";
-
 
     /**
      * Used for adding a new row into repairs.

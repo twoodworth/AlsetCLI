@@ -115,6 +115,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the 'Select Model' menu
+     */
     private static void initializeSelectModelMenu() {
         MenuManager.createMenu(
                 Key.SELECT_MODEL_MENU,
@@ -123,6 +126,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the select model menu
+     */
     private static void reloadSelectModelMenu() {
         int size = MenuManager.getSize(Key.SELECT_MODEL_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_MODEL_MENU, i);
@@ -135,6 +141,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the select unrepairable model menu
+     */
     private static void initializeSelectUnrepairableModelMenu() {
         MenuManager.createMenu(
                 Key.SELECT_UNREPAIRABLE_MODEL_MENU,
@@ -143,6 +152,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the select unrepairable model menu
+     */
     private static void reloadSelectUnrepairableModelMenu() {
         int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_MODEL_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_MODEL_MENU, i);
@@ -160,6 +172,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the select repairable model menu
+     */
     private static void initializeSelectRepairableModelMenu() {
         MenuManager.createMenu(
                 Key.SELECT_REPAIRABLE_MODEL_MENU,
@@ -168,6 +183,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the select repairable model menu
+     */
     private static void reloadSelectRepairableModelMenu() {
         int size = MenuManager.getSize(Key.SELECT_REPAIRABLE_MODEL_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_REPAIRABLE_MODEL_MENU, i);
@@ -185,6 +203,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the select repairable year menu
+     */
     private static void initializeSelectRepairableYearMenu() {
         MenuManager.createMenu(
                 Key.SELECT_REPAIRABLE_YEAR_MENU,
@@ -193,6 +214,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the select repairable year menu
+     */
     private static void reloadSelectRepairableYearMenu() {
         int size = MenuManager.getSize(Key.SELECT_REPAIRABLE_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_REPAIRABLE_YEAR_MENU, i);
@@ -213,6 +237,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the select unrepairable year menu
+     */
     private static void initializeSelectUnrepairableYearMenu() {
         MenuManager.createMenu(
                 Key.SELECT_UNREPAIRABLE_YEAR_MENU,
@@ -221,6 +248,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the select unrepairable year menu
+     */
     private static void reloadSelectUnrepairableYearMenu() {
         int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_YEAR_MENU, i);
@@ -240,6 +270,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the select location menu
+     */
     private static void initializeSelectLocationMenu() {
         MenuManager.createMenu(
                 Key.SELECT_LOCATION_MENU,
@@ -248,6 +281,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the select location menu
+     */
     private static void reloadSelectLocationMenu() {
         int size = MenuManager.getSize(Key.SELECT_LOCATION_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_LOCATION_MENU, i);
@@ -261,6 +297,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the complete order menu
+     */
     private static void initializeCompleteOrderMenu() {
         MenuManager.createMenu(
                 Key.COMPLETE_ORDER_MENU,
@@ -270,15 +309,22 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the select options menu
+     */
     private static void initializeSelectOptionsMenu() {
         MenuManager.createMenu(
                 Key.SELECT_OPTIONS_MENU,
                 MenuInitializer::reloadSelectOptionsMenu,
                 "Choose Additional Features",
-                new MenuOption("Finish Selecting Features", () -> {})
+                new MenuOption("Finish Selecting Features", () -> {
+                })
         );
     }
 
+    /**
+     * Reloads the select options menu
+     */
     private static void reloadSelectOptionsMenu() {
         int size = MenuManager.getSize(Key.SELECT_OPTIONS_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELECT_OPTIONS_MENU, i);
@@ -298,7 +344,9 @@ public class MenuInitializer {
         }
     }
 
-
+    /**
+     * Initializes the select year menu
+     */
     private static void initializeSelectYearMenu() {
         MenuManager.createMenu(
                 Key.SELECT_YEAR_MENU,
@@ -307,6 +355,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the Select Year Menu
+     */
     private static void reloadSelectYearMenu() {
         int size = MenuManager.getSize(Key.SELECT_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_YEAR_MENU, i);
@@ -336,6 +387,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the Manage Showroom Menu
+     */
     private static void initializeManageShowroomMenu() {
         MenuManager.createMenu(
                 Key.MANAGE_SHOWROOM_MENU,
@@ -348,6 +402,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the Retire Vehicle Menu
+     */
     private static void initializeRetireVehicleMenu() {
         MenuManager.createMenu(
                 Key.RETIRE_SHOWROOM_VEHICLE_MENU,
@@ -357,6 +414,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the retire vehicle menu
+     */
     private static void reloadRetireVehicleMenu() {
         int size = MenuManager.getSize(Key.RETIRE_SHOWROOM_VEHICLE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.RETIRE_SHOWROOM_VEHICLE_MENU, i);
@@ -380,12 +440,15 @@ public class MenuInitializer {
                                 } else {
                                     MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU, "Unable to update database. Please try again.");
                                 }
-                            })
+                            }
+                    )
             );
         }
     }
 
-
+    /**
+     * Initializes the 'Add Showroom Vehicle' Menu
+     */
     private static void initializeAddShowroomVehicleMenu() {
         MenuManager.createMenu(
                 Key.ADD_SHOWROOM_VEHICLE_MENU,
@@ -395,6 +458,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'Add showroom Vehicle' menu
+     */
     private static void reloadAddShowroomVehicleMenu() {
         int size = MenuManager.getSize(Key.ADD_SHOWROOM_VEHICLE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.ADD_SHOWROOM_VEHICLE_MENU, i);
@@ -411,11 +477,15 @@ public class MenuInitializer {
                                     MenuManager.setNextMessage("Unable to update database. Please try again.");
                                 }
                                 MenuManager.showMenu(Key.MANAGE_SHOWROOM_MENU);
-                            })
+                            }
+                    )
             );
         }
     }
 
+    /**
+     * Initializes the 'Remove Garage Vehicle' Menu
+     */
     private static void initializeRemoveGarageVehicleMenu() {
         MenuManager.createMenu(
                 Key.REMOVE_GARAGE_VEHICLE_MENU,
@@ -424,6 +494,9 @@ public class MenuInitializer {
                 new MenuOption("Return to Previous Menu", MenuManager::showPrevious));
     }
 
+    /**
+     * Reloads the 'Remove Garage Vehicle' Menu
+     */
     private static void reloadRemoveGarageVehicleMenu() {
         int size = MenuManager.getSize(Key.REMOVE_GARAGE_VEHICLE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.REMOVE_GARAGE_VEHICLE_MENU, i);
@@ -564,13 +637,16 @@ public class MenuInitializer {
     private static void initializeMyVehiclesMenu() {
         MenuManager.createMenu(
                 Key.CUSTOMER_VEHICLES_MENU,
-                MenuInitializer::reloadMyVehilesMenu,
+                MenuInitializer::reloadMyVehiclesMenu,
                 "My Vehicles",
                 new MenuOption("Return to Main Menu", () -> MenuManager.showMenu(Key.CUSTOMER_MENU))
         );
     }
 
-    private static void reloadMyVehilesMenu() {
+    /**
+     * Reloads the 'My Vehicles' Menu
+     */
+    private static void reloadMyVehiclesMenu() {
         int size = MenuManager.getSize(Key.CUSTOMER_VEHICLES_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.CUSTOMER_VEHICLES_MENU, i);
         User current = UserManager.getCurrent();
@@ -586,6 +662,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the Service Manager Menu
+     */
     private static void initializeServiceManagerMenu() {
         MenuManager.createMenu(
                 Key.SERVICE_MANAGER_MENU,
@@ -603,6 +682,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the 'Manage Listings' Menu
+     */
     private static void initializeManageListingsMenu() {
         MenuManager.createMenu(
                 Key.MANAGE_LISTINGS_MENU,
@@ -614,6 +696,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Initializes the 'Sell Listing' Menu
+     */
     private static void initializeSellListingMenu() {
         MenuManager.createMenu(
                 Key.SELL_LISTING_MENU,
@@ -623,6 +708,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'Sell Listing' Menu
+     */
     private static void reloadSellListingMenu() {
         int size = MenuManager.getSize(Key.SELL_LISTING_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELL_LISTING_MENU, i);
@@ -640,6 +728,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the 'Update Listings' Menu
+     */
     private static void initializeUpdateListingsMenu() {
         MenuManager.createMenu(
                 Key.UPDATE_LISTINGS_MENU,
@@ -649,6 +740,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'Update Listings' Menu
+     */
     private static void reloadUpdateListingsMenu() {
         int size = MenuManager.getSize(Key.UPDATE_LISTINGS_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.UPDATE_LISTINGS_MENU, i);
@@ -681,6 +775,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the 'View Listings' Menu
+     */
     private static void initializeViewListingsMenu() {
         MenuManager.createMenu(
                 Key.VIEW_LISTINGS_MENU,
@@ -690,6 +787,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'View Listings' Menu
+     */
     private static void reloadViewListingsMenu() {
         int size = MenuManager.getSize(Key.VIEW_LISTINGS_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_LISTINGS_MENU, i);
@@ -732,6 +832,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the 'View Garage' Menu
+     */
     private static void initializeViewGarageMenu() {
         MenuManager.createMenu(
                 Key.VIEW_GARAGE_MENU,
@@ -741,6 +844,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'View Garage' Menu
+     */
     private static void reloadViewGarageMenu() {
         int size = MenuManager.getSize(Key.VIEW_GARAGE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_GARAGE_MENU, i);
@@ -805,6 +911,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the 'View Showroom' Menu
+     */
     private static void initializeViewShowroomMenu() {
         MenuManager.createMenu(
                 Key.VIEW_SHOWROOM_MENU,
@@ -814,6 +923,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'View Showroom' Menu
+     */
     private static void reloadViewShowroomMenu() {
         int size = MenuManager.getSize(Key.VIEW_SHOWROOM_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.VIEW_SHOWROOM_MENU, i);
@@ -858,6 +970,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the 'Browse Locations' Menu
+     */
     private static void initializeBrowseLocationsMenu() {
         MenuManager.createMenu(
                 Key.BROWSE_LOCATIONS_MENU,
@@ -867,6 +982,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'Browse Locations' Menu
+     */
     private static void reloadBrowseLocationsMenu() {
         int size = MenuManager.getSize(Key.BROWSE_LOCATIONS_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.BROWSE_LOCATIONS_MENU, i);
@@ -881,6 +999,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Initializes the 'FinishGarageVehicle' Menu
+     */
     private static void initializeFinishGarageVehicleMenu() {
         MenuManager.createMenu(
                 Key.FINISH_GARAGE_VEHICLE_MENU,
@@ -890,6 +1011,9 @@ public class MenuInitializer {
         );
     }
 
+    /**
+     * Reloads the 'Select Card' Menu
+     */
     private static void reloadSelectCardMenu() {
         int size = MenuManager.getSize(Key.SELECT_CARD_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELECT_CARD_MENU, i);
@@ -907,6 +1031,9 @@ public class MenuInitializer {
         }
     }
 
+    /**
+     * Reloads the 'Finish Garage Vehicle' Menu
+     */
     private static void reloadFinishGarageVehicleMenu() {
         int size = MenuManager.getSize(Key.FINISH_GARAGE_VEHICLE_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELECT_CARD_MENU, i);

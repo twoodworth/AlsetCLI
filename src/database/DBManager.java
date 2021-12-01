@@ -43,6 +43,7 @@ public class DBManager {
      */
     public static boolean validLoginData(String email, String pwd) {
         try {
+            // add parameters to statement & execute
             boolean valid;
             PreparedStatement s =
                     ConnectionManager
@@ -50,7 +51,11 @@ public class DBManager {
                             .prepareStatement(Statement.VALID_LOGIN_DATA);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
+
+            // check if valid
             valid = rs.next() && rs.getString("password").equals(pwd);
+
+            // close & return
             s.close();
             return valid;
         } catch (SQLException e) {
@@ -68,6 +73,7 @@ public class DBManager {
      */
     public static ServiceLocation getServiceLocation(String pwd) {
         try {
+            // set parameters & execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
@@ -75,6 +81,7 @@ public class DBManager {
             s.setString(1, pwd);
             ResultSet rs = s.executeQuery();
 
+            // construct location
             if (rs.next()) {
                 ServiceLocation location = new ServiceLocation(
                         rs.getString("location_id"),
@@ -89,9 +96,13 @@ public class DBManager {
                                 null
                         )
                 );
+
+                // close & return
                 s.close();
                 return location;
             } else {
+
+                // else close & return null
                 s.close();
                 return null;
             }
@@ -110,12 +121,16 @@ public class DBManager {
     public static boolean emailExists(String email) {
         try {
             boolean valid;
+
+            // set parameters & execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
                             .prepareStatement(Statement.EMAIL_EXISTS);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
+
+            // determin if valid, close, and return
             valid = rs.next();
             s.close();
             return valid;
@@ -134,6 +149,8 @@ public class DBManager {
      */
     public static boolean updatePassword(String email, String pass) {
         try {
+
+            // set parameters & execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
@@ -141,6 +158,8 @@ public class DBManager {
             s.setString(1, pass);
             s.setString(2, email);
             s.execute();
+
+            // close, commit, and return
             s.close();
             ConnectionManager.commit();
             return true;
@@ -158,12 +177,16 @@ public class DBManager {
      */
     public static String[] getName(String email) {
         try {
+
+            // set parameters and execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
                             .prepareStatement(Statement.GET_CUSTOMER_NAME);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
+
+            // get and return name, or return null if not found
             if (rs.next()) {
                 String[] name = new String[3];
                 name[0] = rs.getString("first");
@@ -189,12 +212,15 @@ public class DBManager {
      */
     public static Condition getCondition(String serialNum) {
         try {
+            // set parameters and execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
                             .prepareStatement(Statement.GET_VEHICLE_CONDITION);
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
+
+            // construct condition, close, and return (return null if not found).
             if (rs.next()) {
                 Condition c = new Condition(
                         rs.getLong("mileage"),
@@ -220,14 +246,16 @@ public class DBManager {
      */
     public static Set<Vehicle> getVehicles(String email) {
         try {
+            // set parameters and execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
                             .prepareStatement(Statement.GET_USER_VEHICLES);
             s.setString(1, email);
             ResultSet rs = s.executeQuery();
-            HashSet<Vehicle> vehicles = new HashSet<>();
 
+            // iterate through results & fill vehicles
+            HashSet<Vehicle> vehicles = new HashSet<>();
             while (rs.next()) {
                 String sn = rs.getString("serial_num");
                 Vehicle vehicle = new Vehicle(
@@ -239,6 +267,8 @@ public class DBManager {
                 );
                 vehicles.add(vehicle);
             }
+
+            // close & return
             s.close();
             return vehicles;
         } catch (SQLException e) {
@@ -255,6 +285,8 @@ public class DBManager {
      */
     public static Vehicle getVehicle(String serialNum) {
         try {
+
+            // set parameters & execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
@@ -262,6 +294,7 @@ public class DBManager {
             s.setString(1, serialNum);
             ResultSet rs = s.executeQuery();
 
+            // construct vehicle, close, and return
             if (rs.next()) {
                 Vehicle v = new Vehicle(
                         serialNum,
@@ -283,21 +316,42 @@ public class DBManager {
         }
     }
 
+    /**
+     * Gets a set of models that a given service location cannot repair
+     *
+     * @param location: service location
+     * @return set of unrepairable models
+     */
     public static Set<Model> getUnrepairableModels(ServiceLocation location) {
+        // get repairable models
         Set<Model> repairable = getRepairableModels(location);
+
+        // get all models
         Set<Model> all = getAllModels();
+
+        // remove repairable from all models
         all.removeAll(repairable);
+
+        // return
         return all;
     }
 
+    /**
+     * Returns a set of all vehicle models
+     *
+     * @return set of all models
+     */
     public static Set<Model> getAllModels() {
         try {
+
+            // set parameters & execute
             PreparedStatement s =
                     ConnectionManager
-                    .getCurrentConnection()
-                    .prepareStatement(Statement.GET_ALL_MODELS);
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_ALL_MODELS);
             ResultSet rs = s.executeQuery();
 
+            // iterate through results & fill models
             HashSet<Model> models = new HashSet<>();
             while (rs.next()) {
                 String name = rs.getString("name");
@@ -305,6 +359,9 @@ public class DBManager {
                 Model model = new Model(year, name);
                 models.add(model);
             }
+
+            // close & return
+            s.close();
             return models;
         }  catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -320,16 +377,21 @@ public class DBManager {
      */
     public static Set<Model> getRepairableModels(ServiceLocation location) {
         try {
+            // set parameters and execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
                             .prepareStatement(Statement.GET_REPAIRABLE_MODELS);
             s.setString(1, location.getId());
             ResultSet rs = s.executeQuery();
+
+            // iterate through results & fill models
             HashSet<Model> models = new HashSet<>();
             while (rs.next()) {
                 models.add(new Model(rs.getInt("year"), rs.getString("name")));
             }
+
+            // close and return
             s.close();
             return models;
         } catch (SQLException e) {
@@ -341,13 +403,19 @@ public class DBManager {
 
     public static Set<String> getBuyableModels() {
         try {
+
+            // set parameters and execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
                             .prepareStatement(Statement.GET_BUYABLE_MODELS);
             ResultSet rs = s.executeQuery();
+
+            // iterate through results and fill models
             HashSet<String> models = new HashSet<>();
             while (rs.next()) models.add(rs.getString("name"));
+
+            // close and return
             s.close();
             return models;
         } catch (SQLException e) {
@@ -359,14 +427,19 @@ public class DBManager {
 
     public static Set<Integer> getBuyableYears(String model) {
         try {
+            // set parameters and execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
                             .prepareStatement(Statement.GET_BUYABLE_YEARS);
             s.setString(1, model);
             ResultSet rs = s.executeQuery();
+
+            // iterate through results and fill years
             HashSet<Integer> years = new HashSet<>();
             while (rs.next()) years.add(rs.getInt("year"));
+
+            // close and return
             s.close();
             return years;
         } catch (SQLException e) {
@@ -377,7 +450,7 @@ public class DBManager {
 
     public static List<String> getTransactionList(String email) {
         try {
-            // add vehicle purchases
+            // query for vehicle purchase transactions
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
@@ -400,7 +473,7 @@ public class DBManager {
             }
             s.close();
 
-            // add repairs
+            // query for repair transactions
             s =
                     ConnectionManager
                     .getCurrentConnection()
@@ -422,10 +495,14 @@ public class DBManager {
                                 + price + " (Card: XXXXXXXXXXXX" + cardNum.substring(12, 16) + ")";
                 transactions.put(timestamp, transaction);
             }
+
+            // convert to sorted list
             ArrayList<String> strings = new ArrayList<>();
             for (Long l : transactions.keySet().stream().sorted(Long::compareTo).collect(Collectors.toList())) {
                 strings.add(transactions.get(l));
             }
+
+            // close & return
             s.close();
             return strings;
         } catch (SQLException e) {
@@ -443,6 +520,8 @@ public class DBManager {
      */
     public static Set<ServiceLocation> getRepairableLocations(Vehicle vehicle) {
         try {
+
+            // set parameters and execute
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
@@ -452,6 +531,7 @@ public class DBManager {
             ResultSet rs = s.executeQuery();
             HashSet<ServiceLocation> locations = new HashSet<>();
 
+            // iterate through results and fill locations
             while (rs.next()) {
                 String id = rs.getString("location_id");
                 String name = rs.getString("location_name");
@@ -466,6 +546,8 @@ public class DBManager {
                 );
                 locations.add(new ServiceLocation(id, name, address));
             }
+
+            // close and return
             s.close();
             return locations;
         } catch (SQLException e) {
@@ -809,6 +891,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Adds a new card into the database
+     *
+     * @param card: card to add
+     * @return true if successfully added, otherwise false
+     */
     public static boolean addNewCard(Card card) {
         try {
             // Check if name is in database
@@ -842,8 +930,8 @@ public class DBManager {
                 PreparedStatement s2b = current.prepareStatement(Statement.INSERT_CARD);
                 s2b.setString(1, card.getNum());
                 s2b.setString(2, card.getCvv());
-                s2b.setInt(3, card.getExp_month());
-                s2b.setInt(4, card.getEx_year());
+                s2b.setInt(3, card.getExpMonth());
+                s2b.setInt(4, card.getExpYear());
                 s2b.setString(5, card.getZip());
                 s2b.setString(6, card.getType());
                 s2b.execute();
@@ -1036,6 +1124,14 @@ public class DBManager {
         }
     }
 
+    /**
+     * Removes a vehicle from a service location. To be removed, a vehicle must
+     * be sold to the customer
+     *
+     * @param gd:   GarageData of vehicle to remove
+     * @param card: card used to purchase vehicle
+     * @return true if successful
+     */
     public static boolean removeGarageVehicle(GarageData gd, Card card) {
         try {
             boolean isPurchase = gd.getReason().equals("Vehicle Purchase");
@@ -1063,10 +1159,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * Returns a set of all service locations
+     *
+     * @return set of service locations
+     */
     public static Set<ServiceLocation> getServiceLocations() {
         try {
-
-            // remove vehicle from pickup
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
@@ -1098,6 +1197,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Returns a set of options that a given model can have
+     *
+     * @param model: model to add options to
+     * @return set of options
+     */
     public static Set<String> getBuyableOptions(Model model) {
         try {
             PreparedStatement s =
@@ -1117,6 +1222,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Returns the cost to purchase a given model
+     *
+     * @param model: model being purchased
+     * @return cost of model
+     */
     public static Long getModelCost(Model model) {
         try {
             PreparedStatement s =
@@ -1139,6 +1250,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Returns the cost to add a given option to a vehicle
+     *
+     * @param option: option to add
+     * @return cost of option
+     */
     public static Long getOptionCost(String option) {
         try {
             PreparedStatement s =
@@ -1159,6 +1276,11 @@ public class DBManager {
         }
     }
 
+    /**
+     * Generates a new, unused serial number
+     *
+     * @return new serial number
+     */
     public static String getNewSN() {
         try {
             PreparedStatement s =
@@ -1181,6 +1303,17 @@ public class DBManager {
         }
     }
 
+    /**
+     * Processes a vehicle purchase
+     *
+     * @param model:    Model purchased
+     * @param options:  Options purchased
+     * @param location: Location to deliver vehicle to
+     * @param card:     card used to purchase
+     * @param price:    price of purchase
+     * @param user:     Purchaser of vehicle
+     * @return true if successfully processed, otherwise false
+     */
     public static boolean purchaseVehicle(Model model, HashSet<String> options, ServiceLocation location, Card card, Long price, User user) {
         try {
 
@@ -1260,6 +1393,14 @@ public class DBManager {
         }
     }
 
+    /**
+     * Orders a new vehicle for a service location's showroom
+     *
+     * @param model:    Vehicle model
+     * @param options:  Vehicle options
+     * @param location: Service Location
+     * @return true if successfully ordered, otherwise false
+     */
     public static boolean orderShowroomVehicle(Model model, HashSet<String> options, ServiceLocation location) {
         try {
 
@@ -1310,6 +1451,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Gets a set of showroom vehicles at a given service location
+     *
+     * @param loc: Service location
+     * @return set of showroom vehicles
+     */
     public static Set<Vehicle> getShowroomVehicles(ServiceLocation loc) {
         try {
             PreparedStatement s =
@@ -1332,26 +1479,37 @@ public class DBManager {
         }
     }
 
+    /**
+     * Gets a list of manufactured showroom vehicles at a given service location
+     *
+     * @param loc: Service location
+     * @return set of vehicles
+     */
     public static Set<Vehicle> getManufacturedShowroomVehicles(ServiceLocation loc) {
         Set<Vehicle> vehicles = getShowroomVehicles(loc);
         vehicles.removeIf(v -> !v.isManufactured());
         return vehicles;
     }
 
+    /**
+     * Returns a set of vehicles that a service location has ordered, but that have not
+     * yet arrived to the showroom
+     *
+     * @return set of vehicles
+     */
     public static Set<Vehicle> getOrderedVehicles() {
         try {
-
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
-                            .prepareStatement(Statement.GET_SHOWROOM_VEHICLES);
+                            .prepareStatement(Statement.GET_ORDERED_SHOWROOM_VEHICLES);
             s.setString(1, ServiceManager.getCurrent().getId());
             ResultSet rs = s.executeQuery();
             HashSet<Vehicle> vehicles = new HashSet<>();
             while (rs.next()) {
                 String sn = rs.getString("serial_num");
                 Vehicle v = DBManager.getVehicle(sn);
-                if (v != null && !v.isManufactured()) vehicles.add(v);
+                if (v != null) vehicles.add(v);
             }
             s.close();
             return vehicles;
@@ -1361,6 +1519,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Adds a vehicle into a service location's showroom
+     *
+     * @param v: Vehicle
+     * @return true if successfully added, otherwise false
+     */
     public static boolean addShowroomVehicle(Vehicle v) {
         try {
             Connection current = ConnectionManager.getCurrentConnection();
@@ -1398,6 +1562,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * Removes a vehicle from a service location's showroom, and adds it to the price listings
+     *
+     * @param v:     Vehicle
+     * @param price: Price
+     * @return true if successful, otherwise returns false
+     */
     public static boolean removeShowroomVehicle(Vehicle v, Long price) {
         // remove from showroom
         // add to listing
@@ -1427,6 +1598,11 @@ public class DBManager {
 
     }
 
+    /**
+     * Returns a map of vehicles and their listed prices for a service location
+     *
+     * @return map of vehicles to long prices
+     */
     public static Map<Vehicle, Long> getVehicleListings() {
         try {
             PreparedStatement s =
@@ -1449,6 +1625,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * Sets a price listing to a new price
+     *
+     * @param v:     Vehicle listed
+     * @param price: New price
+     * @return true if successful, otherwise false
+     */
     public static boolean updatePriceListing(Vehicle v, Long price) {
         try {
             PreparedStatement s =
@@ -1467,6 +1650,15 @@ public class DBManager {
         }
     }
 
+    /**
+     * Processes the purchase of a listed vehicle
+     *
+     * @param email: Email of customer
+     * @param price: Sales price
+     * @param v:     Vehicle
+     * @param card:  Card used for purchasing
+     * @return true if successful, otherwise
+     */
     public static boolean sellListedVehicle(String email, long price, Vehicle v, Card card) {
         try {
             String sn = v.getSerialNum();
@@ -1512,6 +1704,11 @@ public class DBManager {
         }
     }
 
+    /**
+     * Adds a model to a service location's set of repairable models
+     * @param model: Model to add
+     * @return true if successful, otherwise false
+     */
     public static boolean addRepairableModel(Model model) {
         try {
             // create statement
@@ -1534,6 +1731,12 @@ public class DBManager {
         }
     }
 
+    /**
+     * Removes a model from a service location's set of
+     * repairable models
+     * @param model: Model to remove
+     * @return true if successful, otherwise false
+     */
     public static boolean removeRepairableModel(Model model) {
         try {
         // create statement

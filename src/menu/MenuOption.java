@@ -45,6 +45,12 @@ public class MenuOption {
         action.run();
     }
 
+    /**
+     * Checks if this menuOption object is equal to another object.
+     *
+     * @param o: Other object
+     * @return true if objects are equal, otherwise false
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,6 +60,11 @@ public class MenuOption {
                 Objects.equals(action, that.action);
     }
 
+    /**
+     * Calculates the hash value.
+     *
+     * @return hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(description, action);

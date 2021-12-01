@@ -188,6 +188,13 @@ public class Sequences {
         MenuManager.showMenu(Key.FINISH_GARAGE_VEHICLE_MENU);
     }
 
+    /**
+     * Used for having the user confirm if the given vehicle info is correct
+     *
+     * @param data: Data to confirm
+     * @param v:    Vehicle that the data is related to
+     * @return true if the user confirms, otherwise false
+     */
     static boolean confirmVehicleInfo(GarageData data, Vehicle v) {
         String sn = data.getSerialNum();
         Set<String> options = DBManager.getOptions(sn);
@@ -399,6 +406,11 @@ public class Sequences {
         viewLocationOverview(location);
     }
 
+    /**
+     * Prints out an overview of the given service location
+     *
+     * @param location: Service Location
+     */
     public static void viewLocationOverview(ServiceLocation location) {
         if (location == null) {
             IOManager.clear("Unable to load info.");
@@ -544,6 +556,12 @@ public class Sequences {
     public static void productManagerSequence() {//todo add
     }
 
+    /**
+     * Used in order to construct a Card object based on user inputs
+     *
+     * @param email: Email of user
+     * @return card
+     */
     static Card getCardSequence(String email) {
         CardManager.setSelected(null);
         ServiceManager.setCurrentEmail(email);
@@ -552,6 +570,12 @@ public class Sequences {
 
     }
 
+    /**
+     * Used for getting the user that is picking up a vehicle
+     *
+     * @param v: Vehicle being picked up
+     * @return user
+     */
     static User getPickupUserSequence(Vehicle v) {
         User user = null;
         int i = 0;
@@ -587,6 +611,11 @@ public class Sequences {
         return user;
     }
 
+    /**
+     * Allows the user to add a new card to the database.
+     *
+     * @return true if successfully added, otherwise false
+     */
     public static boolean addNewCardSequence() {
         String num = null;
         while (num == null) {
@@ -651,6 +680,9 @@ public class Sequences {
         return true;
     }
 
+    /**
+     * Provides the user with their purchase history
+     */
     public static void purchaseHistorySequence() {
         User current = UserManager.getCurrent();
         List<String> purchases = DBManager.getTransactionList(current.getEmail());
@@ -670,6 +702,9 @@ public class Sequences {
         IOManager.getStringInput("Enter any value to continue:");
     }
 
+    /**
+     * Allows a service manager to order a new vehicle for their showroom.
+     */
     public static void orderShowroomVehicleSequence() {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
@@ -690,6 +725,12 @@ public class Sequences {
 
     }
 
+    /**
+     * Allows a service manager to sell a listed vehicle to a customer
+     *
+     * @param v:     Vehicle being sold
+     * @param price: Sales price
+     */
     public static void sellListedVehicleSequence(Vehicle v, long price) {
         VehicleSelections.reset();
         IOManager.clear("Please hand the console over to the customer.");
@@ -815,6 +856,9 @@ public class Sequences {
         MenuManager.showMenu(Key.MANAGE_LISTINGS_MENU);
     }
 
+    /**
+     * Allows a user to purchase a new vehicle
+     */
     public static void purchaseVehicleSequence() {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
@@ -864,6 +908,9 @@ public class Sequences {
         MenuManager.showMenu(Key.CUSTOMER_MENU);
     }
 
+    /**
+     * Allows a service manager to add a model to their set of repairable models
+     */
     public static void addRepairableModelSequence() {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_UNREPAIRABLE_MODEL_MENU);
@@ -878,6 +925,10 @@ public class Sequences {
             MenuManager.showMenu(Key.MANAGE_GARAGE_MENU, "Failed to add model, please try again");
         }
     }
+
+    /**
+     * Allows a service manager to remove a model from their set of repairable models
+     */
     public static void removeRepairableModelSequence() {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_REPAIRABLE_MODEL_MENU);
