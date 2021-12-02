@@ -1201,6 +1201,12 @@ public class Sequences {
                 if (!again) {
                     return;
                 }
+            } else if (DBManager.getServiceLocation(password) != null) {
+                IOManager.clear("Password already taken.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (!again) {
+                    return;
+                }
             } else {
                 break;
             }

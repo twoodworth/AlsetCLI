@@ -99,7 +99,7 @@ public class MenuInitializer {
                 new MenuOption("Set Option Price", Sequences::setOptionPrice),
                 new MenuOption("Add Model Option", Sequences::addModelOptionSequence),
                 new MenuOption("Recall a Product", Sequences::recallSequence),
-                new MenuOption("Log Out", MenuManager::showPrevious)
+                new MenuOption("Log Out", () -> MenuManager.showMenu(Key.ALSET_LOGIN_MENU))
         );
     }
 
