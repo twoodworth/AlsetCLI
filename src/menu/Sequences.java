@@ -927,6 +927,11 @@ public class Sequences {
      * Allows a service manager to add a model to their set of repairable models
      */
     public static void addRepairableModelSequence() {
+        Set<Model> m = DBManager.getUnrepairableModels(ServiceManager.getCurrent());
+        if (m.isEmpty()) {
+            MenuManager.setNextMessage("All models are already repairable.");
+            return;
+        }
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_UNREPAIRABLE_MODEL_MENU);
         MenuManager.showMenuOnce(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
@@ -946,6 +951,11 @@ public class Sequences {
      */
     public static void removeRepairableModelSequence() {
         VehicleSelections.reset();
+        Set<Model> m = DBManager.getRepairableModels(ServiceManager.getCurrent());
+        if (m.isEmpty()) {
+            MenuManager.setNextMessage("This location already can't repair any models.");
+            return;
+        }
         MenuManager.showMenuOnce(Key.SELECT_REPAIRABLE_MODEL_MENU);
         MenuManager.showMenuOnce(Key.SELECT_REPAIRABLE_YEAR_MENU);
         String name = VehicleSelections.getModelName();
