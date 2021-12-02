@@ -78,8 +78,8 @@ public class Statement {
     /**
      * Used for obtaining the current max location id
      */
-    public static final String GET_MAX_LOCATION_ID =
-            "SELECT MAX(location_id) AS max_id " +
+    public static final String GET_NEW_LOCATION_ID =
+            "SELECT (COUNT(location_id) + 1) AS new_id " +
                     "FROM service_location";
 
     /**
@@ -91,6 +91,14 @@ public class Statement {
                     "FROM model " +
                     "WHERE model_price IS NOT NULL " +
                     "AND name=?";
+    /**
+     * Used for obtaining a set of all years currently being sold new for
+     * a given model.
+     */
+    public static final String GET_ALL_YEARS =
+            "SELECT distinct year " +
+                    "FROM model " +
+                    "WHERE name=?";
 
     /**
      * Used for checking if a given email address exists within the database.
@@ -536,7 +544,7 @@ public class Statement {
      * Used for inserting a new row into service_location
      */
     public static final String INSERT_LOCATION =
-            "INSERT INTO service_location (location_id, location_name, password) " +
+            "INSERT INTO service_location (location_name, location_id, password) " +
                     "VALUES (?, ?, ?)";
 
     /**

@@ -64,6 +64,8 @@ public class MenuInitializer {
             initializeSelectRepairableYearMenu();
             initializeSelectAllOptionsMenu();
             initializeProductManagerMenu();
+            initializeSelectAllYearsMenu();
+            initializeSelectAllModelsMenu();
             initialized = true;
         }
     }
@@ -151,6 +153,32 @@ public class MenuInitializer {
             MenuManager.addOption(
                     Key.SELECT_MODEL_MENU,
                     new MenuOption("Model " + s, () -> VehicleSelections.setModel(s))
+            );
+        }
+    }
+
+    /**
+     * Initializes the 'Select Model' menu
+     */
+    private static void initializeSelectAllModelsMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_ALL_MODELS_MENU,
+                MenuInitializer::reloadSelectAllModelsMenu,
+                "Select Model"
+        );
+    }
+
+    /**
+     * Reloads the select model menu
+     */
+    private static void reloadSelectAllModelsMenu() {
+        int size = MenuManager.getSize(Key.SELECT_ALL_MODELS_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_ALL_MODELS_MENU, i);
+        Set<String> models = DBManager.getAllModels().stream().map(Model::getName).collect(Collectors.toSet());
+        for (String m : models) {
+            MenuManager.addOption(
+                    Key.SELECT_ALL_MODELS_MENU,
+                    new MenuOption("Model " + m, () -> VehicleSelections.setModel(m))
             );
         }
     }
@@ -413,6 +441,32 @@ public class MenuInitializer {
         for (int i : buyable) {
             MenuManager.addOption(
                     Key.SELECT_YEAR_MENU,
+                    new MenuOption(String.valueOf(i), () -> VehicleSelections.setYear(i))
+            );
+        }
+    }
+
+    /**
+     * Initializes the select year menu
+     */
+    private static void initializeSelectAllYearsMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_ALL_YEARS_MENU,
+                MenuInitializer::reloadSelectAllYearsMenu,
+                "Select Year"
+        );
+    }
+
+    /**
+     * Reloads the Select Year Menu
+     */
+    private static void reloadSelectAllYearsMenu() {
+        int size = MenuManager.getSize(Key.SELECT_ALL_YEARS_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_ALL_YEARS_MENU, i);
+        Set<Integer> years = DBManager.getAllYears(VehicleSelections.getModelName());
+        for (int i : years) {
+            MenuManager.addOption(
+                    Key.SELECT_ALL_YEARS_MENU,
                     new MenuOption(String.valueOf(i), () -> VehicleSelections.setYear(i))
             );
         }

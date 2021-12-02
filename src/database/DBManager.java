@@ -17,11 +17,9 @@ import vehicle.Condition;
 import vehicle.Model;
 import vehicle.Vehicle;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -484,6 +482,29 @@ public class DBManager {
         }
     }
 
+    public static Set<Integer> getAllYears(String model) {
+        try {
+            // set parameters and execute
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_ALL_YEARS);
+            s.setString(1, model);
+            ResultSet rs = s.executeQuery();
+
+            // iterate through results and fill years
+            HashSet<Integer> years = new HashSet<>();
+            while (rs.next()) years.add(rs.getInt("year"));
+
+            // close and return
+            s.close();
+            return years;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
+        }
+    }
+
     public static List<String> getTransactionList(String email) {
         try {
             // query for vehicle purchase transactions
@@ -629,7 +650,7 @@ public class DBManager {
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
-                            .prepareStatement(Statement.GET_OPTIONS);
+                            .prepareStatement(Statement.GET_ALL_OPTIONS);
             ResultSet rs = s.executeQuery();
             HashSet<String> options = new HashSet<>();
 
@@ -1375,10 +1396,10 @@ public class DBManager {
             PreparedStatement s =
                     ConnectionManager
                             .getCurrentConnection()
-                            .prepareStatement(Statement.GET_MAX_LOCATION_ID);
+                            .prepareStatement(Statement.GET_NEW_LOCATION_ID);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
-                String id = rs.getString("max_id");
+                String id = String.valueOf(rs.getInt("new_id"));
                 s.close();
                 return id;
             }
@@ -1944,7 +1965,8 @@ public class DBManager {
                             .prepareStatement(Statement.ADD_MODEL);
             s.setInt(1, year);
             s.setString(2, name);
-            s.setLong(3, price);
+            if (price == null) s.setNull(3, Types.NUMERIC);
+            else s.setLong(3, price);
             s.execute();
             s.close();
 
@@ -1965,7 +1987,8 @@ public class DBManager {
                             .getCurrentConnection()
                             .prepareStatement(Statement.ADD_OPTION);
             s.setString(1, name);
-            s.setLong(2, price);
+            if (price == null) s.setNull(2, Types.NUMERIC);
+            else s.setLong(2, price);
             s.execute();
             s.close();
 
@@ -2034,7 +2057,8 @@ public class DBManager {
                         ConnectionManager
                                 .getCurrentConnection()
                                 .prepareStatement(Statement.UPDATE_MODEL_PRICE);
-                s.setLong(1, price);
+                if (price == null) s.setNull(1, Types.NUMERIC);
+                else s.setLong(1, price);
                 s.setInt(2, model.getYear());
                 s.setString(3, model.getName());
                 s.execute();
@@ -2056,7 +2080,9 @@ public class DBManager {
                         ConnectionManager
                                 .getCurrentConnection()
                                 .prepareStatement(Statement.UPDATE_OPTION_PRICE);
-                s.setLong(1, price);
+
+                if (price == null) s.setNull(1, Types.NUMERIC);
+                else s.setLong(1, price);
                 s.setString(2, option);
                 s.execute();
                 s.close();

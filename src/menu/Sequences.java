@@ -1062,7 +1062,7 @@ public class Sequences {
         }
         Integer year;
         while (true) {
-            year = IOManager.getIntInput("Enter model year", 2008, Integer.MAX_VALUE);
+            year = IOManager.getIntInput("Enter model year:", 2008, Integer.MAX_VALUE);
             if (year == null) {
                 IOManager.clear("Invalid input, must be a year after 2007.");
                 boolean again = IOManager.getBooleanInput("Try again?");
@@ -1095,10 +1095,11 @@ public class Sequences {
 
         if (price == -1) price = null;
 
-        if (price == null) IOManager.clear(year + " Model " + name + " will be created and sold for $" + price);
-        else IOManager.clear(year + " Model " + name + " will be created, but not for sale.");
+        if (price == null) IOManager.clear(year + " Model " + name + " will be created, but not for sale.");
+        else IOManager.clear(year + " Model " + name + " will be created and sold for $" + price);
 
-        boolean correct = IOManager.getBooleanInput("Is the above information correct? (y/n");
+
+        boolean correct = IOManager.getBooleanInput("Is the above information correct?");
 
         if (correct) {
             boolean success = DBManager.addModel(year, name, price);
@@ -1143,10 +1144,11 @@ public class Sequences {
         }
         if (price == -1) price = null;
 
-        if (price == null) IOManager.clear("Custom option '" + name + "' will be created and sold for $" + price);
-        else IOManager.clear("Custom option '" + name + "' will be created, but not for sale.");
+        if (price == null) IOManager.clear("Custom option '" + name + "' will be created, but not for sale.");
+        else IOManager.clear("Custom option '" + name + "' will be created and sold for $" + price);
 
-        boolean correct = IOManager.getBooleanInput("Is the above information correct? (y/n");
+
+        boolean correct = IOManager.getBooleanInput("Is the above information correct?");
         if (correct) {
             boolean success = DBManager.addOption(name, price);
             if (success) MenuManager.setNextMessage("New option added successfully.");
@@ -1216,8 +1218,8 @@ public class Sequences {
 
     public static void setModelPrice() {
         VehicleSelections.reset();
-        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
-        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_ALL_MODELS_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_ALL_YEARS_MENU);
 
         Long price;
         while (true) {
@@ -1263,8 +1265,8 @@ public class Sequences {
 
     public static void addModelOptionSequence() {
         VehicleSelections.reset();
-        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
-        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_ALL_MODELS_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_ALL_YEARS_MENU);
         MenuManager.showMenuOnce(Key.SELECT_ALL_OPTIONS_MENU);
 
         String name = VehicleSelections.getModelName();
@@ -1285,8 +1287,8 @@ public class Sequences {
 
     public static void recallSequence() {
         VehicleSelections.reset();
-        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
-        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_ALL_MODELS_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_ALL_YEARS_MENU);
         MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU, "Recalls will only be applied to vehicles with all the selected options.");
         IOManager.clear();
         Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModelName());
