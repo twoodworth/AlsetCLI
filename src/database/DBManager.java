@@ -142,6 +142,40 @@ public class DBManager {
     }
 
     /**
+     * Checks if the given address is in the database.
+     *
+     * @param address: address to check
+     * @return true if an address is found, otherwise false.
+     */
+    public static boolean addressExists(Address address) {
+        try {
+            boolean valid;
+
+            // set parameters & execute
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.ADDRESS_EXISTS);
+            s.setString(1, address.getPlanet());
+            s.setString(2, address.getCountry());
+            s.setString(3, address.getState());
+            s.setString(4, address.getCity());
+            s.setString(5, address.getStreet());
+            s.setString(6, address.getZip());
+            s.setString(7, address.getApartment());
+            ResultSet rs = s.executeQuery();
+
+            // determin if valid, close, and return
+            valid = rs.next();
+            s.close();
+            return valid;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    /**
      * Checks if there is an account belonging to the given email.
      *
      * @param email: Email to check
@@ -586,6 +620,31 @@ public class DBManager {
     }
 
     /**
+     * Returns all additional options for all vehicles
+     *
+     * @return set of names of additional options
+     */
+    public static Set<String> getAllOptions() {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_OPTIONS);
+            ResultSet rs = s.executeQuery();
+            HashSet<String> options = new HashSet<>();
+
+            while (rs.next()) {
+                options.add(rs.getString("option_name"));
+            }
+            s.close();
+            return options;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
+
+    /**
      * Returns a set of garage data belonging to vehicles of unfinished services.
      *
      * @param location: Service location to collect data from
@@ -954,7 +1013,6 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
         }
@@ -1299,6 +1357,32 @@ public class DBManager {
                 s.close();
                 return sn.toString();
             }
+            return null;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return null;
+        }
+    }
+
+
+    /**
+     * Generates a new, unused location ID
+     *
+     * @return new location ID
+     */
+    public static String getNewLocationID() {
+        try {
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.GET_MAX_LOCATION_ID);
+            ResultSet rs = s.executeQuery();
+            if (rs.next()) {
+                String id = rs.getString("max_id");
+                s.close();
+                return id;
+            }
+            s.close();
             return null;
         } catch (SQLException e) {
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
@@ -1795,16 +1879,18 @@ public class DBManager {
             s.close();
 
             // insert address
-            s = current.prepareStatement(Statement.INSERT_ADDRESS);
-            s.setString(1, address.getPlanet());
-            s.setString(2, address.getCountry());
-            s.setString(3, address.getState());
-            s.setString(4, address.getCity());
-            s.setString(5, address.getStreet());
-            s.setString(6, address.getApartment());
-            s.setString(7, address.getZip());
-            s.execute();
-            s.close();
+            if (!addressExists(address)) {
+                s = current.prepareStatement(Statement.INSERT_ADDRESS);
+                s.setString(1, address.getPlanet());
+                s.setString(2, address.getCountry());
+                s.setString(3, address.getState());
+                s.setString(4, address.getCity());
+                s.setString(5, address.getStreet());
+                s.setString(6, address.getZip());
+                s.setString(7, address.getApartment());
+                s.execute();
+                s.close();
+            }
 
             // insert customer_address
             s = current.prepareStatement(Statement.INSERT_CUSTOMER_ADDRESS);
@@ -1814,8 +1900,8 @@ public class DBManager {
             s.setString(4, address.getState());
             s.setString(5, address.getCity());
             s.setString(6, address.getStreet());
-            s.setString(7, address.getApartment());
-            s.setString(8, address.getZip());
+            s.setString(7, address.getZip());
+            s.setString(8, address.getApartment());
             s.execute();
             s.close();
 
@@ -1823,9 +1909,219 @@ public class DBManager {
             ConnectionManager.commit();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace(); //todo remove
             MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
             return false;
+        }
+    }
+
+    public static boolean correctProductManagerPassword(String password) {
+        try {
+            boolean valid;
+            // set parameters & execute
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.CORRECT_PRODUCT_MANAGER_PASSWORD);
+            s.setString(1, password);
+            ResultSet rs = s.executeQuery();
+
+            // determine if valid, close, and return
+            valid = rs.next();
+            s.close();
+            return valid;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean addModel(Integer year, String name, Long price) {
+        try {
+            // set parameters & execute
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.ADD_MODEL);
+            s.setInt(1, year);
+            s.setString(2, name);
+            s.setLong(3, price);
+            s.execute();
+            s.close();
+
+            // commit & return
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean addOption(String name, Long price) {
+        try {
+            // set parameters & execute
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.ADD_OPTION);
+            s.setString(1, name);
+            s.setLong(2, price);
+            s.execute();
+            s.close();
+
+            // commit & return
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean addLocation(String name, String password, Address address) {
+        try {
+            String id = getNewLocationID();
+            Connection current = ConnectionManager.getCurrentConnection();
+            // insert location row
+            PreparedStatement s = current.prepareStatement(Statement.INSERT_LOCATION);
+            s.setString(1, name);
+            s.setString(2, id);
+            s.setString(3, password);
+            s.execute();
+            s.close();
+
+            // insert address row
+            if (!addressExists(address)) {
+                s = current.prepareStatement(Statement.INSERT_ADDRESS);
+                s.setString(1, address.getPlanet());
+                s.setString(2, address.getCountry());
+                s.setString(3, address.getState());
+                s.setString(4, address.getCity());
+                s.setString(5, address.getStreet());
+                s.setString(6, address.getZip());
+                s.setString(7, address.getApartment());
+                s.execute();
+                s.close();
+            }
+
+            // insert service_address row
+            s = current.prepareStatement(Statement.INSERT_SERVICE_ADDRESS);
+            s.setString(1, id);
+            s.setString(2, address.getPlanet());
+            s.setString(3, address.getCountry());
+            s.setString(4, address.getState());
+            s.setString(5, address.getCity());
+            s.setString(6, address.getStreet());
+            s.setString(7, address.getZip());
+            s.setString(8, address.getApartment());
+            s.execute();
+            s.close();
+
+
+            // commit & return
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static boolean updateModelPrice(Model model, Long price) {
+            try {
+                // set parameters & execute
+                PreparedStatement s =
+                        ConnectionManager
+                                .getCurrentConnection()
+                                .prepareStatement(Statement.UPDATE_MODEL_PRICE);
+                s.setLong(1, price);
+                s.setInt(2, model.getYear());
+                s.setString(3, model.getName());
+                s.execute();
+                s.close();
+
+                // commit & return
+                ConnectionManager.commit();
+                return true;
+            } catch (SQLException e) {
+                MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+                return false;
+            }
+    }
+
+    public static boolean updateOptionPrice(String option, Long price) {
+            try {
+                // set parameters & execute
+                PreparedStatement s =
+                        ConnectionManager
+                                .getCurrentConnection()
+                                .prepareStatement(Statement.UPDATE_OPTION_PRICE);
+                s.setLong(1, price);
+                s.setString(2, option);
+                s.execute();
+                s.close();
+
+                // commit & return
+                ConnectionManager.commit();
+                return true;
+            } catch (SQLException e) {
+                MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+                return false;
+            }
+    }
+
+    public static boolean addModelOption(Model model, String option) {
+        try {
+            // set parameters & execute
+            PreparedStatement s =
+                    ConnectionManager
+                            .getCurrentConnection()
+                            .prepareStatement(Statement.INSERT_MODEL_OPTION);
+            s.setString(1, option);
+            s.setInt(2, model.getYear());
+            s.setString(3, model.getName());
+            s.execute();
+            s.close();
+
+            // commit & return
+            ConnectionManager.commit();
+            return true;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return false;
+        }
+    }
+
+    public static Set<String> getRecallEmails(Model model, Set<String> options) {
+        try {
+            Connection current = ConnectionManager.getCurrentConnection();
+            Set<String> emails = new HashSet<>();
+            if (options.isEmpty()) {
+                PreparedStatement s = current.prepareStatement(Statement.GET_RECALL_EMAILS_NO_OPTION);
+                s.setInt(1, model.getYear());
+                s.setString(2, model.getName());
+                ResultSet rs = s.executeQuery();
+                while (rs.next()) {
+                    emails.add(rs.getString("email"));
+                }
+                s.close();
+            } else {
+                for (String option : options) {
+                    PreparedStatement s = current.prepareStatement(Statement.GET_RECALL_EMAILS);
+                    s.setInt(1, model.getYear());
+                    s.setString(2, model.getName());
+                    s.setString(3, option);
+                    ResultSet rs = s.executeQuery();
+                    while (rs.next()) {
+                        emails.add(rs.getString("email"));
+                    }
+                    s.close();
+                }
+            }
+            return emails;
+        } catch (SQLException e) {
+            MenuManager.showMenu(Key.EDGAR1_LOGIN_MENU, Strings.DB_ERROR);
+            return new HashSet<>();
         }
     }
 }

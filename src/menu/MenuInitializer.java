@@ -15,10 +15,7 @@ import vehicle.Model;
 import vehicle.Vehicle;
 import vehicle.VehicleSelections;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +62,8 @@ public class MenuInitializer {
             initializeSelectUnrepairableYearMenu();
             initializeSelectRepairableModelMenu();
             initializeSelectRepairableYearMenu();
+            initializeSelectAllOptionsMenu();
+            initializeProductManagerMenu();
             initialized = true;
         }
     }
@@ -81,9 +80,24 @@ public class MenuInitializer {
                 new MenuOption("Create New Customer Account", Sequences::createNewAccountSequence),
                 new MenuOption("Browse Service Locations",  () -> MenuManager.showMenu(Key.BROWSE_LOCATIONS_MENU)),
                 new MenuOption("Login as Service Manager", Sequences::serviceManagerSequence),
-                new MenuOption("Login as Product Manager \t//todo add functionality", Sequences::productManagerSequence),//todo add functionality
+                new MenuOption("Login as Product Manager", Sequences::productManagerSequence),
                 new MenuOption("Close connection", Sequences::endConnectionSequence),
                 new MenuOption("Exit Program", Sequences::exitSequence)
+        );
+    }
+
+    private static void initializeProductManagerMenu() {
+        MenuManager.createMenu(
+                Key.PRODUCT_MANAGER_MENU,
+                "Product Manager Menu",
+                new MenuOption("Add New Model", Sequences::addModelSequence),
+                new MenuOption("Add New Option", Sequences::addOptionSequence),
+                new MenuOption("Add New Location", Sequences::addServiceLocationSequence),
+                new MenuOption("Set Model Price", Sequences::setModelPrice),
+                new MenuOption("Set Option Price", Sequences::setOptionPrice),
+                new MenuOption("Add Model Option", Sequences::addModelOptionSequence),
+                new MenuOption("Recall a Product", Sequences::recallSequence),
+                new MenuOption("Log Out", MenuManager::showPrevious)
         );
     }
 
@@ -221,7 +235,7 @@ public class MenuInitializer {
         int size = MenuManager.getSize(Key.SELECT_REPAIRABLE_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_REPAIRABLE_YEAR_MENU, i);
 
-        String name = VehicleSelections.getModel();
+        String name = VehicleSelections.getModelName();
         Set<Integer> repairable =
                 DBManager
                         .getRepairableModels(ServiceManager.getCurrent())
@@ -254,7 +268,7 @@ public class MenuInitializer {
     private static void reloadSelectUnrepairableYearMenu() {
         int size = MenuManager.getSize(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_UNREPAIRABLE_YEAR_MENU, i);
-        String name = VehicleSelections.getModel();
+        String name = VehicleSelections.getModelName();
         Set<Integer> unrepairable =
                 DBManager
                         .getUnrepairableModels(ServiceManager.getCurrent())
@@ -287,7 +301,11 @@ public class MenuInitializer {
     private static void reloadSelectLocationMenu() {
         int size = MenuManager.getSize(Key.SELECT_LOCATION_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_LOCATION_MENU, i);
-        Set<ServiceLocation> locations = DBManager.getServiceLocations();
+        String name = VehicleSelections.getModelName();
+        int year = VehicleSelections.getYear();
+        Vehicle v = new Vehicle("temp", year, name, false, null);
+        Set<ServiceLocation> locations = DBManager.getRepairableLocations(v);
+        if (locations == null) locations = new HashSet<>();
         List<ServiceLocation> sorted = locations.stream().sorted(Comparator.comparing(ServiceLocation::getName)).collect(Collectors.toList());
         for (ServiceLocation s : sorted) {
             MenuManager.addOption(
@@ -323,12 +341,42 @@ public class MenuInitializer {
     }
 
     /**
+     * Initializes the select options menu
+     */
+    private static void initializeSelectAllOptionsMenu() {
+        MenuManager.createMenu(
+                Key.SELECT_ALL_OPTIONS_MENU,
+                MenuInitializer::reloadSelectAllOptionsMenu,
+                "Select a Customization Option"
+        );
+    }
+
+    /**
+     * Reloads the select options menu
+     */
+    private static void reloadSelectAllOptionsMenu() {
+        int size = MenuManager.getSize(Key.SELECT_ALL_OPTIONS_MENU);
+        for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_ALL_OPTIONS_MENU, i);
+        Set<String> options = DBManager.getAllOptions();
+        if (options == null) {
+            MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU, "Failed to load data, please try again.");
+            return;
+        }
+        for (String option : options) {
+            MenuManager.addOption(
+                    Key.SELECT_ALL_OPTIONS_MENU,
+                    new MenuOption(option, () -> VehicleSelections.addCustomOption(option))
+            );
+        }
+    }
+
+    /**
      * Reloads the select options menu
      */
     private static void reloadSelectOptionsMenu() {
         int size = MenuManager.getSize(Key.SELECT_OPTIONS_MENU);
         for (int i = size - 1; i > 0; i--) MenuManager.removeOption(Key.SELECT_OPTIONS_MENU, i);
-        String name = VehicleSelections.getModel();
+        String name = VehicleSelections.getModelName();
         int year = VehicleSelections.getYear();
         Model model = new Model(year, name);
         Set<String> buyable = DBManager.getBuyableOptions(model);
@@ -361,7 +409,7 @@ public class MenuInitializer {
     private static void reloadSelectYearMenu() {
         int size = MenuManager.getSize(Key.SELECT_YEAR_MENU);
         for (int i = size - 1; i >= 0; i--) MenuManager.removeOption(Key.SELECT_YEAR_MENU, i);
-        Set<Integer> buyable = DBManager.getBuyableYears(VehicleSelections.getModel());
+        Set<Integer> buyable = DBManager.getBuyableYears(VehicleSelections.getModelName());
         for (int i : buyable) {
             MenuManager.addOption(
                     Key.SELECT_YEAR_MENU,

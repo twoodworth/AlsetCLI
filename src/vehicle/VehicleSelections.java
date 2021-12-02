@@ -33,7 +33,7 @@ public class VehicleSelections {
      *
      * @return model name
      */
-    public static String getModel() {
+    public static String getModelName() {
         return model;
     }
 

@@ -76,6 +76,13 @@ public class Statement {
                     "FROM vehicle";
 
     /**
+     * Used for obtaining the current max location id
+     */
+    public static final String GET_MAX_LOCATION_ID =
+            "SELECT MAX(location_id) AS max_id " +
+                    "FROM service_location";
+
+    /**
      * Used for obtaining a set of all years currently being sold new for
      * a given model.
      */
@@ -92,6 +99,28 @@ public class Statement {
             "SELECT * " +
                     "FROM customer " +
                     "WHERE email=?";
+
+    /**
+     * Used for checking if a given address exists within the database.
+     */
+    public static final String ADDRESS_EXISTS =
+            "SELECT * " +
+                    "FROM address " +
+                    "WHERE planet=? " +
+                        "AND country=? " +
+                        "AND state=? " +
+                        "AND city=? " +
+                        "AND street=? " +
+                        "AND zip=? " +
+                        "AND apartment=?";
+
+    /**
+     * Used for checking if a given email address exists within the database.
+     */
+    public static final String CORRECT_PRODUCT_MANAGER_PASSWORD =
+            "SELECT * " +
+                    "FROM product_manager " +
+                    "WHERE password=?";
 
 
     /**
@@ -188,6 +217,12 @@ public class Statement {
                     "WHERE serial_num=?";
 
     /**
+     * Used for fetching all custom options belonging to a given vehicle.
+     */
+    public static final String GET_ALL_OPTIONS =
+            "SELECT option_name FROM custom_option";
+
+    /**
      * Used for fetching all service locations
      */
     public static final String GET_SERVICE_LOCATIONS =
@@ -264,6 +299,31 @@ public class Statement {
                     "WHERE serial_num=?";
 
     /**
+     * Used for getting a list of emails that meet the recall parameters
+     */
+    public static final String GET_RECALL_EMAILS =
+            "select distinct email " +
+                    "FROM customer " +
+                        "NATURAL JOIN owner " +
+                        "NATURAL JOIN vehicle_model " +
+                        "NATURAL JOIN model_options " +
+                    "WHERE year=? " +
+                        "AND name=? " +
+                        "AND option_name=?";
+
+    /**
+     * Used for getting a list of emails that meet the recall parameters
+     */
+    public static final String GET_RECALL_EMAILS_NO_OPTION =
+            "select distinct email " +
+                    "FROM customer " +
+                        "NATURAL JOIN owner " +
+                        "NATURAL JOIN vehicle_model " +
+                        "NATURAL JOIN model_options " +
+                    "WHERE year=? " +
+                        "AND name=?";
+
+    /**
      * Used for getting all vehicle listings of a given service location
      */
     public static final String GET_LISTINGS =
@@ -309,6 +369,22 @@ public class Statement {
             "UPDATE customer " +
                     "SET password=? " +
                     "WHERE email=?";
+
+
+    /**
+     * Used for setting the price of an option
+     */
+    public static final String UPDATE_OPTION_PRICE =
+            "UPDATE custom_option " +
+                    "SET option_price=? " +
+                    "WHERE option_name=?";
+
+    /**
+     * Used for updating model price
+     */
+    public static final String UPDATE_MODEL_PRICE =
+            "UPDATE model SET model_price=? " +
+                    "WHERE year=? AND name=?";
 
     /**
      * Used for updating a given vehicle's listing price
@@ -360,6 +436,26 @@ public class Statement {
     public static final String START_REPAIR =
             "INSERT INTO repair (start_time, end_time, repair_type, price) " +
                     "VALUES (?, ?, ?, ?)";
+
+    /**
+     * Used for adding a new row into model
+     */
+    public static final String ADD_MODEL =
+            "INSERT INTO model (year, name, model_price) " +
+                    "VALUES (?, ?, ?)";
+    /**
+     * Used for adding a new row into model_options
+     */
+    public static final String INSERT_MODEL_OPTION =
+            "INSERT INTO model_options (option_name, year, name) " +
+                    "VALUES (?, ?, ?)";
+
+    /**
+     * Used for adding a new row into custom_option
+     */
+    public static final String ADD_OPTION =
+            "INSERT INTO custom_option (option_name, option_price) " +
+                    "VALUES (?, ?)";
 
     /**
      * Used for adding a new row into repairable
@@ -436,6 +532,12 @@ public class Statement {
     public static final String INSERT_CUSTOMER =
             "INSERT INTO customer (email, password) " +
                     "VALUES (?, ?)";
+    /**
+     * Used for inserting a new row into service_location
+     */
+    public static final String INSERT_LOCATION =
+            "INSERT INTO service_location (location_id, location_name, password) " +
+                    "VALUES (?, ?, ?)";
 
     /**
      * Used for inserting a new row into customer_name
@@ -451,6 +553,13 @@ public class Statement {
 
     public static final String INSERT_CUSTOMER_ADDRESS =
             "INSERT INTO customer_address (email, planet, country, state, city, street, zip, apartment) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    /**
+     * Used for inserting a new row into service_address
+     */
+    public static final String INSERT_SERVICE_ADDRESS =
+            "INSERT INTO service_address (location_id, planet, country, state, city, street, zip, apartment) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**

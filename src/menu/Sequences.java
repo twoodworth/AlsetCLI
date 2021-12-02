@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Contains all the sequence functions in the program.
@@ -394,7 +395,6 @@ public class Sequences {
             ServiceManager.setCurrent(location);
             MenuManager.showMenu(Key.SERVICE_MANAGER_MENU, "Successfully logged in as " + location.getName() + " Service Manager.");
         }
-
     }
 
     /**
@@ -556,7 +556,17 @@ public class Sequences {
         IOManager.getStringInput("Enter any value to continue:");
     }
 
-    public static void productManagerSequence() {//todo add
+    public static void productManagerSequence() {
+        // clear console
+        IOManager.clear();
+
+        String password = IOManager.getPasswordInput("Enter password:");
+        boolean correct = DBManager.correctProductManagerPassword(password);
+        if (correct) {
+            MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU, "Successfully logged in as Product Manager.");
+        } else {
+            MenuManager.setNextMessage("Invalid password.");
+        }
     }
 
     /**
@@ -713,7 +723,7 @@ public class Sequences {
         MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
         MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
         MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU);
-        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModel());
+        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModelName());
 
 
         boolean success = DBManager.orderShowroomVehicle(model, VehicleSelections.getOptions(), ServiceManager.getCurrent());
@@ -871,7 +881,7 @@ public class Sequences {
         MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU);
         MenuManager.showMenuOnce(Key.SELECT_LOCATION_MENU);
 
-        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModel());
+        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModelName());
         Long cost = DBManager.getModelCost(model);
         if (cost == null) {
             MenuManager.setNextMessage("Unable to load info, please try again.");
@@ -920,7 +930,7 @@ public class Sequences {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_UNREPAIRABLE_MODEL_MENU);
         MenuManager.showMenuOnce(Key.SELECT_UNREPAIRABLE_YEAR_MENU);
-        String name = VehicleSelections.getModel();
+        String name = VehicleSelections.getModelName();
         int year = VehicleSelections.getYear();
         Model model = new Model(year, name);
         boolean success = DBManager.addRepairableModel(model);
@@ -938,7 +948,7 @@ public class Sequences {
         VehicleSelections.reset();
         MenuManager.showMenuOnce(Key.SELECT_REPAIRABLE_MODEL_MENU);
         MenuManager.showMenuOnce(Key.SELECT_REPAIRABLE_YEAR_MENU);
-        String name = VehicleSelections.getModel();
+        String name = VehicleSelections.getModelName();
         int year = VehicleSelections.getYear();
         Model model = new Model(year, name);
         boolean success = DBManager.removeRepairableModel(model);
@@ -1029,5 +1039,276 @@ public class Sequences {
                 }
             }
         }
+    }
+
+    /**
+     * Used for adding a new vehicle model
+     */
+    public static void addModelSequence() {
+        IOManager.clear("Adding a new model");
+
+        String name;
+        while (true) {
+            name = IOManager.getStringInput("Enter model name:");
+            if (name.length() == 1) {
+                break;
+            } else {
+                IOManager.clear("Model names must be exactly 1 character long.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (again) IOManager.clear();
+                else return;
+            }
+
+        }
+        Integer year;
+        while (true) {
+            year = IOManager.getIntInput("Enter model year", 2008, Integer.MAX_VALUE);
+            if (year == null) {
+                IOManager.clear("Invalid input, must be a year after 2007.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (again) IOManager.clear();
+                else return;
+            } else {
+                break;
+            }
+        }
+
+        Model model = new Model(year, name);
+        if (DBManager.getAllModels().contains(model)) {
+            IOManager.clear("Model already exists.");
+            IOManager.getStringInput("Enter any value to continue:");
+            return;
+        }
+
+        Long price;
+        while (true) {
+            price = IOManager.getLongInput("Enter a sales price (or '-1' if not for sale):", -1L, Long.MAX_VALUE);
+            if (price == null) {
+                IOManager.clear("Invalid input, must be an integer greater than or equal to -1.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (again) IOManager.clear();
+                else return;
+            } else {
+                break;
+            }
+        }
+
+        if (price == -1) price = null;
+
+        if (price == null) IOManager.clear(year + " Model " + name + " will be created and sold for $" + price);
+        else IOManager.clear(year + " Model " + name + " will be created, but not for sale.");
+
+        boolean correct = IOManager.getBooleanInput("Is the above information correct? (y/n");
+
+        if (correct) {
+            boolean success = DBManager.addModel(year, name, price);
+            if (success) MenuManager.setNextMessage("New model added successfully.");
+            else MenuManager.setNextMessage("Failed to add new model, please try again.");
+        } else {
+            MenuManager.setNextMessage("Information was incorrect, model not added.");
+        }
+    }
+
+    /**
+     * Used for adding a new custom option
+     */
+    public static void addOptionSequence() {
+
+        IOManager.clear("Adding a new customization option.");
+
+        String name = IOManager.getStringInput("Enter option name:");
+        Set<String> all = DBManager.getAllOptions();
+        if (all == null) {
+            IOManager.clear("Error while loading data, please try again.");
+            IOManager.getStringInput("Enter any value to continue:");
+            return;
+        }
+        if (all.contains(name)) {
+            IOManager.clear("This customization option already exists.");
+            IOManager.getStringInput("Enter any value to continue:");
+            return;
+        }
+
+        Long price;
+        while (true) {
+            price = IOManager.getLongInput("Enter a sales price (or '-1' if not for sale):", -1L, Long.MAX_VALUE);
+            if (price == null) {
+                IOManager.clear("Invalid input, must be an integer greater than or equal to 0.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (again) IOManager.clear();
+                else return;
+            } else {
+                break;
+            }
+        }
+        if (price == -1) price = null;
+
+        if (price == null) IOManager.clear("Custom option '" + name + "' will be created and sold for $" + price);
+        else IOManager.clear("Custom option '" + name + "' will be created, but not for sale.");
+
+        boolean correct = IOManager.getBooleanInput("Is the above information correct? (y/n");
+        if (correct) {
+            boolean success = DBManager.addOption(name, price);
+            if (success) MenuManager.setNextMessage("New option added successfully.");
+            else MenuManager.setNextMessage("Failed to add new option, please try again.");
+        } else {
+            MenuManager.setNextMessage("Information was incorrect, option not added.");
+        }
+
+    }
+
+    public static void addServiceLocationSequence() {
+
+        IOManager.clear("Adding a new service location.");
+
+        // location name
+        String name;
+        while (true) {
+            name = IOManager.getStringInput("Enter location name:");
+            Set<String> all = DBManager.getServiceLocations().stream().map(ServiceLocation::getName).collect(Collectors.toSet());
+            if (all.contains(name)) {
+                IOManager.clear("A service location already exists with that name.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (!again) {
+                    return;
+                }
+            } else {
+                break;
+            }
+        }
+
+        // get password
+        String password;
+        while (true) {
+            password = IOManager.getPasswordInput("Enter location password:");
+            String confirmation = IOManager.getPasswordInput("Confirm password:");
+
+            if (!password.equals(confirmation)) {
+                IOManager.clear("Confirmation does not match password.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (!again) {
+                    return;
+                }
+            } else {
+                break;
+            }
+        }
+
+        // get password
+        IOManager.clear(("What is the location's address? Enter 'N/A' where not applicable."));
+        String planet = IOManager.getStringInput("Enter Planet:");
+        String country = IOManager.getStringInput("Enter Country:");
+        String state = IOManager.getStringInput("Enter State:");
+        String city = IOManager.getStringInput("Enter City:");
+        String street = IOManager.getStringInput("Enter Street Number:");
+        String zip = IOManager.getStringInput("Enter ZIP Code:");
+        String apartment = IOManager.getStringInput("Enter apartment:");
+
+        Address address = new Address(planet, country, state, city, street, zip, apartment);
+
+        IOManager.clear("Service location will now be added.");
+        IOManager.getStringInput("Enter any value to continue:");
+
+        boolean success = DBManager.addLocation(name, password, address);
+        if (success) MenuManager.setNextMessage("New location added successfully.");
+        else MenuManager.setNextMessage("Failed to add new location, please try again.");
+    }
+
+    public static void setModelPrice() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+
+        Long price;
+        while (true) {
+            price = IOManager.getLongInput("Enter new price (or '-1' to stop selling):", -1, Long.MAX_VALUE);
+            if (price == null) {
+                IOManager.clear("Invalid input, must be an integer greater than or equal to -1.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (again) IOManager.clear();
+                else MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU);
+            } else {
+                break;
+            }
+        }
+        if (price == -1) price = null;
+        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModelName());
+        boolean success = DBManager.updateModelPrice(model, price);
+        if (success) MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU,"Price updated successfully.");
+        else MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU,"Failed to add new location, please try again.");
+    }
+
+    public static void setOptionPrice() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_ALL_OPTIONS_MENU);
+        String option = new ArrayList<>(VehicleSelections.getOptions()).get(0);
+
+        Long price;
+        while (true) {
+            price = IOManager.getLongInput("Enter new price (or '-1' to stop selling):", -1, Long.MAX_VALUE);
+            if (price == null) {
+                IOManager.clear("Invalid input, must be an integer greater than or equal to -1.");
+                boolean again = IOManager.getBooleanInput("Try again?");
+                if (again) IOManager.clear();
+                else MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU);
+            } else {
+                break;
+            }
+        }
+        if (price == -1) price = null;
+        boolean success = DBManager.updateOptionPrice(option, price);
+        if (success) MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU, "Price updated successfully.");
+        else MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU, "Failed to add new location, please try again.");
+    }
+
+    public static void addModelOptionSequence() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_ALL_OPTIONS_MENU);
+
+        String name = VehicleSelections.getModelName();
+        int year = VehicleSelections.getYear();
+        String option = new ArrayList<>(VehicleSelections.getOptions()).get(0);
+        Model model = new Model(year, name);
+
+        Set<String> buyable = DBManager.getBuyableOptions(model);
+        if (buyable.contains(option)) {
+            MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU, "The selected model can already have this option added.");
+            return;
+        }
+
+        boolean success = DBManager.addModelOption(model, option);
+        if (success) MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU, "Option added successfully.");
+        else MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU, "Failed to add new location, please try again.");
+    }
+
+    public static void recallSequence() {
+        VehicleSelections.reset();
+        MenuManager.showMenuOnce(Key.SELECT_MODEL_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_YEAR_MENU);
+        MenuManager.showMenuOnce(Key.SELECT_OPTIONS_MENU, "Recalls will only be applied to vehicles with all the selected options.");
+        IOManager.clear();
+        Model model = new Model(VehicleSelections.getYear(), VehicleSelections.getModelName());
+        Set<String> options = VehicleSelections.getOptions();
+        String message = IOManager.getStringInput("Enter brief recall message to send via email:");
+        Set<String> emails = DBManager.getRecallEmails(model, options);
+
+        if (emails.isEmpty()) {
+            IOManager.clear("No customers currently drive the vehicle + options being recalled, so no notifications were sent.");
+            IOManager.getStringInput("Enter any value to continue:");
+            MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU);
+            return;
+        }
+        IOManager.clear("Recall notification has been sent to all the following emails:");
+        for (String email : emails) {
+            IOManager.println("\t- " + email);
+            /*
+                No email actually gets sent here since these are fake emails.
+             */
+        }
+        IOManager.println();
+        IOManager.getStringInput("Enter any value to continue:");
+        MenuManager.showMenu(Key.PRODUCT_MANAGER_MENU);
     }
 }
